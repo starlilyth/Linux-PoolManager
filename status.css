@@ -1,0 +1,322 @@
+body
+{
+background-color: #FFFFFF;
+color: rgb(0,0,0);
+font-family: "Trebuchet MS", Helvetica, sans-serif;
+notfont-family: Tahoma, Geneva, sans-serif;
+border-left-width: 0px; border-right-width: 0px; border-top-width: 0px; border-bottom-width: 0px;
+border-left-style: none; border-right-style: none; border-top-style: none; border-bottom-style: none;
+margin: 0px;
+padding: 0px;
+}
+
+a
+{
+ color: #000000;
+}
+
+#content
+{
+ padding: 20px;
+ margin: 0px;
+ vertical-align: top;
+ position: absolute;
+ top: 80px;
+ 
+}
+
+#gpugraphs table tr td
+{
+ padding: 0px;
+ padding-top: 20px;
+ padding-right: 10px;
+ margin: 0px;
+ vertical-align: top;
+ border: 0px;
+ border-collapse:collapse;
+ color: #EEEEEE;
+}
+
+#sumdata table
+{
+    border-collapse:collapse;
+#   box-shadow: 3px 3px 2px #888888;
+}
+#sumdata tr td
+{
+   background-color: rgb(255,255,255);
+      border-bottom: 1px solid #cccccc;
+}
+
+img
+{
+ padding: 0px;
+ margin: 0px;
+}
+
+#content table
+{
+        border: 0px;
+        border-collapse:collapse;
+}
+
+#content td
+{
+        background-color: rgb(255,255,255);
+	font-size: 16px;
+	text-align: center;
+        padding: 5px;
+	padding-left: 8px;
+	padding-right: 8px;
+        vertical-align: middle;
+	border: 1px solid #cccccc;
+}
+
+#content td.locsum
+{
+        background-color: rgb(255,255,255);
+        border: 0px;
+        padding: 10px;
+        vertical-align: top;
+}
+
+#content td.node
+{
+        background-color: rgb(255,255,255);
+        border: 0px;
+        padding: 20px;
+        vertical-align: top;
+}
+
+#content td.gpudata
+{
+        background-color: rgb(255,255,255);
+        border: 0px;
+        padding: 5px;
+        vertical-align: top;
+}
+
+
+#content td.big
+{
+         font-size: 18px;
+         vertical-align: top;
+#        font-weight: bold;
+}
+
+#content td.bigger
+{
+        background-color: rgb(224,255,255);
+        padding: 5px;
+        font-size: 25px;
+}
+
+#content table.datatbl
+{
+	border: 1px solid #cccccc;
+}
+
+#showgpu table
+{
+        border: 0px;
+        border-collapse:collapse;
+}
+
+#showgpu td
+{
+    background-color: rgb(255,255,255);
+	font-size: 14px;
+	text-align: left;
+    padding: 3px;
+	padding-left: 8px;
+	padding-right: 8px;
+    vertical-align: top;
+	border: 0px solid #cccccc;
+
+}
+
+.nogpudata
+{
+        vertical-align: middle;
+        padding: 30px;
+        font-family: "Trebuchet MS", Helvetica, sans-serif;
+        font-size: 12px;
+}
+
+
+.gpudata
+{
+        vertical-align: top;
+        padding: 0px;
+}
+
+.gpudata table
+{
+        border-collapse:collapse;
+        vertical-align: top;
+        padding: 0px;
+        margin: 0px;
+}
+
+.gpudata td
+{
+        padding: 0px;
+#        padding-left: 10px;
+        margin: 0px;
+        font-family: "Trebuchet MS", Helvetica, sans-serif;
+        font-size: 12px;
+}
+
+#content td.ghdr
+{
+        vertical-align: top;
+
+        color: rgb(0,0,0);
+        background-color: rgb(198,226,255);
+
+        padding: 2px;
+        padding-left: 5px;
+        padding-right: 5px;
+
+        margin: 0px;
+        font-family: "Trebuchet MS", Helvetica, sans-serif;
+        font-size: 12px;
+	font-weight: bold;
+
+}
+
+#content td.error
+{
+        color: rgb(255,255,255);
+        background-color: rgb(200,0,0);
+
+        font-family: "Trebuchet MS", Helvetica, sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+
+}
+
+#content td.blank
+{
+        background-color: rgb(200,200,200);
+        border: 0px;
+        margin: 0px;
+        padding: 0px;
+        height: 1px;
+}
+
+#content td.space
+{
+        border: 0px;
+        margin: 0px;
+        padding: 0px;
+        height: 30px;
+}
+
+
+#overview
+{
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 68px;
+        padding: 10px;
+        padding-top: 5px;
+        color: rgb(255,255,255);
+	z-index: 1;
+
+  /* Safari 4-5, Chrome 1-9 */
+  background: -webkit-gradient(linear, top, bottom, from(#0000CC), to(#3366FF));
+  
+  /* Safari 5.1+, Chrome 10+ */
+  background: -webkit-linear-gradient(top, #0000CC, #3366FF);
+  
+  /* Firefox 3.6+ */
+  background: -moz-linear-gradient(top, #0000CC, #3366FF);
+  
+  /* IE 10 */
+  background: -ms-linear-gradient(top, #0000CC, #3366FF);
+  
+  /* Opera 11.10+ */
+  background: -o-linear-gradient(top, #0000CC, #3366FF);
+  
+  background-color: #222222;
+}
+
+#overview a
+{
+ color: #FFFFFF;
+}
+
+#overview img
+{
+        padding-top: 3px;
+}
+
+#overview td
+{
+        padding-right: 15px;
+        vertical-align: top;
+        color: rgb(255,255,255);
+
+}
+
+#overview td.overview
+{
+        vertical-align: top;
+        text-wrap:none;
+        font-size: 16px;
+}
+
+#overview td.overviewhash
+{
+        vertical-align: top;
+        text-wrap:none;
+        font-size: 30px;
+}
+
+#overview td.overviewid
+{
+        vertical-align: middle;
+        text-wrap:none;
+        font-size: 18px;
+}
+
+h1
+{
+ font-family: "Trebuchet MS", Helvetica, sans-serif;
+ font-size: 18px;
+}
+
+h2
+{
+ font-size: 14px;
+}
+
+h3
+{
+ font-size: 12px;
+}
+
+h4
+{
+ font-size: 10px;
+}
+
+h5
+{
+        font-family: "Trebuchet MS", Helvetica, sans-serif;
+        font-size: 12px;
+}
+
+#cpage
+{
+font-family: "Trebuchet MS", Helvetica, sans-serif;
+notfont-family: Tahoma, Geneva, sans-serif;
+border-left-width: 0px; border-right-width: 0px; border-top-width: 0px; border-bottom-width: 0px;
+border-left-style: none; border-right-style: none; border-top-style: none; border-bottom-style: none;
+margin: 0px;
+padding: 0px;
+}
+
