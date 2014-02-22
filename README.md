@@ -13,6 +13,7 @@ Originally extended from the BAMT miner web interface.
 See the wiki page for screenshots.
 
 Reqirements: Linux running cgminer or clone. Built and tested on litecoin-bamt 1.2. 
+Packages req: Perl5 + extensions, rrdtool, Apache w/SSL and mod_rewrite, other stuff I am sure. 
 
 
 NOTE!! NOTE!! NOTE!!! 
