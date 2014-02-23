@@ -9,7 +9,7 @@ Originally extended from the BAMT miner web interface of gpumon/mgpumon.
 * Install script enables SSL redirection (and optional default page password) for security.
 * Farm Overview provides status view for all nodes running PoolManager (Not yet available in this version!)
 
-See the wiki page for screenshots.
+See the GitHub wiki page for screenshots.
 
 -----
 
@@ -31,14 +31,17 @@ EASY PEASY SURE FIRE INSTALL INSTRUCTIONS: (WHICH ARE PROBABLY BROKEN)
 (Doing it this way ensures all the files will have the correct permissions.)
 
 1. ssh into your miner, so you are at the command prompt. be root (if you are user, do: sudo su - ).
-2. do: wget https://github.com/starlilyth/Linux-PoolManager/archive/master.zip
-3. do: unzip master.zip
-4. cd to 'Linux-PoolManager-master' directory and run: ./install-pm.sh
-Please make sure the following entries are in your cgminer.conf:
+1. do: wget https://github.com/starlilyth/Linux-PoolManager/archive/master.zip
+1. do: unzip master.zip
+1. cd to 'Linux-PoolManager-master' directory and run: ./install-pm.sh
+1. Please make sure the following entries are in your cgminer.conf:
 
     "api-listen" : true,
+   
     "api-port" : "4028",
+   
     "api-allow" : "W:127.0.0.1",
+
 
 PoolManager installation attempts to modify /etc/sudoers to allow the web service to stop/start the miner application, modify files, and boot the machine, all as a specified user. If it fails, you will need to modify sudoers yourself with the following: 
 
