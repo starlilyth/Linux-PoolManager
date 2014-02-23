@@ -1,0 +1,29 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+
+my $login = (getpwuid $>);
+die "must run as root" if ($login ne 'root');
+die "no arguments" if ($ARGV[0] eq "");
+
+require '/opt/ifmi/pm-common.pl';
+
+if ($ARGV[0] eq "start") { 
+	my $mcheck = `ps -eo command | grep [m]iner | wc -l`;
+	if ($mcheck > 0) {
+		die "another mining process is running."
+	}
+	if (-e "/opt/bamtX") { 
+		exec `/usr/sbin/mine start`;
+	} else { 
+		&startCGMiner();
+	}
+}
+
+if ($ARGV[0] eq "stop") { 
+	if (-e "/opt/bamtX") { 
+		exec `/usr/sbin/mine stop`;
+	} else { 
+		&stopCGMiner();
+	}
+}

@@ -51,10 +51,28 @@ if ($cgraphs ne "") {
   $cgraphs = "";
 }
 
+my $mstop = $in{'mstop'};
+if ($mstop eq "stop") { 
+  $status = `echo $in{'ptext'} | sudo -S /opt/ifmi/mcontrol stop`;
+  $mstop = ""; 
+}
+
+my $mstart = $in{'mstart'};
+if ($mstart eq "start") { 
+  my $sup = $in{'ptext'};
+  $status = `echo $in{'ptext'} | sudo -S /opt/ifmi/mcontrol start`;
+  $mstart = ""; 
+}
+
+my $reboot = $in{'reboot'};
+if ($reboot eq "reboot") { 
+  $status = `echo $in{'ptext'} | sudo -S /sbin/coldreboot`;
+}  
+
 # Someday, maybe.
 my $qval = $in{'qval'};
 if ($qval ne "") {
-  $qpool = $in{'qpool'};
+  my $qpool = $in{'qpool'};
   &quotaPool($qpool, $qval);
   $qval = ""; $qpool = "";
 }
@@ -451,9 +469,9 @@ if (@summary) {
   		$msput .= "<tr><td>Miner Version (API)</td><td colspan=3>" . $mvers . $avers . "</td></tr>";
       	$msput .= "<tr><td>Run time:</td><td>" . $mrunt . "</td>";
 		if ($melapsed > 0) {  	  
-		  $msput .= "<td  colspan=2><form name='mstop' action='poolmanage.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
+		  $msput .= "<td  colspan=2><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
 		} else { 
-		  $msput .= "<td  colspan=2><form name='mstart' action='poolmanage.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > ";
+		  $msput .= "<td  colspan=2><form name='mstart' action='status.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > ";
 		}
 		$msput .= "<input type='password' placeholder='root password' name='ptext' required></form></tr>";
 		$mtm = ${@summary[$i]}{'total_mh'};
@@ -498,10 +516,10 @@ if (@summary) {
   	} else {		
 		if ($melapsed > 0) {  	  
 		  $mcontrol .= "<td>Run time: " . $mrunt . "</td>";
-		  $mcontrol .= "<td><form name='mstop' action='poolmanage.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
+		  $mcontrol .= "<td><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
 		} else { 
 		  $mcontrol .= "<td class='error'>Stopped</td>";
-		  $mcontrol .= "<td><form name='mstart' action='poolmanage.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > ";
+		  $mcontrol .= "<td><form name='mstart' action='status.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > ";
 		}
 		$mcontrol .= "<input type='password' placeholder='root password' name='ptext' required></td></form>";		
 		my $mcheck = `ps -eo command | grep [m]gpumon | wc -l`;

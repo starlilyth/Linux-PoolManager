@@ -26,8 +26,8 @@ case "$input" in
       cp status.pl /usr/lib/cgi-bin/
       cp /usr/lib/cgi-bin/confedit.pl /usr/lib/cgi-bin/confedit.pl.back
       cp confedit.pl /usr/lib/cgi-bin/
-      cp /usr/lib/cgi-bin/poolmanage.pl /usr/lib/cgi-bin/poolmanage.pl.back
-      cp poolmanage.pl /usr/lib/cgi-bin/
+      cp /opt/ifmi/mcontrol /opt/ifmi/mcontrol.back
+      cp mcontrol /opt/ifmi/
 #      cp /opt/bamt/sendstatus.pl /opt/bamt/sendstatus.pl.back
 #      cp sendstatus.pl /opt/bamt/
 #      cp /opt/bamt/mgpumon /opt/bamt/mgpumon.back
@@ -52,6 +52,9 @@ case "$input" in
       echo -e "Copying files...\n"
       mkdir -p /var/www/IFMI/graphs
       mkdir -p /opt/ifmi/rrdtool
+      if [ -f /var/www/index.html ]; then
+        cp /var/www/index.html /var/www/index.html.pre-ifmi
+      fi
       cp index.html /var/www/
       cp favicon.ico /var/www/
       cp status.css /var/www/IFMI/
@@ -61,7 +64,7 @@ case "$input" in
       fi
       cp status.pl /usr/lib/cgi-bin/
       cp confedit.pl /usr/lib/cgi-bin/
-      cp poolmanage.pl /usr/lib/cgi-bin/
+      cp mcontrol /opt/ifmi/
       cp pm-common.pl /opt/ifmi/
       cp poolmanager.conf /opt/ifmi/
 #      cp /opt/bamt/sendstatus.pl /opt/bamt/sendstatus.pl.bamt
@@ -74,10 +77,19 @@ case "$input" in
       echo -e "*/5 * * * * root /opt/ifmi/rrdtool/pmgraph.pl\n" >> /etc/crontab
       chmod +x /usr/lib/cgi-bin/*.pl #because windows
       echo -e "Modifying sudoers....\n"
-      sed \$a"Defaults targetpw\n"\
-"www-data ALL=(ALL) /usr/sbin/mine,/bin/cp,/sbin/coldreboot\n" /etc/sudoers > /etc/sudoers.ifmi
+      if [ -f /etc/redhat-release ]; then 
+        sed \$a"Defaults targetpw\n"\
+"apache ALL=(ALL) /opt/ifmi/mcontrol,/bin/cp,/usr/bin/reboot\n" /etc/sudoers > /etc/sudoers.ifmi
       cp /etc/sudoers /etc/sudoers.pre-ifmi
       cp /etc/sudoers.ifmi /etc/sudoers
+      elif [ -f /etc/debian_version ]; then 
+        sed \$a"Defaults targetpw\n"\
+"www-data ALL=(ALL) /opt/ifmi/mcontrol,/bin/cp,/sbin/reboot\n" /etc/sudoers > /etc/sudoers.ifmi
+      cp /etc/sudoers /etc/sudoers.pre-ifmi
+      cp /etc/sudoers.ifmi /etc/sudoers
+      else 
+        echo -e "Cant determine distro, skipping sudoers... PLEASE SEE THE README!\n"
+      fi 
       echo -e "Running Apache security script...\n"
       ./htsec.sh
       echo -e "Done! Please read the README and edit your conf file as required. Thank you for flying IFMI!\n"

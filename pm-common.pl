@@ -874,203 +874,62 @@ push(@summary, ({elapsed=>$melapsed, hashavg=>$mhashav, hashrate=>$mhashrate, kh
 	
 }
 
-sub stopMining
+sub stopCGMiner
 {
- 	
-	
+ 		
  my $conf = &getConfig;
  %conf = %{$conf};  
  
  &blog("stopping mining processes...");
  
- print "..";
- 
- # if cgminer, ask nicely
  if (${$conf}{'settings'}{'cgminer'})
  {
- 	 my $cgport = 4028;
- 	 if (defined(${$conf}{'settings'}{'cgminer_port'}))
- 	 {
- 	 	 $cgport = ${$conf}{'settings'}{'cgminer_port'};
- 	 }
- 	 
- 	 print "cgminer api ";
- 	 
- 	 my $sock = new IO::Socket::INET (
-                                  PeerAddr => '127.0.0.1',
-                                  PeerPort => $cgport,
-                                  Proto => 'tcp',
-                                  ReuseAddr => 1,
-                                  Timeout => 10,
-                                 );
+ 	  my $cgport = 4028;
+ 	  if (defined(${$conf}{'settings'}{'cgminer_port'}))
+ 	  {
+ 	  	 $cgport = ${$conf}{'settings'}{'cgminer_port'};
+ 	  }
+ 	  my $sock = new IO::Socket::INET (
+          PeerAddr => '127.0.0.1',
+          PeerPort => $cgport,
+          Proto => 'tcp',
+          ReuseAddr => 1,
+          Timeout => 10,
+         );
     
     if ($sock)
     {
     	&blog("send quit command to cgminer api");
- 	 
+  	 
     	print $sock "quit|\n";
     
-		my $res = "";
-		
-		while(<$sock>) 
-		{
-			$res .= $_;
-		}
-		
-		close($sock);
-		print "closed..";
-	}
-	else
-	{
-		&blog("failed to get socket for cgminer api");
- 	 
-		print "failed..";
-	}
-    	
- }
- 
- 
- # kill any straggler wrappers 
- if (opendir(DIR, '/tmp'))  
- {
-	 while (defined($file = readdir(DIR))) 
-	 {
-	  next if $file =~ /^\.\.?$/;
-	 
-	  if ($file =~ m/^wrapper-(\d+)\.pid/)
-	  {
-         &blog("kill straggler wrapper for gpu $1");
-		 print "$file..";
-		`cat /tmp/$file | xargs kill -9 2>&1`;
-	  }
-	 } 
-	 closedir(DIR);
- }
- 
- sleep(1);
- 
- # tell mother we're done
- my $momtmp = &getMomTmp;
-
- %momtmp = %{$momtmp};
- 
- $momtmp{'mining'} = 0;
- $momtmp{'stopped_mining_time'} = time;
- $momtmp{"gendesktop"} = 0;
- 
- &putMomTmp(%momtmp);
-
-}
-
-
-sub startMining
-{
- my $conf = &getConfig;
- %conf = %{$conf};  
-  
- my (@gpus) = &getFreshGPUData;
-
- # always check/sync offline	
- &syncOfflineConfig;
-
- # check our hostname
- &setHostname;
- 
-
- # if we aren't forbidden..
- if (! -e '/live/image/BAMT/CONTROL/ACTIVE/noMine')
- {
-
-  for (my $k = 0;$k < @gpus;$k++)
-  {
-   print "..GPU $k";  
-	  
-   unless ((${$conf{'gpu' . $k}}{'disabled'}) || ( -e '/live/image/BAMT/CONTROL/ACTIVE/noGPU'.$k))
-   {
-    my $pid = fork(); 
-
-    if (not defined $pid)
-    {
-      die "out of resources? forking failed while starting mining for GPU $k";
-    }
-    elsif ($pid == 0)
-    {
-     #$ENV{DISPLAY} = ":0.$k";
-     $ENV{DISPLAY} = ":0.0";
-     $ENV{LD_LIBRARY_PATH} = "/opt/AMD-APP-SDK-v2.4-lnx32/lib/x86/:";
-     
-     &doFAN($k);
-     &doOC($k);
-     
-     # no phoenix wrapper on cgminer gpus
-     if ((! ${$conf{'gpu' . $k}}{'cgminer'}) && (! ${$conf{'gpu' . $k}}{'phoenix2'}))
-     {
-     	&blog("starting phoenix wrapper for gpu $k");
-     	exec("/usr/bin/screen -d -m -S gpu$k /opt/bamt/wrapper $k");
-     }
-     
-     exit(0);
-    }
-    else
-    {
-     if (defined(${$conf}{'settings'}{'start_mining_miner_delay'}))
-     {
-     	sleep ${$conf}{'settings'}{'start_mining_miner_delay'};
-     }
-     else
-     {
-      	sleep 3;
-     }
-    }
-   }
-   else
-   {
-   	print " is disabled";
-   }
+  		my $res = "";
+  		
+  		while(<$sock>) 
+  		{
+  			$res .= $_;
+  		}
+  		
+  		close($sock);
+  	} else {
+  		&blog("failed to get socket for cgminer api");
+  	}	
   }
-  
-  
-  if ( defined(${$conf}{'settings'}{'cgminer'}) && (${$conf}{'settings'}{'cgminer'} == 1) && defined(${$conf}{'settings'}{'cgminer_opts'}) )
-  {
-  	  # startup a cgminer session
-  	  print "..cgminer..";
-  	  
-  	  # wait for overclocking to settle down.. maybe not needed but cgminer sometimes bitches and wont start gpu
-  	  sleep(3);
-  	  
-  	  &startCGMiner( ${$conf}{'settings'}{'cgminer_opts'} );
-  }
-
-  
-
-  # tell mother what we've done
-  my $momtmp = &getMomTmp;
-
-  %momtmp = %{$momtmp};
-
-  $momtmp{'mining'} = 1;
-  $momtmp{'started_mining_time'} = time;
-  $momtmp{"gendesktop"} = 0;
-
-  &putMomTmp(%momtmp);
-
-  
- }
- else
- {
- 	 &blog("mining is disabled, nothing started");
- 	 print " (mining is disabled, so nothing started)";
- }
 }
 
 
 sub startCGMiner
 {
-	my ($args) = @_;
-	
-	my $pid = fork(); 
 
-	
+ my $conf = &getConfig;
+ %conf = %{$conf};  
+
+  my $minerbin = ${$conf}{'settings'}{'cgminer_path'}; 
+  if ($minerbin eq "") {
+    die "No miner path defined! Exiting."; 
+  }
+  my $mineropts =  ${$conf}{'settings'}{'cgminer_opts'}; 	
+	my $pid = fork(); 
 	
     if (not defined $pid)
     {
@@ -1080,11 +939,11 @@ sub startCGMiner
     {
     	$ENV{DISPLAY} = ":0";
     	$ENV{LD_LIBRARY_PATH} = "/opt/AMD-APP-SDK-v2.4-lnx32/lib/x86/:";
-        $ENV{GPU_USE_SYNC_OBJECTS} = "1";
+      $ENV{GPU_USE_SYNC_OBJECTS} = "1";
     	
-    	my $cmd = "cd /opt/miners/cgminer;/usr/bin/screen -d -m -S cgminer /opt/miners/cgminer/cgminer $args"; 
+    	my $cmd = "/usr/bin/screen -d -m -S PM-miner $minerbin $mineropts"; 
     	
-    	&blog("starting cgminer with cmd: $cmd");
+    	&blog("starting miner with cmd: $cmd");
     	
 		exec($cmd);
 		exit(0);
