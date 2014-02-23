@@ -43,12 +43,12 @@ sub saveConfig
                  $cgport = ${$conf}{'settings'}{'cgminer_port'};
          }
          my $sock = new IO::Socket::INET (
-                                  PeerAddr => '127.0.0.1',
-                                  PeerPort => $cgport,
-                                  Proto => 'tcp',
-                                  ReuseAddr => 1,
-                                  Timeout => 10,
-                                 );
+                PeerAddr => '127.0.0.1',
+                PeerPort => $cgport,
+                Proto => 'tcp',
+                ReuseAddr => 1,
+                Timeout => 10,
+               );
         if ($sock)
         {
         &blog("sending save command to cgminer api");
@@ -82,12 +82,12 @@ sub switchPool
                  $cgport = ${$conf}{'settings'}{'cgminer_port'};
          }
          my $sock = new IO::Socket::INET (
-                                  PeerAddr => '127.0.0.1',
-                                  PeerPort => $cgport,
-                                  Proto => 'tcp',
-                                  ReuseAddr => 1,
-                                  Timeout => 10,
-                                 );
+                PeerAddr => '127.0.0.1',
+                PeerPort => $cgport,
+                Proto => 'tcp',
+                ReuseAddr => 1,
+                Timeout => 10,
+               );
         if ($sock)
         {
         &blog("sending switchpool command to cgminer api");
@@ -122,12 +122,12 @@ sub quotaPool
                  $cgport = ${$conf}{'settings'}{'cgminer_port'};
          }
          my $sock = new IO::Socket::INET (
-                                  PeerAddr => '127.0.0.1',
-                                  PeerPort => $cgport,
-                                  Proto => 'tcp',
-                                  ReuseAddr => 1,
-                                  Timeout => 10,
-                                 );
+                PeerAddr => '127.0.0.1',
+                PeerPort => $cgport,
+                Proto => 'tcp',
+                ReuseAddr => 1,
+                Timeout => 10,
+               );
         if ($sock)
         {
         &blog("sending poolquota command to cgminer api");
@@ -164,12 +164,12 @@ sub addPool
                  $cgport = ${$conf}{'settings'}{'cgminer_port'};
          }
          my $sock = new IO::Socket::INET (
-                                  PeerAddr => '127.0.0.1',
-                                  PeerPort => $cgport,
-                                  Proto => 'tcp',
-                                  ReuseAddr => 1,
-                                  Timeout => 10,
-                                 );
+                PeerAddr => '127.0.0.1',
+                PeerPort => $cgport,
+                Proto => 'tcp',
+                ReuseAddr => 1,
+                Timeout => 10,
+               );
         if ($sock)
         {
         &blog("sending addpool command to cgminer api");
@@ -203,12 +203,12 @@ sub delPool
                  $cgport = ${$conf}{'settings'}{'cgminer_port'};
          }
          my $sock = new IO::Socket::INET (
-                                  PeerAddr => '127.0.0.1',
-                                  PeerPort => $cgport,
-                                  Proto => 'tcp',
-                                  ReuseAddr => 1,
-                                  Timeout => 10,
-                                 );
+                PeerAddr => '127.0.0.1',
+                PeerPort => $cgport,
+                Proto => 'tcp',
+                ReuseAddr => 1,
+                Timeout => 10,
+               );
         if ($sock)
         {
         &blog("sending removepool command to cgminer api");
@@ -242,12 +242,12 @@ sub zeroStats
                  $cgport = ${$conf}{'settings'}{'cgminer_port'};
          }
          my $sock = new IO::Socket::INET (
-                                  PeerAddr => '127.0.0.1',
-                                  PeerPort => $cgport,
-                                  Proto => 'tcp',
-                                  ReuseAddr => 1,
-                                  Timeout => 10,
-                                 );
+                PeerAddr => '127.0.0.1',
+                PeerPort => $cgport,
+                Proto => 'tcp',
+                ReuseAddr => 1,
+                Timeout => 10,
+               );
         if ($sock)
         {
         &blog("sending zero command to cgminer api");
@@ -378,7 +378,7 @@ sub getFreshGPUData
 
   	my $res = `DISPLAY=:0.0 /usr/local/bin/atitweak -s`;
 
-	  while ($res =~ m/(\d)\.\s(.+\n.+\n.+\n.+\n.+)/g) {
+	  while ($res =~ m/$i\.\s(.+\n.+\n.+\n.+\n.+)/g) {
       $gidata = $2; 
        if ($gidata =~ m/^(.+)\s+\(:/) {
         $gdesc = $1;
@@ -405,72 +405,69 @@ sub getFreshGPUData
 			${$gpus[$gpu]}{status} = 'disabled';
 		}
 		
-		# system info
-#		${$gpus[$gpu]}{uptime} = $uptime;
-
 		# monitoring
 	
-		if (!defined(${$gc}{'disabled'}) || (${$gc}{'disabled'} == 0))
-		{		
+		# if (!defined(${$gc}{'disabled'}) || (${$gc}{'disabled'} == 0))
+		# {		
                 
-			if (defined(${$gc}{'monitor_fan_lo'}))
-			{
-				if (isdigit($gpus[$gpu]{fan_rpm}))
-				{
-					if ($gpus[$gpu]{fan_rpm} <  ${$gc}{'monitor_fan_lo'})
-					{
-						$gpus[$gpu]{fault_fan_lo} = ${$gc}{'monitor_fan_lo'} . '|' . $gpus[$gpu]{fan_rpm};
-					}
-				}
-			}               
+		# 	if (defined(${$gc}{'monitor_fan_lo'}))
+		# 	{
+		# 		if (isdigit($gpus[$gpu]{fan_rpm_c}))
+		# 		{
+		# 			if ($gpus[$gpu]{fan_rpm_c} <  ${$gc}{'monitor_fan_lo'})
+		# 			{
+		# 				$gpus[$gpu]{fault_fan_lo} = ${$gc}{'monitor_fan_lo'} . '|' . $gpus[$gpu]{fan_rpm_c};
+		# 			}
+		# 		}
+		# 	}               
 			
-			if (defined(${$gc}{'monitor_load_lo'}))
-			{
-				if ($gpus[$gpu]{current_load} <  ${$gc}{'monitor_load_lo'})
-				{
-					$gpus[$gpu]{fault_load_lo} = ${$gc}{'monitor_load_lo'} . '|' . $gpus[$gpu]{current_load};
-				}
-			}
+		# 	if (defined(${$gc}{'monitor_load_lo'}))
+		# 	{
+		# 		if ($gpus[$gpu]{current_load_c} <  ${$gc}{'monitor_load_lo'})
+		# 		{
+		# 			$gpus[$gpu]{fault_load_lo} = ${$gc}{'monitor_load_lo'} . '|' . $gpus[$gpu]{current_load_c};
+		# 		}
+		# 	}
 		
-			if (defined(${$gc}{'monitor_hash_lo'}) && defined($gpus[$gpu]{hashrate}))
-			{
-				if ($gpus[$gpu]{hashrate} < ${$gc}{'monitor_hash_lo'})
-				{
-					$gpus[$gpu]{fault_hash_lo} = ${$gc}{'monitor_hash_lo'} . '|' . $gpus[$gpu]{hashrate};
-				}
-			}
+		# 	if (defined(${$gc}{'monitor_hash_lo'}) && defined($gpus[$gpu]{hashrate}))
+		# 	{
+		# 		if ($gpus[$gpu]{hashrate} < ${$gc}{'monitor_hash_lo'})
+		# 		{
+		# 			$gpus[$gpu]{fault_hash_lo} = ${$gc}{'monitor_hash_lo'} . '|' . $gpus[$gpu]{hashrate};
+		# 		}
+		# 	}
 			
-			if (defined(${$gc}{'monitor_reject_hi'}))
-			{
-				if ($gpus[$gpu]{'shares_accepted'})
-				{
-					my $rr = $gpus[$gpu]{'shares_invalid'}/($gpus[$gpu]{'shares_accepted'} + $gpus[$gpu]{'shares_invalid'}) * 100;		
+		# 	if (defined(${$gc}{'monitor_reject_hi'}))
+		# 	{
+		# 		if ($gpus[$gpu]{'shares_accepted'})
+		# 		{
+		# 			my $rr = $gpus[$gpu]{'shares_invalid'}/($gpus[$gpu]{'shares_accepted'} + $gpus[$gpu]{'shares_invalid'}) * 100;		
 			
-					if ($rr > ${$gc}{'monitor_reject_hi'})
-					{
-						$gpus[$gpu]{fault_reject_hi} = ${$gc}{'monitor_reject_hi'} . '|' . $rr;
-					}
-				}
-			}
+		# 			if ($rr > ${$gc}{'monitor_reject_hi'})
+		# 			{
+		# 				$gpus[$gpu]{fault_reject_hi} = ${$gc}{'monitor_reject_hi'} . '|' . $rr;
+		# 			}
+		# 		}
+		# 	}
 		
-			if (defined(${$gc}{'monitor_temp_lo'}))
-			{
-				if ($gpus[$gpu]{current_temp_0} < ${$gc}{'monitor_temp_lo'})
-				{
-					$gpus[$gpu]{fault_temp_lo} = ${$gc}{'monitor_temp_lo'} . '|' . $gpus[$gpu]{current_temp_0};
-				}
-			}
+		# 	if (defined(${$gc}{'monitor_temp_lo'}))
+		# 	{
+		# 		if ($gpus[$gpu]{current_temp_0_c} < ${$gc}{'monitor_temp_lo'})
+		# 		{
+		# 			$gpus[$gpu]{fault_temp_lo} = ${$gc}{'monitor_temp_lo'} . '|' . $gpus[$gpu]{current_temp_0_c};
+		# 		}
+		# 	}
 		
-			if (defined(${$gc}{'monitor_temp_hi'}))
-			{
-				if ($gpus[$gpu]{current_temp_0} > ${$gc}{'monitor_temp_hi'})
-				{
-					$gpus[$gpu]{fault_temp_hi} = ${$gc}{'monitor_temp_hi'} . '|' . $gpus[$gpu]{current_temp_0};
-				}
+		# 	if (defined(${$gc}{'monitor_temp_hi'}))
+		# 	{
+		# 		if ($gpus[$gpu]{current_temp_0_c} > ${$gc}{'monitor_temp_hi'})
+		# 		{
+		# 			$gpus[$gpu]{fault_temp_hi} = ${$gc}{'monitor_temp_hi'} . '|' . $gpus[$gpu]{current_temp_0_c};
+		# 		}
 			
-			}
+		# 	}
 		
-    }           
+  #   }           
         
   }      	
   return(@gpus);
@@ -490,13 +487,13 @@ sub getCGMinerPools
  	}
     
 	my $sock = new IO::Socket::INET (
-                                  PeerAddr => '127.0.0.1',
-                                  PeerPort => $cgport,
-                                  Proto => 'tcp',
-                                  ReuseAddr => 1,
-                                  Timeout => 10,
-                                 );
-    
+          PeerAddr => '127.0.0.1',
+          PeerPort => $cgport,
+          Proto => 'tcp',
+          ReuseAddr => 1,
+          Timeout => 10,
+         );
+
     if ($sock)
     {
     	print $sock "pools|\n";
@@ -579,12 +576,12 @@ sub getCGMinerStats
  	}
     
 	my $sock = new IO::Socket::INET (
-                                  PeerAddr => '127.0.0.1',
-                                  PeerPort => $cgport,
-                                  Proto => 'tcp',
-                                  ReuseAddr => 1,
-                                  Timeout => 10,
-                                 );  
+        PeerAddr => '127.0.0.1',
+        PeerPort => $cgport,
+        Proto => 'tcp',
+        ReuseAddr => 1,
+        Timeout => 10,
+       );  
   if ($sock)
   {
     	print $sock "gpu|$gpu\n";
@@ -774,12 +771,12 @@ sub getCGMinerSummary
  	}
     
 	my $sock = new IO::Socket::INET (
-                                  PeerAddr => '127.0.0.1',
-                                  PeerPort => $cgport,
-                                  Proto => 'tcp',
-                                  ReuseAddr => 1,
-                                  Timeout => 10,
-                                 );
+          PeerAddr => '127.0.0.1',
+          PeerPort => $cgport,
+          Proto => 'tcp',
+          ReuseAddr => 1,
+          Timeout => 10,
+         );
     
     if ($sock)
     {

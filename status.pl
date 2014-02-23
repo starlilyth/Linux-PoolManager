@@ -206,7 +206,7 @@ for (my $i=0;$i<@gpus;$i++)
 		
  	}	
 
-	if (defined($conf{monitor_temp_hi}) && ($gpus[$i]{'current_temp_0_c'} > $conf{monitor_temp_hi}))
+	if (defined($conf{settings}{monitor_temp_hi}) && ($gpus[$i]{'current_temp_0_c'} > $conf{settings}{monitor_temp_hi}))
 	{
 			$problems++;
 			push(@nodemsg, "GPU $i is over maximum temp");
@@ -219,7 +219,7 @@ for (my $i=0;$i<@gpus;$i++)
 			
 			$gput .= "<td class='error'>";
 	}
-	elsif (defined( $conf{monitor_temp_lo}) && ($gpus[$i]{'current_temp_0_c'} < $conf{monitor_temp_lo}))
+	elsif (defined($conf{settings}{monitor_temp_lo}) && ($gpus[$i]{'current_temp_0_c'} < $conf{settings}{monitor_temp_lo}))
 	{
 			$problems++;
 			push(@nodemsg, "GPU $i is below minimum temp");
@@ -238,12 +238,12 @@ for (my $i=0;$i<@gpus;$i++)
 		{
 			$gsput .= "<tr><td>Temp:</td><td>" . sprintf("%.1f", $gpus[$i]{'current_temp_0_c'}) . ' C</td>';
 		}
-		$gput .= '<td>' . sprintf("%.1f", $gpus[$i]{'current_temp_0_c'}) . ' C</td>';
+		$gput .= '<td>';
 	}		
-	$gput .= '</TD>';
+	$gput .= sprintf("%.1f", $gpus[$i]{'current_temp_0_c'}) . ' C</td>';
 	
 	$frpm = $gpus[$i]{'fan_rpm_c'}; $frpm = "0" if ($frpm eq "");
-	if (defined($conf{monitor_fan_lo}) && $frpm < ($conf{monitor_fan_lo}) && ($frpm > 0))
+	if (defined($conf{settings}{monitor_fan_lo}) && $frpm < ($conf{settings}{monitor_fan_lo}) && ($frpm > 0))
 	{
 		$problems++;
 		push(@nodemsg, "GPU $i is below minimum fan rpm");
@@ -277,7 +277,7 @@ for (my $i=0;$i<@gpus;$i++)
 		
 	my $ghashrate = $gpus[$i]{'hashrate'}; 
 	$ghashrate = $gpus[$i]{'hashavg'} if ($ghashrate eq "");
-	if (defined($conf{monitor_hash_lo}) && ($ghashrate < $conf{monitor_hash_lo}))
+	if (defined($conf{settings}{monitor_hash_lo}) && ($ghashrate < $conf{settings}{monitor_hash_lo}))
 	{
 		$problems++;
 		push(@nodemsg, "GPU $i is below minimum hash rate");
@@ -314,7 +314,7 @@ for (my $i=0;$i<@gpus;$i++)
 	if ($gsha > 0)
 	{
 		my $rr = $gpus[$i]{'shares_invalid'}/($gpus[$i]{'shares_accepted'} + $gpus[$i]{'shares_invalid'})*100 ;		
-		if (defined(${$config}{monitor_reject_hi}) && ($rr > ${$config}{monitor_reject_hi}))
+		if (defined(${$conf}{settings}{monitor_reject_hi}) && ($rr > ${$conf}{settings}{monitor_reject_hi}))
 		{
 			$problems++;
 			push(@nodemsg, "GPU $i is above maximum reject rate");
@@ -376,7 +376,7 @@ for (my $i=0;$i<@gpus;$i++)
 
 	$gput .= "</TR>";
 
-	if (defined($conf{monitor_hash_lo}) && ($gpus[$i]{'current_load_c'} < $conf{monitor_load_lo}))
+	if (defined($conf{settings}{monitor_load_lo}) && ($gpus[$i]{'current_load_c'} < $conf{settings}{monitor_load_lo}))
 	{
 		$problems++;
 		push(@nodemsg, "GPU $i is below minimum load");
@@ -438,7 +438,6 @@ if (@summary) {
   for (my $i=0;$i<@summary;$i++) {
     $melapsed = ${@summary[$i]}{'elapsed'};
     $mrunt = sprintf("%d days, %02d:%02d.%02d",(gmtime $melapsed)[7,2,1,0]);
-
     $mratem = ${@summary[$i]}{'hashrate'};
     $mratem = ${@summary[$i]}{'hashavg'} if ($mratem eq "");
     $minerate = sprintf("%.2f", $mratem);
@@ -571,7 +570,7 @@ if ($ispriv eq "S") {
 	      $problems++;
 	      push(@nodemsg, "Pool $i is dead"); 
 	      $pstatus = "<td class='error'>" . $pstat . "</td>";
-		  if ($i == $showpool) {
+		  if ($showpool == $i) {
 		  	push(@poolmsg, "Pool is dead"); 
 		  }	
 	    } else {
@@ -587,11 +586,11 @@ if ($ispriv eq "S") {
 	    } else { 
 		   $prr = "0.0";
 	    }
-		if (defined(${$config}{monitor_reject_hi}) && ($prr > ${$config}{monitor_reject_hi})) {
+		if (defined(${$conf}{settings}{monitor_reject_hi}) && ($prr > ${$conf}{settings}{monitor_reject_hi})) {
 	      $problems++;
 	      push(@nodemsg, "Pool $i reject ratio too high"); 
 	  	  $prat = "<td class='error'>" . $prr . "%</td>";
-		  if ($i == $showpool) {
+		  if ($showpool == $i) {
 	        push(@poolmsg, "Reject ratio is too high"); 
 		  }	
 	    } else { 
