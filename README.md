@@ -19,7 +19,7 @@ Packages req: Perl5 + extensions, rrdtool, Apache w/SSL and mod_rewrite, other s
 
 NOTE!! NOTE!! NOTE!!! 
 
-    THIS VERSION IS NOT COMPLETE! I am porting this from a distro dependency, so many things are broken still, including FarmView. 
+THIS VERSION IS NOT COMPLETE! I am porting this from a distro dependency, so many things are broken still, including FarmView. 
 
 PROCEED AT YOUR OWN RISK!
 
@@ -34,7 +34,7 @@ EASY PEASY SURE FIRE INSTALL INSTRUCTIONS: (WHICH ARE PROBABLY BROKEN)
 2. do: wget https://github.com/starlilyth/Linux-PoolManager/archive/master.zip
 3. do: unzip master.zip
 4. cd to 'Linux-PoolManager-master' directory and run: ./install-pm.sh
-5. Please make sure the following entries are in your cgminer.conf:
+Please make sure the following entries are in your cgminer.conf:
 
     "api-listen" : true,
     "api-port" : "4028",
