@@ -30,11 +30,11 @@ EASY PEASY SURE FIRE INSTALL INSTRUCTIONS: (WHICH ARE PROBABLY BROKEN)
 
 (Doing it this way ensures all the files will have the correct permissions.)
 
-# ssh into your miner, so you are at the command prompt. be root (if you are user, do: sudo su - ).
-# do: wget https://github.com/starlilyth/Linux-PoolManager/archive/master.zip
-# do: unzip master.zip
-# cd to 'Linux-PoolManager-master' directory and run: ./install-pm.sh
-# Please make sure the following entries are in your cgminer.conf:
+1. ssh into your miner, so you are at the command prompt. be root (if you are user, do: sudo su - ).
+2. do: wget https://github.com/starlilyth/Linux-PoolManager/archive/master.zip
+3. do: unzip master.zip
+4. cd to 'Linux-PoolManager-master' directory and run: ./install-pm.sh
+5. Please make sure the following entries are in your cgminer.conf:
 
     "api-listen" : true,
     "api-port" : "4028",
