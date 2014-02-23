@@ -1,14 +1,14 @@
 Web based pool and miner manager for Linux running CGminer and clones, in perl (no php). 
 Originally extended from the BAMT miner web interface.
 
-    Add or Remove pools, or Switch priority, from the web GUI without stopping your miner.
-    Stop/start the miner, with password protection and version/run time display.
-    Extra stats in the header (Work Util, HW errors, Uptime, Load, Free Mem).
-    Refactored GPU stats on overview and details pages. Pool details page.
-    Miner details page with reboot control and Configuration Editor.
-    Install script enables SSL redirection (and optional default page password) for security.
-    Native graphing
-    Farm Overview (mgpumon) is much improved with more information in less space. (Not yet available in this version!)
+* Add or Remove pools, or Switch priority, from the web GUI without stopping your miner.
+* Stop/start the miner, with password protection and version/run time display.
+* Extra stats in the header (Work Util, HW errors, Uptime, Load, Free Mem).
+* Refactored GPU stats on overview and details pages. Pool details page.
+* Miner details page with reboot control and Configuration Editor.
+* Install script enables SSL redirection (and optional default page password) for security.
+* Native graphing
+* Farm Overview (mgpumon) is much improved with more information in less space. (Not yet available in this version!)
 
 See the wiki page for screenshots.
 
@@ -17,7 +17,7 @@ Packages req: Perl5 + extensions, rrdtool, Apache w/SSL and mod_rewrite, other s
 
 
 NOTE!! NOTE!! NOTE!!! 
-    THIS VERSION IS NOT COMPLETE! I am porting this from a distro dependency, so many things are broken still, including mgpumon and miner control. 
+    THIS VERSION IS NOT COMPLETE! I am porting this from a distro dependency, so many things are broken still, including mgpumon. 
         PROCEED AT YOUR OWN RISK!
 
 
@@ -32,9 +32,9 @@ do: unzip master.zip
 cd to 'Linux-PoolManager-master' directory and run: ./install-pm.sh
 Please make sure the following entries are in your cgminer.conf:
 
-"api-listen" : true,
-"api-port" : "4028",
-"api-allow" : "W:127.0.0.1",
+    "api-listen" : true,
+    "api-port" : "4028",
+    "api-allow" : "W:127.0.0.1",
 
 
 -----
@@ -49,8 +49,8 @@ Where apacheuser is the user that your web service runs as, and /path/to/reboot 
 
 
 
-Absolutely NO hidden donate code! You can trust the IFMI brand to never include any kind of auto donate or 
-hash theft code.
+Absolutely NO hidden donate code! 
+You can trust the IFMI brand to never include any kind of auto donate or hash theft code.
 
 If you love it, please donate!
 

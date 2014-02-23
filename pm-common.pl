@@ -598,9 +598,12 @@ sub getCGMinerStats
 		
 		close($sock);
 	
-		if ($res =~ m/MHS\sav=(\d+\.\d+),/) {
+		if ($res =~ m/MHS\s\ds=(\d+\.\d+),/) {
 			$data->{'hashrate'} = $1 * 1000;
 		}
+    if ($res =~ m/MHS\sav=(\d+\.\d+),/) {
+      $data->{'hashavg'} = $1 * 1000;
+    }
 		if ($res =~ m/Accepted=(\d+),/)	{
 			$data->{'shares_accepted'} = $1;
 		}		
