@@ -35,9 +35,8 @@ EASY PEASY SURE FIRE INSTALL INSTRUCTIONS: (WHICH ARE PROBABLY BROKEN)
 1. do: unzip master.zip
 1. cd to 'Linux-PoolManager-master' directory and run: ./install-pm.sh
 1. cd to /opt/ifmi/ and edit poolmanager.conf as needed. 
-1. Please make sure the following entries are in your cgminer.conf:
 
-
+Please make sure the following entries are in your cgminer.conf:
 
     "api-listen" : true,
     "api-port" : "4028",
