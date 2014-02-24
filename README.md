@@ -14,15 +14,9 @@ See the GitHub wiki page for screenshots.
 -----
 
 Reqirements: Linux running cgminer or clone. Built and tested on litecoin-bamt 1.2. 
-Packages req: Perl5 + extensions, rrdtool, Apache w/SSL and mod_rewrite, other stuff I am sure. 
+Packages req: Perl5 + extensions, rrdtool. 
 
-
-NOTE!! NOTE!! NOTE!!! 
-
-THIS VERSION IS NOT COMPLETE! I am porting this from a distro dependency, so many things are broken still, including FarmView. 
-
-PROCEED AT YOUR OWN RISK!
-
+NOTE!! THIS VERSION IS NOT COMPLETE! I am porting this from a distro dependency, so things are broken still, including FarmView. Installation does not check dependencies yet. 
 
 ------
 
