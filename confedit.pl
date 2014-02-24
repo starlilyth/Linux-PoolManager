@@ -1,7 +1,11 @@
 #!/usr/bin/perl
-# In order for this file to work correctly, /etc/sudoers must contain the following:
-# Defaults targetpw
-# www-data ALL=(ALL) /bin/cp
+#    This file is part of IFMI PoolManager.
+#
+#    PoolManager is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
 
 use CGI qw(:cgi-lib :standard);
 print header;

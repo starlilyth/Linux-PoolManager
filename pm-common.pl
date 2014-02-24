@@ -8,19 +8,9 @@
 #    GNU General Public License for more details.
 #
 
-use Data::Dumper;
-use Socket;
-use IO::Handle;
-use YAML qw( DumpFile LoadFile );
-use LWP::UserAgent;
-
-use JSON::XS;
-use JSON::RPC::Client;
+use YAML qw( LoadFile );
 use IO::Socket::INET;
-use Sys::Hostname;
 use Sys::Syslog qw( :DEFAULT setlogsock);
-use POSIX;
-
 setlogsock('unix');
 
 
@@ -288,67 +278,6 @@ sub getGPUConfig
 
 }
 
-
-sub getMomTmp
-{
- if (-e '/tmp/mother.tmp')
- {
-        my $c = LoadFile('/tmp/mother.tmp');
-        return($c);
- }
- return({ gendesktop => 0, lastrun => time });
-}
-
-
-sub putMomTmp
-{	
- my (%c) = @_;
-
- DumpFile( "/tmp/mother.tmp" , \%c );
-}
-
-
-# cached data
-sub getCachedGPUData
-{
- my ($su) = @_;
- 
- my $fn = "/tmp/gpu.tmp." . $>;
- 
- if (-e $fn)
- {
- 	 my $gtime = (stat($fn))[9];
- 
- 	 # cache for 60 seconds (ignore the future)
- 	 if ((time - $gtime < 60) && ! ( $gtime > time))
- 	 {
- 	 	 my @c = LoadFile($fn);
- 	 	 
- 	 	 # seems insane, but whatevr
- 	 	 my @b;
- 	 	 for ($k = 0;$k < @{$c[0]}; $k++)
- 	 	 {
- 	 	 	 push(@b, ${$c[0]}[$k]);
- 	 	 }
- 	 	 
- 	 	 return(@b);
- 	 }
- }
- 
- my @c = &getFreshGPUData($su);
- putGPUTmp(@c);
- return(@c);
-}
-
-
-sub putGPUTmp
-{
- my (@c) = @_;
-
- DumpFile( "/tmp/gpu.tmp.".$> , \@c );
-}
-
-
 sub getGPUData
 {
 	my ($su) = @_;
@@ -372,6 +301,7 @@ sub getFreshGPUData
 
   my $gpucount = &getCGMinerGPUCount;
 
+  my $gidata = "";
   for (my $i=0;$i<$gpucount;$i++)
   {
     my $gpu = $i; 

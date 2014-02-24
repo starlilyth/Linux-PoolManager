@@ -1,6 +1,12 @@
 #!/bin/bash
+#    This file is part of IFMI PoolManager.
+#
+#    PoolManager is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.   
+#
 # This script is intended to provide some basic security to your http service.
-# It is distributed with IFMI-PoolManager. No guarantees or assurances are provided or implied.
 # Please see http://httpd.apache.org/docs/2.2/ssl/ for more information.
 
 if [[ $EUID -ne 0 ]]; then
@@ -40,18 +46,6 @@ echo -e "It will optionally also set up a default site password.\n"
 	ServerName IFMI:443' /etc/apache2/sites-available/default-ssl > /etc/apache2/sites-available/default-ssl.ifmi
   sed -i "s/ssl-cert-snakeoil.pem/apache.crt/g" /etc/apache2/sites-available/default-ssl.ifmi
   sed -i "s/ssl-cert-snakeoil.key/apache.key/g" /etc/apache2/sites-available/default-ssl.ifmi
-  cp /etc/apache2/sites-available/default-ssl.ifmi /etc/apache2/sites-available/default-ssl
-  sed '/CustomLog /a\
-	\
-	Alias /mgpumon/ "/tmp/mgpumon/"\
-    	<Directory "/tmp/mgpumon/">\
-        Options Indexes MultiViews FollowSymLinks\
-        AllowOverride None\
-        Order allow,deny\
-        Allow from all\
-	</Directory>\
-' /etc/apache2/sites-available/default-ssl > /etc/apache2/sites-available/default-ssl.ifmi
-  cp /etc/apache2/sites-available/default-ssl.ifmi /etc/apache2/sites-available/default-ssl
   /usr/sbin/a2ensite default-ssl
   echo "Configuring Apache to use https only..."
   if [ ! -e /etc/apache2/sites-available/default.pre-ifmi ] ; then

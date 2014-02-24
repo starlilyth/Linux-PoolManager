@@ -1,8 +1,16 @@
 #!/usr/bin/perl
+#    This file is part of IFMI PoolManager.
+#
+#    PoolManager is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+
 use warnings;
 use strict;
 use RRDs;
-use Socket;
+#use Socket;
 use IO::Socket::INET;
 
 my $login = (getpwuid $>);
@@ -156,8 +164,7 @@ if ($sock) {
    or die "Update error: ($RRDs::error)";
 }
 
-my $mname = `/bin/hostname`;
-chomp $mname; 
+my $mname = $conf{settings}{miner_id};
 RRDs::graph("-P", $PICPATH . "msummary.png",
  "--start","now-1d",
  "--end", "now",
