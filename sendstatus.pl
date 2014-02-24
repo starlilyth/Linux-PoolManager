@@ -5,7 +5,7 @@
 #    PoolManager is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.   
+#    GNU General Public License for more details. 
 #
 
 require '/opt/ifmi/pm-common.pl';
@@ -39,7 +39,7 @@ sub bcastStatus
   $ts .= "|$k:" . encode_json $gpus[$k];
  }
 
- my @pools;  my @pools = &getCGMinerPools(1);
+ my @pools;  my @pools = &getCGMinerPools;
  for ($p = 0;$p < @pools;$p++)
  {
   $ts .= "|$p pool:" . encode_json $pools[$p];
@@ -68,6 +68,8 @@ sub bcastStatus
  {
  	$socket->send($ts, 0);
 	 close $socket;
+ } else {
+   &blog("sendstatus failed to get socket");
  }
 
 }
@@ -88,7 +90,7 @@ sub directStatus
   $ts .= "|$k:" . encode_json $gpus[$k];
  }
 
- my @pools = &getCGMinerPools(1);
+ my @pools = &getCGMinerPools;
 
  for ($p = 0;$p < @pools;$p++)
  {
@@ -123,7 +125,10 @@ sub directStatus
  {
   $socket->send($ts, 0);
   close $socket;
+ } else {
+   &blog("sendstatus failed to get socket");
  }
+
 }
 
 

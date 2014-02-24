@@ -19,7 +19,10 @@ sub saveConfig
  my $savefile = $_[0];
  my $conf = &getConfig;
  %conf = %{$conf};
- $savefile = "/opt/ifmi/cgminer.conf" if ($savefile eq "");
+$savefile = "/opt/ifmi/cgminer.conf";
+if (defined($conf{settings}{savepath})) {
+  $savefile = $conf{settings}{savepath};
+}
   if (-e $savefile) { 
    $bkpfile = $savefile . "-bkp";
    rename $savefile, $bkpfile; 
