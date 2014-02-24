@@ -717,7 +717,6 @@ sub getCGMinerVersion
         $res .= $_;
       }
       close($sock);
-#This will need to be changed if the API is ever changed to v2.x v0.7 should return null 
       while ($res =~ m/VERSION,(\w+?=\d+\.\d+\.\d+,API=\d+\.\d+)/g) {
         return $1; 
       }

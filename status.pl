@@ -546,7 +546,7 @@ $p1sum .= "<table id='pcontent'>";
 if ($ispriv eq "S") {
 	$p1sum .= "<TR class='ghdr'><TD class='ghdr'>Pool</TD>";
 	$p1sum .= "<TD class='ghdr'>Pool URL</TD>";
-	if ($avers > 16) {
+	if ($avers > 1.16) {
 	  $p1sum .= "<TD class='ghdr'>Worker</TD>"; 
 	}
 	$p1sum .= "<TD class='ghdr'>Status</TD>";
@@ -640,7 +640,7 @@ if ($ispriv eq "S") {
 	      if (length($pusr) > 20) { 
 	        $pusr = substr($pusr, 1, 6) . " ... " . substr($pusr, -6, 6) if (index($pusr, '.') < 0);
 	      }
-	      if ($avers > 16) {
+	      if ($avers > 1.16) {
 	        $psum .= "<td>" . $pusr . "</td>";
 	      }
 	      $psum .= $pstatus;

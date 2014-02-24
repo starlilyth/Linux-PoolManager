@@ -1,4 +1,4 @@
-Web based pool and miner manager for Linux running CGminer and clones. Written in perl (no php). 
+Web based pool and miner manager for Linux running CGminer and clones (sgminer, vertminer, keccak, etc). Written in perl (no php). 
 Originally extended from the BAMT miner web interface of gpumon/mgpumon.
 
 * Add or Remove pools, or Switch priority, from the web GUI without stopping your miner.
@@ -39,7 +39,6 @@ EASY PEASY SURE FIRE INSTALL INSTRUCTIONS: (WHICH ARE PROBABLY BROKEN)
 Please make sure the following entries are in your cgminer.conf:
 
     "api-listen" : true,
-    "api-port" : "4028",
     "api-allow" : "W:127.0.0.1",
 
 
