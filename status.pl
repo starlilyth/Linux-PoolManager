@@ -425,14 +425,15 @@ $g1put .= "</table>";
 $mcontrol .= "<table><tr>";
 my $surl = "?"; $surl .= "miner=$i";
 $mcontrol .= '<TD class="bigger"><A href="' . $surl . '">Miner</a></td>';
-if ($version =~ m/Miner=(\d+\.\d+\.\d+),API=1\.(\d+)/) {
-  	$mvers = $1; 
-  	$avers = $2; 
+if ($version =~ m/(\w+?)=(\d+\.\d+\.\d+),API=(\d+\.\d+)/) {
+	$mname = $1;
+  	$mvers = $2; 
+  	$avers = $3; 
 } else { 
 	$mvers = "Unknown";
 	$avers = "0"; 
 }
-$mcontrol .= "<td>version: $mvers</td>";
+$mcontrol .= "<td>$mname $mvers</td>";
 
 if (@summary) {
   for (my $i=0;$i<@summary;$i++) {
@@ -467,8 +468,7 @@ if (@summary) {
 		$msput .= "<tr><td></td></tr><tr><td colspan=2><input type='submit' value='Reboot' onclick='this.disabled=true;this.form.submit();' > ";
 		$msput .= "<input type='password' placeholder='root password' name='ptext' required></td></tr></form>";
 		$msput .= "<tr><td colspan=4><hr></td></tr>";
-		$avers = " (1." . $avers . ")" if ($avers ne "");
-  		$msput .= "<tr><td>Miner Version (API)</td><td colspan=3>" . $mvers . $avers . "</td></tr>";
+  		$msput .= "<tr><td>Miner Version (API)</td><td colspan=3>$mname $mvers ($avers)</td></tr>";
       	$msput .= "<tr><td>Run time:</td><td>" . $mrunt . "</td>";
 		if ($melapsed > 0) {  	  
 		  $msput .= "<td  colspan=2><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
