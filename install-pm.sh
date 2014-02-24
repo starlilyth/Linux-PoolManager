@@ -28,12 +28,12 @@ case "$input" in
       cp confedit.pl /usr/lib/cgi-bin/
       cp /opt/ifmi/mcontrol /opt/ifmi/mcontrol.back
       cp mcontrol /opt/ifmi/
-#      cp /opt/bamt/sendstatus.pl /opt/bamt/sendstatus.pl.back
-#      cp sendstatus.pl /opt/bamt/
-#      cp /opt/bamt/mgpumon /opt/bamt/mgpumon.back
-#      cp mgpumon /opt/bamt/
-#      cp /var/www/bamt/mgpumon.css /var/www/bamt/mgpumon.css.back
-#      cp mgpumon.css /var/www/bamt/
+      cp /opt/ifmi/sendstatus.pl /opt/ifmi/sendstatus.pl.back
+      cp sendstatus.pl /opt/ifmi/
+      cp /opt/ifmi/farmview /opt/ifmi/farmview.back
+      cp farmview /opt/ifmi/
+      cp /var/www/IFMI/farmview.css /var/www/IFMI/farmview.css.back
+      cp farmview.css /var/www/IFMI/
       cp /opt/ifmi/pm-common.pl /opt/ifmi/pm-common.pl.back
       cp pm-common.pl /opt/ifmi/
       cp /opt/ifmi/poolmanager.conf /opt/ifmi/poolmanager.conf.back
@@ -67,12 +67,9 @@ case "$input" in
       cp mcontrol /opt/ifmi/
       cp pm-common.pl /opt/ifmi/
       cp poolmanager.conf /opt/ifmi/
-#      cp /opt/bamt/sendstatus.pl /opt/bamt/sendstatus.pl.bamt
-#      cp sendstatus.pl /opt/bamt/
-#      cp /opt/bamt/mgpumon /opt/bamt/mgpumon.bamt
-#      cp mgpumon /opt/bamt/
-#      cp /var/www/bamt/mgpumon.css /var/www/bamt/mgpumon.css.bamt
-#      cp mgpumon.css /var/www/bamt/
+      cp sendstatus.pl /opt/ifmi/
+      cp farmview /opt/ifmi/
+      cp farmview.css /var/www/IFMI/
       cp pmgraph.pl /opt/ifmi/rrdtool
       echo -e "*/5 * * * * root /opt/ifmi/rrdtool/pmgraph.pl\n" >> /etc/crontab
       chmod +x /usr/lib/cgi-bin/*.pl #because windows

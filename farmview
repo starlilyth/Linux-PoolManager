@@ -9,12 +9,9 @@ use IO::Socket::INET;
 use JSON::XS;
 
 
-my $config = { listen_port => 54545, debug=>0, 
-genhttp_last => 0, genhttp_interval => 30, genhttp_minwait => 5, 
-httpdir => '/var/www/', httpindex => 'farmview.html', httpimgpath => '/IFMI', httpcss =>'/IFMI/farmview.css', 
-#monitor_temp_hi => 80, monitor_temp_lo => 45, monitor_load_lo => 90, 
-#monitor_hash_lo => 100, monitor_fan_lo => 3000, monitor_reject_hi => 3 
-};
+my $config = { debug=>0, 
+genhttp_last => 0, genhttp_interval => 30, genhttp_minwait => 5, httpdir => '/var/www/', 
+httpindex => 'farmview.html', httpimgpath => '/IFMI', httpcss =>'/IFMI/farmview.css' };
 
 require '/opt/ifmi/pm-common.pl';
 
@@ -29,33 +26,6 @@ if (Proc::PID::File->running())
 	print "Another farmview is already running.\n";
         exit(0);
 }
-
-
-# if (@ARGV)
-# {
-# 	my $cfile = $ARGV[0];
-	
-# 	if (-e $cfile)
-# 	{
-# 		open(FH,"<$cfile");
-		
-# 		my $ctext = <FH>;
-		
-# 		close(FH);
-		
-# 		my $tc = JSON::XS->new->ascii->pretty(1)->decode($ctext);
-		
-# 		for my $k ( keys %{$tc} )
-# 		{
-# 			${$config}{$k} = ${$tc}{$k};
-# 		}
-# 	}
-# 	else
-# 	{
-# 		die("specified config file does not exist");
-# 	}
-# }
-
 
 our %miners;
 
@@ -87,8 +57,12 @@ our $starttime = time;
 my $last_minerid = "";
 my $last_minedip = "";
 
+my $listenport = 54545;
+if (defined($conf{settings}{listen_port})) {
+  $listenport = $conf{settings}{listen_port};
+}
 my $socket = IO::Socket::INET->new(Proto => 'udp', Type => SOCK_DGRAM, 
-LocalPort => ${$config}{listen_port}, Blocking  => 0) or die "Cannot open socket";
+LocalPort => $listenport, Blocking  => 0) or die "Cannot open socket";
 
 $sel = IO::Select->new();
 $sel->add($socket);
@@ -126,7 +100,9 @@ while($socket)
 
  my $timesince = (time - ${$config}{genhttp_last});
  
- if ( ($timesince > ${$config}{genhttp_interval}) || ($packets && (!$seendata)) || ( ($timesince > ${$config}{genhttp_minwait}) && ($packets > $refreshedpackets) ) )
+ if ( ($timesince > ${$config}{genhttp_interval}) 
+ 	|| ($packets && (!$seendata)) 
+ 	|| ( ($timesince > ${$config}{genhttp_minwait}) && ($packets > $refreshedpackets) ) )
  {
  	 &genhttp;
  	 ${$config}{genhttp_last} = time;
@@ -453,7 +429,8 @@ sub genhttp
 
 				for (my $i = 0; $i < @gpus;$i++)
 				{
-					if (($gpus[$i]{'fan_rpm_c'} < $conf{settings}{monitor_fan_lo}) && (! $gpus[$i]{'fan_rpm_c'} eq '0'))
+					if (($gpus[$i]{'fan_rpm_c'} < $conf{settings}{monitor_fan_lo}) 
+						&& (! $gpus[$i]{'fan_rpm_c'} eq '0'))
 					{
 						$gpuid = $i; 
 						$gproblem{$gpuid}++;
@@ -498,7 +475,8 @@ sub genhttp
 				{
 					if ($gpus[$i]{'shares_accepted'} > 0)
 					{
-						my $rr = $gpus[$i]{'shares_invalid'}/($gpus[$i]{'shares_accepted'} + $gpus[$i]{'shares_invalid'})*100 ;
+						my $rr = $gpus[$i]{'shares_invalid'}/($gpus[$i]{'shares_accepted'} 
+							+ $gpus[$i]{'shares_invalid'})*100 ;
 						
 						if ($rr > $conf{settings}{monitor_reject_hi})
 						{
@@ -639,7 +617,7 @@ sub genhttp
 		
 		$html .= "It can take up to 60 seconds for miner data to appear. ";
 		$html .= "If no data appears after a full minute, you may need to check your miner's configuration.<p>";
-		$html .= "<b>This FarmView is listening for UDP packets on port " . ${$config}{listen_port} . "<p>";
+		$html .= "<b>This FarmView is listening for UDP packets on port $listenport<p>";
 		my @ips = &getIPs;
 				
 		if (@ips)
