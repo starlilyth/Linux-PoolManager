@@ -409,12 +409,12 @@ for (my $i=0;$i<@gpus;$i++)
 	
 	if ($problems)
 	{
-		$gput = '<TR><TD class="bigger"><A href="' . $gpuurl . '">' . $i . '</TD><TD class=error><img src=/bamt/error24.png></td>' . $gput;
+		$gput = '<TR><TD class="bigger"><A href="' . $gpuurl . '">' . $i . '</TD><TD class=error><img src=/IFMI/error24.png></td>' . $gput;
 		$problemgpus++;
 	}
 	else
 	{
-		$gput = '<TR><TD class="bigger"><A href="' . $gpuurl . '">' . $i . '</TD><TD><img src=/bamt/ok24.png></td>' . $gput;
+		$gput = '<TR><TD class="bigger"><A href="' . $gpuurl . '">' . $i . '</TD><TD><img src=/IFMI/ok24.png></td>' . $gput;
 		$okgpus++;
 	}
 	$g1put .= $gput;
@@ -524,8 +524,8 @@ if (@summary) {
 		  $mcontrol .= "<td><form name='mstart' action='status.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > ";
 		}
 		$mcontrol .= "<input type='password' placeholder='root password' name='ptext' required></td></form>";		
-		my $mcheck = `ps -eo command | grep [m]gpumon | wc -l`;
-		$mcontrol .=  "<td><A href=/mgpumon/>Farm Overview</A></td>" if ($mcheck >0);
+		my $mcheck = `ps -eo command | grep [f]armview | wc -l`;
+		$mcontrol .=  "<td><A href=/farmview.html>Farm Overview</A></td>" if ($mcheck >0);
 	}
   }
 } 
@@ -563,7 +563,7 @@ if ($ispriv eq "S") {
 	    $pimg = "<form name='pselect' action='status.pl' method='POST'><input type='hidden' name='swpool' value='$i'><button type='submit'>Switch</button></form>";
 	    $pnum = ${@pools[$i]}{'poolid'};
 	    $pname = ${@pools[$i]}{'url'};
-	    $pimg = "<img src='/bamt/ok24.png'>" if ($g0url eq $pname);
+	    $pimg = "<img src='/IFMI/ok24.png'>" if ($g0url eq $pname);
 	    $pusr = ${@pools[$i]}{'user'};
 	    $pstat = ${@pools[$i]}{'status'};
 	    if ($pstat eq "Dead") {
@@ -576,9 +576,9 @@ if ($ispriv eq "S") {
 	    } else {
 	      $pstatus = "<td>" . $pstat . "</td>";
 	    }
-	    $pimg = "<img src='/bamt/error24.png'>" if ($pstat ne "Alive");
+	    $pimg = "<img src='/IFMI/error24.png'>" if ($pstat ne "Alive");
 	    $ppri = ${@pools[$i]}{'priority'};
-	    $pimg = "<img src='/bamt/timeout24.png'>" if (($g0url ne $pname)&&(($ppri eq 0)&&($pstat eq "Alive")));
+	    $pimg = "<img src='/IFMI/timeout24.png'>" if (($g0url ne $pname)&&(($ppri eq 0)&&($pstat eq "Alive")));
 	    $pacc = ${@pools[$i]}{'accepted'};
 	    $prej = ${@pools[$i]}{'rejected'};
 	    if ($prej ne "0") {
@@ -689,7 +689,7 @@ if ($ispriv eq "S") {
 
 print "<div id='overview'>";
 print "<table><TR><TD>";
-print "<table><TR><TD id='overviewlogo' rowspan=2><a href='https://github.com/starlilyth/bamt-poolmanager' target=_blank>";
+print "<table><TR><TD id='overviewlogo' rowspan=2><a href='https://github.com/starlilyth/Linux-PoolManager' target=_blank>";
 print "<IMG src='/IFMI/IFMI-logo-small.png'></a></TD>";
 print "<TD class='overviewid'>" . $conf{'settings'}{'miner_id'} . "</td>";
 print "<td align='right'><form name='zero' action='status.pl' method='POST'><input type='hidden' name='zero' value='zero'>";
@@ -761,12 +761,12 @@ given($x) {
 		print sprintf("%d", $gpus[$showgpu]{'hashrate'}) . " Kh/s</td></tr>";	
 		print "<tr><td>";
 		if (@gpumsg) {
-			print "<img src='/bamt/error.png'><p>";
+			print "<img src='/IFMI/error.png'><p>";
 			foreach my $l (@gpumsg) {
 				print "$l<br>";
 			}
 		} else {
-			print "<img src='/bamt/ok.png'><p>";
+			print "<img src='/IFMI/ok.png'><p>";
 			print "All parameters OK";
 		}
 		print "</td></tr></table>";
@@ -792,13 +792,13 @@ given($x) {
 		}
 		print "</td></tr><tr><td>";
         if (@poolmsg) {
-                print "<p><img src='/bamt/error.png'><p>";
+                print "<p><img src='/IFMI/error.png'><p>";
                 foreach my $l (@poolmsg)
                 {
                         print "$l<br>";
                 }
         } else {
-                print "<p><img src='/bamt/ok.png'><p>";
+                print "<p><img src='/IFMI/ok.png'><p>";
                 print "All OK";
         }
    		print "</td></tr></table>";
@@ -819,20 +819,20 @@ given($x) {
 		print "</td></tr><tr><td>Efficiency (WU / Hashrate)</td></tr>"; 
 		print "<tr><td>";
         if (@nodemsg) {
-                print "<img src='/bamt/error.png'><p>";
+                print "<img src='/IFMI/error.png'><p>";
                 foreach my $l (@nodemsg)
                 {
                         print "$l<br>";
                 }
         } else {
-                print "<p><img src='/bamt/ok.png'><p>";
+                print "<p><img src='/IFMI/ok.png'><p>";
                 print "All OK";
         }
    		print "</td></tr></table>";        
         print "</td><td><table class=datatbl>$msput</td></tr>";
         print "<tr><td colspan=4><hr></td></tr>";
         print "<tr><td colspan=4>PoolManager was written by Lily, and updates are available at ";
-        print "<a href=https://github.com/starlilyth/bamt-poolmanager target=_blank>GitHub</a>.<br>"; 
+        print "<a href=https://github.com/starlilyth/Linux-PoolManager target=_blank>GitHub</a>.<br>"; 
         print "If you love PoolManager, please consider donating. Thank you!<br> ";
         print "BTC: 1JBovQ1D3P4YdBntbmsu6F1CuZJGw9gnV6 <br>LTC: LdMJB36zEfTo7QLZyKDB55z9epgN78hhFb<br>";
         print "</table></td></tr></table>";
