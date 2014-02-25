@@ -10,13 +10,12 @@
 use warnings;
 use strict;
 use RRDs;
-#use Socket;
 use IO::Socket::INET;
 
 my $login = (getpwuid $>);
 die "must run as root" if ($login ne 'root');
 
-require '/opt/bamt/common.pl';
+require '/opt/ifmi/pm-common.pl';
 
 my $conf = &getConfig;
 my %conf = %{$conf};

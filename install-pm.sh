@@ -40,8 +40,8 @@ case "$input" in
       cp poolmanager.conf /opt/ifmi/
       cp /opt/ifmi/pmgraph.pl /opt/ifmi/pmgraph.pl.back
       cp pmgraph.pl /opt/ifmi/rrdtool
-      if ! grep -q  "pmgraph" "/etc/crontab" ; then
-        echo -e "*/5 * * * * root /opt/ifmi/rrdtool/pmgraph.pl\n" >> /etc/crontab
+      if ! grep -q  "run-poolmanager" "/etc/crontab" ; then
+        echo -e "* * * * * root /opt/ifmi/run-poolmanager.pl\n" >> /etc/crontab
       fi   
       chmod +x /usr/lib/cgi-bin/*.pl #because windows
       echo -e "Done!\n";;
@@ -71,7 +71,7 @@ case "$input" in
       cp farmview /opt/ifmi/
       cp farmview.css /var/www/IFMI/
       cp pmgraph.pl /opt/ifmi/rrdtool
-      echo -e "*/5 * * * * root /opt/ifmi/rrdtool/pmgraph.pl\n" >> /etc/crontab
+      echo -e "* * * * * root /opt/ifmi/run-poolmanager.pl\n" >> /etc/crontab
       chmod +x /usr/lib/cgi-bin/*.pl #because windows
       echo -e "Modifying sudoers....\n"
       if [ -f /etc/redhat-release ]; then 

@@ -12,7 +12,7 @@ use YAML qw( LoadFile );
 use IO::Socket::INET;
 use Sys::Syslog qw( :DEFAULT setlogsock);
 setlogsock('unix');
-
+use JSON::XS;
 
 sub saveConfig 
 {
