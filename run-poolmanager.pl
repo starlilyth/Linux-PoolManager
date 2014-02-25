@@ -37,8 +37,8 @@ if (! -e $graph || $fileage > 300) {
 }
 my $fcheck = 0; 
 if ( defined($conf{settings}{do_farmview}) && ($conf{settings}{do_farmview} == 1) ) {
-  $fcheck = `ps -eo command | grep [f]arm | wc -l`;
-  if ($fcheck != 0) {
+  $fcheck = system('/bin/ps -eo command | /bin/grep [f]arm | /usr/bin/wc -l');
+  if ($fcheck == 0) {
     my $pid = fork();
     if (not defined $pid) {
       die "out of resources? forking failed while starting farmview";
