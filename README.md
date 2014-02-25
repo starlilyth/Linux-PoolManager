@@ -7,7 +7,7 @@ Originally extended from the BAMT miner web interface of gpumon/mgpumon.
 * GPU and Pool details pages, including native graphing with persistence. 
 * Miner details page with reboot control and Configuration Editor.
 * Install script enables SSL redirection (and optional default page password) for security.
-* Farm Overview provides status view for all nodes running PoolManager (Not yet available in this version!)
+* Farm Overview provides status view for all nodes running PoolManager. 
 
 See the GitHub wiki page for screenshots.
 
@@ -16,11 +16,11 @@ See the GitHub wiki page for screenshots.
 Reqirements: Linux running cgminer or clone. Built and tested on litecoin-bamt 1.2. 
 Packages req: Perl5 + extensions, rrdtool. 
 
-NOTE!! THIS VERSION IS NOT COMPLETE! I am porting this from a distro dependency, so things are broken still, including FarmView. Installation does not check dependencies yet. 
+NOTE! Installation does not check dependencies yet. This should work out of the box on BAMT, but may need some Perl modules on clean Linux installs. 
 
 ------
 
-EASY PEASY SURE FIRE INSTALL INSTRUCTIONS: (WHICH ARE PROBABLY BROKEN)
+EASY PEASY SURE FIRE INSTALL INSTRUCTIONS: (but see the above note!)
 
 (Doing it this way ensures all the files will have the correct permissions.)
 
