@@ -14,15 +14,20 @@ case "$input" in
           echo "IFMI not installed"
           exit 1 ;
   else
-    mv /var/www/favicon.ico /var/www/IFMI/favicon.ico
-#    mv /var/www/bamt/mgpumon.css /var/www/IFMI/mgpumon.css.ifmi
-#    mv /var/www/bamt/mgpumon.css.bamt /var/www/bamt/mgpumon.css
+    mv /var/www/favicon.ico /var/www/IFMI/
+    mv /var/www/index.html /var/www/IFMI/
+    if [ -f /var/www/index.html.pre-ifmi ]; then
+      mv /var/www/index.html.pre-ifmi /var/www/index.html
+    fi
     mv /usr/lib/cgi-bin/status.pl /var/www/IFMI/status.pl.ifmi
-    mv /usr/lib/cgi-bin/status.pl.pre-ifmi /usr/lib/cgi-bin/status.pl
+    if [ -f /usr/lib/cgi-bin/status.pl.pre-ifmi ]; then 
+      mv /usr/lib/cgi-bin/status.pl.pre-ifmi /usr/lib/cgi-bin/status.pl
+    fi
     mv /usr/lib/cgi-bin/confedit.pl /var/www/IFMI/
-    mv /usr/lib/cgi-bin/poolmanage.pl /var/www/IFMI/
-    mv /etc/sudoers /etc/sudoers.ifmi
     mv /etc/sudoers.pre-ifmi /etc/sudoers
+    mv /etc/crontab.pre-ifmi /etc/crontab
+    rm -r /var/www/IFMI/
+    rm -r /opt/ifmi/
     echo -e "Done!\n"
   fi ;;
   * ) echo -e "installation exited\n";;
