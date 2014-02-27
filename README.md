@@ -28,7 +28,7 @@ EASY PEASY SURE FIRE INSTALL INSTRUCTIONS: (but see the above note!)
 1. do: wget https://github.com/starlilyth/Linux-PoolManager/archive/master.zip
 1. do: unzip master.zip
 1. cd to 'Linux-PoolManager-master' directory and run: ./install-pm.sh
-1. cd to /opt/ifmi/ and edit poolmanager.conf as needed. 
+1. cd to /opt/ifmi/ and edit poolmanager.conf as needed. In particular, you may want to change the config file save path, as PoolMananger will save the config whenever you add or remove pools. 
 
 Please make sure the following entries are in your cgminer.conf:
 
@@ -42,6 +42,16 @@ PoolManager installation attempts to modify /etc/sudoers to allow the web servic
     apacheuser ALL=(ALL) /opt/ifmi/mcontrol,/bin/cp,/path/to/reboot
 
 Where apacheuser is the user that your web service runs as, and /path/to/reboot is the path to the reboot command. 
+
+Once installed, simply visit the IP of your miner in a browser. PoolManager enables and uses SSL (https), so be sure to open port 443 on any firewalls or routers if necessary. 
+
+If you wish to remove PoolManager, you can run the remove-pm.sh script in the same directory you ran install-pm.sh
+
+-----
+
+FAQ: 
+Q: Why doesnt PoolManager let me: save a pool as X priority/switch to a dead pool/save priority list on restart/have pool aliases?
+A: PoolManager only mirrors what cgminer can do, via the API, these are things that cgminer doesnt do, and are non-trivial to implement yet. As development progresses in some other areas, some of this may be easier, and I will add it. 
 
 -----
 

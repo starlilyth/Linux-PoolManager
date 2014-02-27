@@ -19,27 +19,41 @@ case "$input" in
       echo -e "Copying files...\n"
       mkdir -p /var/www/IFMI/graphs
       mkdir -p /opt/ifmi/rrdtool
-      cp /var/www/IFMI/status.css /var/www/IFMI/status.css.back
-      cp status.css /var/www/IFMI/
-      cp ./images/*.png /var/www/IFMI
-      cp /usr/lib/cgi-bin/status.pl /usr/lib/cgi-bin/status.pl.back
-      cp status.pl /usr/lib/cgi-bin/
-      cp /usr/lib/cgi-bin/confedit.pl /usr/lib/cgi-bin/confedit.pl.back
-      cp confedit.pl /usr/lib/cgi-bin/
-      cp /opt/ifmi/mcontrol /opt/ifmi/mcontrol.back
-      cp mcontrol /opt/ifmi/
-      cp /opt/ifmi/sendstatus.pl /opt/ifmi/sendstatus.pl.back
-      cp sendstatus.pl /opt/ifmi/
-      cp /opt/ifmi/farmview /opt/ifmi/farmview.back
-      cp farmview /opt/ifmi/
-      cp /var/www/IFMI/farmview.css /var/www/IFMI/farmview.css.back
-      cp farmview.css /var/www/IFMI/
-      cp /opt/ifmi/pm-common.pl /opt/ifmi/pm-common.pl.back
-      cp pm-common.pl /opt/ifmi/
-      cp /opt/ifmi/poolmanager.conf /opt/ifmi/poolmanager.conf.back
-      cp poolmanager.conf /opt/ifmi/
-      cp /opt/ifmi/pmgraph.pl /opt/ifmi/pmgraph.pl.back
-      cp pmgraph.pl /opt/ifmi/rrdtool
+      if [ -f /var/www/IFMI/status.pl.ifmi ]; then 
+        rm /var/www/IFMI/*.ifmi
+        cp status.css /var/www/IFMI/
+        cp status.pl /usr/lib/cgi-bin/
+        cp ./images/*.png /var/www/IFMI
+        cp confedit.pl /usr/lib/cgi-bin/
+        cp mcontrol /opt/ifmi/
+        cp farmview /opt/ifmi/
+        cp farmview.css /var/www/IFMI/
+        cp pm-common.pl /opt/ifmi/
+        cp poolmanager.conf /opt/ifmi/
+        cp pmgraph.pl /opt/ifmi/rrdtool
+      else 
+        cp /var/www/IFMI/status.css /var/www/IFMI/status.css.back
+        cp status.css /var/www/IFMI/
+        cp ./images/*.png /var/www/IFMI
+        cp /usr/lib/cgi-bin/status.pl /usr/lib/cgi-bin/status.pl.back
+        cp status.pl /usr/lib/cgi-bin/
+        cp /usr/lib/cgi-bin/confedit.pl /usr/lib/cgi-bin/confedit.pl.back
+        cp confedit.pl /usr/lib/cgi-bin/
+        cp /opt/ifmi/mcontrol /opt/ifmi/mcontrol.back
+        cp mcontrol /opt/ifmi/
+        cp /opt/ifmi/sendstatus.pl /opt/ifmi/sendstatus.pl.back
+        cp sendstatus.pl /opt/ifmi/
+        cp /opt/ifmi/farmview /opt/ifmi/farmview.back
+        cp farmview /opt/ifmi/
+        cp /var/www/IFMI/farmview.css /var/www/IFMI/farmview.css.back
+        cp farmview.css /var/www/IFMI/
+        cp /opt/ifmi/pm-common.pl /opt/ifmi/pm-common.pl.back
+        cp pm-common.pl /opt/ifmi/
+        cp /opt/ifmi/poolmanager.conf /opt/ifmi/poolmanager.conf.back
+        cp poolmanager.conf /opt/ifmi/
+        cp /opt/ifmi/pmgraph.pl /opt/ifmi/pmgraph.pl.back
+        cp pmgraph.pl /opt/ifmi/rrdtool
+      fi 
       cp /etc/crontab /etc/crontab.pre-ifmi
       if ! grep -q  "run-poolmanager" "/etc/crontab" ; then
         echo -e "* * * * * root /opt/ifmi/run-poolmanager.pl\n" >> /etc/crontab
