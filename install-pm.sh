@@ -51,7 +51,7 @@ case "$input" in
         cp pm-common.pl /opt/ifmi/
         cp /opt/ifmi/poolmanager.conf /opt/ifmi/poolmanager.conf.back
         cp poolmanager.conf /opt/ifmi/
-        cp /opt/ifmi/pmgraph.pl /opt/ifmi/pmgraph.pl.back
+        cp /opt/ifmi/rrdtool/pmgraph.pl /opt/ifmi/rrdtool/pmgraph.pl.back
         cp pmgraph.pl /opt/ifmi/rrdtool
       fi 
       cp /etc/crontab /etc/crontab.pre-ifmi
