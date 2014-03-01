@@ -31,6 +31,7 @@ case "$input" in
         cp pm-common.pl /opt/ifmi/
         cp poolmanager.conf /opt/ifmi/
         cp pmgraph.pl /opt/ifmi/rrdtool
+        cp run-poolmanager.pl /opt/ifmi/run-poolmanager.pl
       else 
         cp /var/www/IFMI/status.css /var/www/IFMI/status.css.back
         cp status.css /var/www/IFMI/
@@ -53,6 +54,8 @@ case "$input" in
         cp poolmanager.conf /opt/ifmi/
         cp /opt/ifmi/rrdtool/pmgraph.pl /opt/ifmi/rrdtool/pmgraph.pl.back
         cp pmgraph.pl /opt/ifmi/rrdtool
+        cp /opt/ifmi/run-poolmanager.pl /opt/ifmi/run-poolmanager.pl.back
+        cp run-poolmanager.pl /opt/ifmi/run-poolmanager.pl
       fi 
       cp /etc/crontab /etc/crontab.pre-ifmi
       if ! grep -q  "run-poolmanager" "/etc/crontab" ; then
@@ -86,6 +89,7 @@ case "$input" in
       cp farmview /opt/ifmi/
       cp farmview.css /var/www/IFMI/
       cp pmgraph.pl /opt/ifmi/rrdtool
+      cp run-poolmanager.pl /opt/ifmi/run-poolmanager.pl
       cp /etc/crontab /etc/crontab.pre-ifmi
       echo -e "* * * * * root /opt/ifmi/run-poolmanager.pl\n" >> /etc/crontab
       chmod +x /usr/lib/cgi-bin/*.pl #because windows
