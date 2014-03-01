@@ -7,9 +7,6 @@
 #    GNU General Public License for more details.
 #
 
-
-#use Socket;
-#use IO::Handle;
 use IO::Select;
 use IO::Socket::INET;
 use JSON::XS;
@@ -120,7 +117,7 @@ while($socket)
  {
  	 $seendata = 1;
  }
- 
+ sleep(2);
 }
 
 
