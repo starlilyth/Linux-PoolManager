@@ -471,7 +471,7 @@ if (@summary) {
 		  $msput .= '<td class=big colspan=2><A href=ssh://user@' . $iptxt . '>SSH to Host</a></td></tr>';
 		}
       	$msput .= "<tr><td class='big' colspan=2><a href='/cgi-bin/confedit.pl' target='_blank'>Configuration Editor</a></td></tr>";
-		$msput .= "<form name='reboot' action='poolmanage.pl' method='POST'><input type='hidden' name='reboot' value='reboot'>";
+		$msput .= "<form name='reboot' action='status.pl' method='POST'><input type='hidden' name='reboot' value='reboot'>";
 		$msput .= "<tr><td></td></tr><tr><td colspan=2><input type='submit' value='Reboot' onclick='this.disabled=true;this.form.submit();' > ";
 		$msput .= "<input type='password' placeholder='root password' name='ptext' required></td></tr></form>";
 		$msput .= "<tr><td colspan=4><hr></td></tr>";
@@ -656,7 +656,7 @@ if ($ispriv eq "S") {
 	      $psum .= "<td>" . $pimg . "</td>";
 	      $psum .= "<td>" . $ppri . "</td>";
 	#      $psum .= "<td>" . $pquo . "</td>";
-	#      $psum .= "<td><form name='pquota' action='poolmanage.pl' method='text'>";
+	#      $psum .= "<td><form name='pquota' action='status.pl' method='text'>";
 	#      $psum .= "<input type='text' size='3' name='qval' required>";
 	#      $psum .= "<input type='hidden' name='qpool' value='$i'>";
 	#      $psum .= "<input type='submit' value='Set'></form></td></tr>";
@@ -670,7 +670,7 @@ if ($ispriv eq "S") {
 	  $psum .= "</td></form></tr>";
 
 	#if ($pqb ne "0") {
-	#  $p1add .= "<td colspan='3'><form name='qreset' action='poolmanage.pl' method='text'>";
+	#  $p1add .= "<td colspan='3'><form name='qreset' action='status.pl' method='text'>";
 	#  $p1add .= "<input type='hidden' name='qreset' value='reset'>";
 	#  $p1add .= "<input type='submit' value='Unset Quotas'></form></td>";
 	#} else { 
