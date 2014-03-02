@@ -50,7 +50,21 @@ If you wish to remove PoolManager, you can run the remove-pm.sh script in the sa
 -----
 
 FAQ: 
+
+Q: I cant get to my miner page anymore! 
+
+A: PoolManager changes your Apache configuration to use https, which is on port 443, not port 80. Please make sure you have port 443 open on any firewalls or routers between you and your miner. 
+
+Q: FarmView doesnt work/shows bad or double status in BAMT
+
+A: Make sure mgpumon is stopped. If you need to use it, put it on a different port. Make sure 'do_bcast_status:' is also set to 0 (not 1!) in bamt.conf
+
+Q: How can I see my miner page/farmview remotely?
+
+A: In general, you will either have to allow access to your miner from the internet, or you can export the farmview.html page to an internet web server (probably with some combination of rsync/scp and cron). The specifics will depend on your setup and needs, and are beyond the scope of this document. 
+
 Q: Why doesnt PoolManager let me: save a pool as X priority/switch to a dead pool/save priority list on restart/have pool aliases?
+
 A: PoolManager only mirrors what cgminer can do, via the API, these are things that cgminer doesnt do, and are non-trivial to implement yet. As development progresses in some other areas, some of this may be easier, and I will add it. 
 
 -----
