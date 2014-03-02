@@ -57,11 +57,19 @@ A: PoolManager changes your Apache configuration to use https, which is on port 
 
 Q: FarmView doesnt work/shows bad or double status in BAMT
 
-A: Make sure mgpumon is stopped. If you need to use it, put it on a different port. Make sure 'do_bcast_status:' is also set to 0 (not 1!) in bamt.conf
+A: Make sure mgpumon and broadcast are stopped. Edit bamt.conf, set do_mgpumon to 0 and set do_bcast_status to 0. If you need to use mgpumon, put it on a different port. 
 
 Q: How can I see my miner page/farmview remotely?
 
 A: In general, you will either have to allow access to your miner from the internet, or you can export the farmview.html page to an internet web server (probably with some combination of rsync/scp and cron). The specifics will depend on your setup and needs, and are beyond the scope of this document. 
+
+Q: How do I change the default page password? 
+
+A: Your htpasswd file is in /var, so you can do: 'htpasswd /var/htpasswd username', where username is the name you want to manage. 
+
+Q: How do I disable the defalt page password? I dont want it anymore.  
+
+A: Edit /etc/apache2/sites-available/default-ssl and comment out "Require valid-user", near the top. Then do 'apachectl restart'. 
 
 Q: Why doesnt PoolManager let me: save a pool as X priority/switch to a dead pool/save priority list on restart/have pool aliases?
 
