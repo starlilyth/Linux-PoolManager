@@ -311,12 +311,12 @@ sub getFreshGPUData
 
   	my $res = `DISPLAY=:0.0 /usr/local/bin/atitweak -s`;
 
-	  while ($res =~ m/$i\.\s(.+\n.+\n.+\n.+\n.+)/g) {
-      $gidata = $2; 
-       if ($gidata =~ m/^(.+)\s+\(:/) {
+	  while ($res =~ m/$i\.\s(.+\n)/g) {
+      $gidata = $1; 
+       if ($gidata =~ m/^(.+?)\s+\(/) {
         $gdesc = $1;
        }  
-       if ($gidata =~ m/\(:(\d+\.\d+)\)/) {
+       if ($gidata =~ m/:(\d+\.\d+)\)/) {
         $gdisp = $1;
        }
     }
