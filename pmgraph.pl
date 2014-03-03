@@ -176,7 +176,8 @@ if ($sock) {
    or die "Update error: ($RRDs::error)";
 }
 
-my $mname = $conf{settings}{miner_id};
+my $mname = `hostname`;
+chomp $mname;
 RRDs::graph("-P", $PICPATH . "msummary.png",
  "--title","24 Hour Summary",
  "--vertical-label","Hashrate / WU",
@@ -211,9 +212,7 @@ RRDs::graph("-P", $PICPATH . "msummary.png",
  "COMMENT:<span font_desc='10'>$mname</span>",
  "TEXTALIGN:left",
  "AREA:mchash#00008B: Hashrate",
- #"GPRINT:mvhash: %2.2lf  ",
  "AREA:mcwu#4876FFcc: WU",
- #"GPRINT:mvwu: %2.2lf  ",
  "TICK:mdfb#505050cc:-0.1: Found Block",
  "TICK:mdhwe#FF0000cc:-0.1: HW Error",
  "AREA:mcshacc#32CD32cc: Avg. Shares Accepted / Min",

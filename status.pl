@@ -95,6 +95,8 @@ if ($qreset eq "reset") {
 # Now carry on
 our $conf = &getConfig;
 %conf = %{$conf};
+my $miner_name = `hostname`;
+chomp $miner_name;
 
 $q=CGI->new();
 
@@ -133,12 +135,12 @@ if ($showminer > -1)
 print header;
 if ($url eq "?")
 {
-	print start_html( -title=>'PoolManager - ' . $conf{'settings'}{'miner_id'} . ' status', -style=>{-src=>'/IFMI/status.css'},  -head=>$q->meta({-http_equiv=>'REFRESH',-content=>'30'})  );
+	print start_html( -title=>'PoolManager - ' . $miner_name . ' status', -style=>{-src=>'/IFMI/status.css'},  -head=>$q->meta({-http_equiv=>'REFRESH',-content=>'30'})  );
 }
 else
 {
 	$url .= "tok=1";
-	print start_html( -title=>'PoolManager - ' . $conf{'settings'}{'miner_id'} . ' status', -style=>{-src=>'/IFMI/status.css'},  -head=>$q->meta({-http_equiv=>'REFRESH',-content=>'30; url=' . $url })  );
+	print start_html( -title=>'PoolManager - ' . $miner_name . ' status', -style=>{-src=>'/IFMI/status.css'},  -head=>$q->meta({-http_equiv=>'REFRESH',-content=>'30; url=' . $url })  );
 
 }
 
@@ -698,7 +700,7 @@ print "<div id='overview'>";
 print "<table><TR><TD>";
 print "<table><TR><TD id='overviewlogo' rowspan=2><a href='https://github.com/starlilyth/Linux-PoolManager' target=_blank>";
 print "<IMG src='/IFMI/IFMI-logo-small.png'></a></TD>";
-print "<TD class='overviewid'>" . $conf{'settings'}{'miner_id'} . "</td>";
+print "<TD class='overviewid'>" . $miner_name . "</td>";
 print "<td align='right'><form name='zero' action='status.pl' method='POST'><input type='hidden' name='zero' value='zero'>";
 print "<input type='image' src='/IFMI/button_round_navy.png' width='10' height='10' alt='Zero Stats'></form></td>";
 print "<tr><TD class='overviewhash' colspan=2>";
@@ -819,7 +821,7 @@ given($x) {
         print "tok=1> << Back to overview</A>";
         print "<P>";
         print "<table><tr><td id='showgpustats'>";
-        print "<table><tr><td width=200px class='bigger'>" . $conf{'settings'}{'miner_id'} . "<br>";
+        print "<table><tr><td width=200px class='bigger'>" . $miner_name . "<br>";
 		if (($minerate ne "0") && ($minewu ne "0")) {
  	      print sprintf("%.1f%%", ($minewu / $minerate) / 10);
 		} else { print "0"; }

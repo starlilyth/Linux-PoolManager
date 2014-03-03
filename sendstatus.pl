@@ -17,7 +17,10 @@ sub bcastStatus
  my $conf = &getConfig;
  my %conf = %{$conf};
 
- my $ts = ${$conf}{settings}{miner_id} . '|' . ${$conf}{settings}{miner_loc};
+ my $mname = `hostname`;
+ chomp $mname;
+
+ my $ts = $mname . '|' . ${$conf}{settings}{miner_loc};
  my $k; 
  my @gpus = &getGPUData;
  for ($k = 0;$k < @gpus;$k++)
@@ -67,8 +70,10 @@ sub directStatus
 
  my $conf = &getConfig;
  my %conf = %{$conf};
+ my $mname = `hostname`;
+ chomp $mname;
 
- my $ts = ${$conf}{settings}{miner_id} . '|' . ${$conf}{settings}{miner_loc};
+ my $ts = $mname . '|' . ${$conf}{settings}{miner_loc};
 
  my @gpus = &getGPUData('false');
  my $k; 
