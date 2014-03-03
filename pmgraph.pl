@@ -119,7 +119,7 @@ my $gpucount = &getCGMinerGPUCount;
    "COMMENT:                 ",
    "LINE3:gctemp#FF7F24: Temp C",
    "LINE3:gcfan#000000: Fan %",
-   "TICK:gdhwe#FF0000:-0.1: HW error",
+   "TICK:gdhwe#FF0000cc:-0.1: HW error",
    ) or
   die "graph failed ($RRDs::error)";
 }
@@ -178,8 +178,8 @@ if ($sock) {
 my $mname = $conf{settings}{miner_id};
 RRDs::graph("-P", $PICPATH . "msummary.png",
  "--title","24 Hour Summary",
- "--vertical-label","Hashrate/WU",
- "--right-axis-label","Shares Acc/Rej",
+ "--vertical-label","Hashrate / WU",
+ "--right-axis-label","Shares Acc / Rej",
  "--right-axis",".01:0",
  "--start","now-1d",
  "--end","now",
@@ -202,21 +202,22 @@ RRDs::graph("-P", $PICPATH . "msummary.png",
  "CDEF:mcshacc=mdshacc,6000,*",
  "CDEF:mccshacc=mdshacc,60,*",
  "VDEF:mvshacc=mccshacc,AVERAGE",
- "CDEF:mshrej=mdshrej,6000,*",
- "VDEF:mshrejm=mshrej,AVERAGE",
+ "CDEF:mcshrej=mdshrej,60,*",
+ "CDEF:mccshrej=mdshrej,6000,*",
+ "VDEF:mvshrej=mcshrej,AVERAGE",
  "VDEF:mvfb=mdfb,LAST",
  "COMMENT:<span font_desc='10'>$mname</span>",
  "TEXTALIGN:left",
  "AREA:mchash#00008B: Hashrate",
  #"GPRINT:mvhash: %2.2lf  ",
- "AREA:mcwu#4876FF: WU",
+ "AREA:mcwu#4876FFcc: WU",
  #"GPRINT:mvwu: %2.2lf  ",
- "TICK:mdfb#505050:-0.1: Found Block",
- "TICK:mdhwe#FF000090:-0.1: HW Error",
+ "TICK:mdfb#505050cc:-0.1: Found Block",
+ "TICK:mdhwe#FF0000cc:-0.1: HW Error",
  "AREA:mcshacc#32CD32cc: Avg. Shares Accepted / Min",
  "GPRINT:mvshacc:%2.2lf  ",
- "AREA:mshrej#EEEE00: Avg. Shares Rejected / Min",
- "GPRINT:mshrejm:%2.2lf  ",
+ "AREA:mccshrej#EEEE00: Avg. Shares Rejected / Min",
+ "GPRINT:mvshrej:%2.2lf  ",
  ) or
  die "graph failed ($RRDs::error)";
 
@@ -303,7 +304,7 @@ if ($psock) {
      "GPRINT:pvstale:%2.2lf  ",
      "AREA:pcshrej#EEEE00: Shares Rejected / Min",
      "GPRINT:pvshrej:%2.2lf  ",
-     "TICK:pdrfail#FF0000:-0.1: Remote Failure",
+     "TICK:pdrfail#FF0000cc:-0.1: Remote Failure",
      ) or
      die "graph failed ($RRDs::error)";
   }
