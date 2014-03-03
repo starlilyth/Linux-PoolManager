@@ -71,7 +71,7 @@ Q: How do I change the default page password?
 
 A: Your htpasswd file is in /var, so you can do: 'htpasswd /var/htpasswd username', where username is the name you want to manage. 
 
-Q: How do I disable the defalt page password? I dont want it anymore.  
+Q: How do I disable the default page password? I dont want it anymore.  
 
 A: Edit /etc/apache2/sites-available/default-ssl and comment out "Require valid-user", near the top. Then do 'apachectl restart'. 
 
