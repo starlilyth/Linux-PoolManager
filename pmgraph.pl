@@ -67,7 +67,7 @@ my $gpucount = &getCGMinerGPUCount;
       }
       close($sock);
       if ($res =~ m/MHS\sav=(\d+\.\d+),/) {
-      	$ghash = $1 * 100;
+      	$ghash = $1 * 1000;
       }
       if ($res =~ m/Accepted=(\d+),/) {
       	$gshacc = $1;
@@ -89,9 +89,16 @@ my $gpucount = &getCGMinerGPUCount;
   or die "Update error: ($RRDs::error)";
 
   RRDs::graph("-P", $PICPATH . "gpu$gnum.png",
+   "--title","24 Hour Summary",
+   "--vertical-label","Hashrate K/hs",
+   "--right-axis-label","Temp C / Fan % / Shares Acc. x10",
+   "--right-axis",".1:0",
    "--start","now-1d",
    "--end", "now",
    "--width","700","--height","300",
+   "--color","BACK#00000000",
+   "--color","CANVAS#00000000",
+   "--border","1", 
    "DEF:gdhash=$GDB:hash:LAST",
    "DEF:gdshacc=$GDB:shacc:LAST",
    "DEF:gdtemp=$GDB:temp:LAST",
@@ -99,14 +106,17 @@ my $gpucount = &getCGMinerGPUCount;
    "DEF:gdhwe=$GDB:hwe:LAST",
    "CDEF:gcshacc=gdshacc,60,*",
    "VDEF:gvshacc=gcshacc,AVERAGE",
+   "CDEF:gccshacc=gdshacc,6000,*",
+   "CDEF:gctemp=gdtemp,10,*",
+   "CDEF:gcfan=gdfan,10,*",
    "COMMENT:<span font_family='Helvetica' font_desc='10'><b>GPU $gnum</b></span>",
    "TEXTALIGN:left",
-   "AREA:gdhash#4876FF:<span font_family='Helvetica'>Hashrate/10</span>",
-   "AREA:gcshacc#32CD32:<span font_family='Helvetica'>Shares Accepted / Min</span>",
+   "AREA:gdhash#4876FF:<span font_family='Helvetica'>Hashrate</span>",
+   "AREA:gccshacc#32CD32:<span font_family='Helvetica'>Shares Accepted / Min</span>",
    "GPRINT:gvshacc:<span font_family='Helvetica'>%2.2lf</span>",
    "COMMENT:                 ",
-   "LINE3:gdtemp#FF7F24:<span font_family='Helvetica'>Temp C</span>",
-   "LINE3:gdfan#000000:<span font_family='Helvetica'>Fan %</span>",
+   "LINE3:gctemp#FF7F24:<span font_family='Helvetica'>Temp C</span>",
+   "LINE3:gcfan#000000:<span font_family='Helvetica'>Fan %</span>",
    "TICK:gdhwe#FF0000:-0.1:<span font_family='Helvetica'>HW error</span>",
    ) or
   die "graph failed ($RRDs::error)";
@@ -142,7 +152,7 @@ if ($sock) {
   close($sock);
     my $mhashav = "0";my $mfoundbl = "0";my $maccept = "0";my $mreject = "0";my $mhwerrors = "0";my $mworkutil = "0";
     if ($res =~ m/MHS\sav=(\d+\.\d+),/g) {
-      $mhashav = $1 * 100;
+      $mhashav = $1 * 1000;
     }
     if ($res =~ m/Found\sBlocks=(\d+),/g) {
       $mfoundbl =$1;
@@ -165,32 +175,44 @@ if ($sock) {
 
 my $mname = $conf{settings}{miner_id};
 RRDs::graph("-P", $PICPATH . "msummary.png",
+ "--title","24 Hour Summary",
+ "--vertical-label","Hashrate/WU",
+ "--right-axis-label","Shares Acc/Rej",
+ "--right-axis",".01:0",
  "--start","now-1d",
- "--end", "now",
- "--width","800","--height","200",
+ "--end","now",
+ "--width","700","--height","200",
+ "--color","BACK#00000000",
+ "--color","CANVAS#00000000", 
+ "--border","1",
  "DEF:mdhash=$SDB:mhash:LAST",
  "DEF:mdwu=$SDB:mwu:LAST",
  "DEF:mdshacc=$SDB:mshacc:LAST",
  "DEF:mdshrej=$SDB:mshrej:LAST",
  "DEF:mdhwe=$SDB:mhwe:LAST",
  "DEF:mdfb=$SDB:mfb:LAST",
- "CDEF:mwus=mdwu,10,/",
- "CDEF:mshacc=mdshacc,60,*",
- "VDEF:mshaccm=mshacc,AVERAGE",
- "CDEF:mshrej=mdshrej,60,*",
+ "CDEF:mchash=mdhash",
+ "VDEF:mvhash=mchash,LAST",
+ "CDEF:mcwu=mdwu",
+ "VDEF:mvwu=mcwu,LAST",
+ "CDEF:mcshacc=mdshacc,6000,*",
+ "CDEF:mccshacc=mdshacc,60,*",
+ "VDEF:mvshacc=mccshacc,AVERAGE",
+ "CDEF:mshrej=mdshrej,6000,*",
  "VDEF:mshrejm=mshrej,AVERAGE",
  "VDEF:mvfb=mdfb,LAST",
  "COMMENT:<span font_family='Helvetica' font_desc='10'><b>$mname</b></span>",
  "TEXTALIGN:left",
- "AREA:mdhash#00008B:<span font_family='Helvetica'>Hashrate/10</span>",
- "AREA:mwus#4876FF:<span font_family='Helvetica'>WU/10</span>",
- "AREA:mshacc#32CD32:<span font_family='Helvetica'>Shares Accepted / Min</span>",
- "GPRINT:mshaccm:<span font_family='Helvetica'>%2.2lf  </span>",
- "AREA:mshrej#EEEE00:<span font_family='Helvetica'>Shares Rejected / Min</span>",
+ "AREA:mchash#00008B:<span font_family='Helvetica'>Hashrate</span>",
+ #"GPRINT:mvhash:<span font_family='Helvetica'>%2.2lf  </span>",
+ "AREA:mcwu#4876FF:<span font_family='Helvetica'>WU</span>",
+ #"GPRINT:mvwu:<span font_family='Helvetica'>%2.2lf  </span>",
+ "TICK:mdfb#505050:-0.1:<span font_family='Helvetica'>Found Block</span>",
+ "TICK:mdhwe#FF000090:-0.1:<span font_family='Helvetica'>HW Error</span>",
+ "AREA:mcshacc#32CD32cc:<span font_family='Helvetica'>Avg. Shares Accepted / Min</span>",
+ "GPRINT:mvshacc:<span font_family='Helvetica'>%2.2lf  </span>",
+ "AREA:mshrej#EEEE00:<span font_family='Helvetica'>Avg. Shares Rejected / Min</span>",
  "GPRINT:mshrejm:<span font_family='Helvetica'>%2.2lf  </span>",
- #"LINE3:mdfb#000000:<span font_family='Helvetica'>Found Blocks</span>:dashes",
- #"GPRINT:mvfb:<span font_family='Helvetica'>%2.0lf</span>",
- "TICK:mdhwe#FF0000:-0.1:<span font_family='Helvetica'>HW error</span>",
  ) or
  die "graph failed ($RRDs::error)";
 
@@ -248,9 +270,14 @@ if ($psock) {
     or die "Update error: ($RRDs::error)";
 
     RRDs::graph("-P", $PICPATH . "pool$poid.png",
+     "--title","24 Hour Summary",
+     "--vertical-label","Shares Acc / Rej",
      "--start","now-1d",
      "--end", "now",
      "--width","700","--height","300",
+     "--color","BACK#00000000",
+     "--color","CANVAS#00000000",
+     "--border","1",
      "DEF:pdlive=$PDB:plive:LAST",
      "DEF:pdshacc=$PDB:pshacc:LAST",
      "DEF:pdshrej=$PDB:pshrej:LAST",

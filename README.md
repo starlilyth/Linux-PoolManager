@@ -63,6 +63,10 @@ Q: How can I see my miner page/farmview remotely?
 
 A: In general, you will either have to allow access to your miner from the internet, or you can export the farmview.html page to an internet web server (probably with some combination of rsync/scp and cron). The specifics will depend on your setup and needs, and are beyond the scope of this document. 
 
+Q: My graphs are messed up after updating. 
+
+A: Press 'Clear All Graphs' on the Miner detail page. It will take about ten minutes for the graphs to clear and start redrawing. 
+
 Q: How do I change the default page password? 
 
 A: Your htpasswd file is in /var, so you can do: 'htpasswd /var/htpasswd username', where username is the name you want to manage. 
