@@ -28,6 +28,7 @@ case "$input" in
         cp mcontrol /opt/ifmi/
         cp farmview /opt/ifmi/
         cp farmview.css /var/www/IFMI/
+        cp sendstatus.pl /opt/ifmi/
         cp pm-common.pl /opt/ifmi/
         cp poolmanager.conf /opt/ifmi/
         cp pmgraph.pl /opt/ifmi/rrdtool
