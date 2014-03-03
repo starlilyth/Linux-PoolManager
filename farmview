@@ -11,15 +11,15 @@ use IO::Select;
 use IO::Socket::INET;
 use JSON::XS;
 
-
-my $config = { debug=>0, 
-genhttp_last => 0, genhttp_interval => 30, genhttp_minwait => 5, httpdir => '/var/www/', 
-httpindex => 'farmview.html', httpimgpath => '/IFMI', httpcss =>'/IFMI/farmview.css' };
-
 require '/opt/ifmi/pm-common.pl';
 
 my $conf = &getConfig;
 %conf = %{$conf};
+
+my $config = { debug=>0, 
+genhttp_last => 0, genhttp_interval => 30, genhttp_minwait => 5, httpdir => '/var/www/', 
+httpindex => 'farmview.html', httpimgpath => '/IFMI', httpcss =>'/IFMI/' . $conf{settings}{farmview_css}};
+
 
 use Proc::PID::File;
 
