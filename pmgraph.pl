@@ -23,8 +23,8 @@ my %conf = %{$conf};
 my $PICPATH = "/var/www/IFMI/graphs/";
 my $DBPATH = "/opt/ifmi/rrdtool/";
 
-my $colorfile = "/opt/ifmi/pmgraph.colors";
-$colorfile = "/opt/ifmi/" . ${$conf}{'settings'}{'graphcolors'} 
+my $colorfile = "/var/www/IFMI/themes/pmgraph.colors";
+$colorfile = "/var/www/IFMI/themes/" . ${$conf}{'settings'}{'graphcolors'} 
  if (defined (${$conf}{'settings'}{'graphcolors'})); 
 my $gconf = LoadFile($colorfile) if (-e $colorfile);
 my $hashcolor = "#0033FF";
