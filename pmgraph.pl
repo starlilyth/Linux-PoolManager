@@ -27,7 +27,7 @@ my $colorfile = "/opt/ifmi/pmgraph.colors";
 $colorfile = "/opt/ifmi/" . ${$conf}{'settings'}{'graphcolors'} 
  if (defined (${$conf}{'settings'}{'graphcolors'})); 
 my $gconf = LoadFile($colorfile) if (-e $colorfile);
-my $hashcolor = "#00008B";
+my $hashcolor = "#0033FF";
 $hashcolor = $gconf->{hashcolor} if (defined ($gconf->{hashcolor}));
 my $wucolor = "#4876FFcc"; 
 $wucolor = $gconf->{wucolor} if (defined ($gconf->{wucolor}));
