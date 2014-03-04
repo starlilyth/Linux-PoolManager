@@ -8,7 +8,6 @@ border-left-width: 0px; border-right-width: 0px; border-top-width: 0px; border-b
 border-left-style: none; border-right-style: none; border-top-style: none; border-bottom-style: none;
 margin: 0px;
 padding: 0px;
-
 }
 
 #waiting
@@ -219,29 +218,4 @@ a
 }
 
 
-h1
-{
- font-family: "Trebuchet MS", Helvetica, sans-serif;
- font-size: 18px;
-}
-
-h2
-{
- font-size: 14px;
-}
-
-h3
-{
- font-size: 12px;
-}
-
-h4
-{
- font-size: 10px;
-}
-
-h5
-{
-	font-family: "Trebuchet MS", Helvetica, sans-serif;
-	font-size: 12px;
-}
+h
