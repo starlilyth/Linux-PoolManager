@@ -20,9 +20,8 @@ a
  padding: 20px;
  margin: 0px;
  vertical-align: top;
- position: absolute;
- top: 80px;
- 
+ position: relative;
+ display: block;
 }
 
 #gpugraphs table tr td
@@ -216,7 +215,8 @@ img
 
 #overview
 {
-        position: fixed;
+        position: relative;
+        display: block;
         top: 0px;
         left: 0px;
         width: 100%;
