@@ -135,12 +135,12 @@ if ($showminer > -1)
 print header;
 if ($url eq "?")
 {
-	print start_html( -title=>'PoolManager - ' . $miner_name . ' status', -style=>{-src=>'/IFMI/' . $conf{settings}{status_css}},  -head=>$q->meta({-http_equiv=>'REFRESH',-content=>'30'})  );
+	print start_html( -title=>'PoolManager - ' . $miner_name . ' status', -style=>{-src=>'/IFMI/themes/' . $conf{settings}{status_css}},  -head=>$q->meta({-http_equiv=>'REFRESH',-content=>'30'})  );
 }
 else
 {
 	$url .= "tok=1";
-	print start_html( -title=>'PoolManager - ' . $miner_name . ' status', -style=>{-src=>'/IFMI/' . $conf{settings}{status_css}},  -head=>$q->meta({-http_equiv=>'REFRESH',-content=>'30; url=' . $url })  );
+	print start_html( -title=>'PoolManager - ' . $miner_name . ' status', -style=>{-src=>'/IFMI/themes/' . $conf{settings}{status_css}},  -head=>$q->meta({-http_equiv=>'REFRESH',-content=>'30; url=' . $url })  );
 
 }
 

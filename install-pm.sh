@@ -18,12 +18,11 @@ case "$input" in
       y|Y|Yes)
       echo -e "Copying files...\n"
       mkdir -p /var/www/IFMI/graphs
+      mkdir -p /var/www/IFMI/themes
       mkdir -p /opt/ifmi/rrdtool
       if [ -f /var/www/IFMI/status.pl.ifmi ]; then 
         rm /var/www/IFMI/*.ifmi
-        cp status.css /var/www/IFMI/
-        cp farmview.css /var/www/IFMI/
-        cp newstyle.css /var/www/IFMI/
+        cp *.css /var/www/IFMI/
         cp ./images/*.png /var/www/IFMI
         cp status.pl /usr/lib/cgi-bin/
         cp confedit.pl /usr/lib/cgi-bin/
@@ -77,14 +76,13 @@ case "$input" in
       echo -e "Copying files...\n"
       mkdir -p /var/www/IFMI/graphs
       mkdir -p /opt/ifmi/rrdtool
+      mkdir -p /var/www/IFMI/themes
       if [ -f /var/www/index.html ]; then
         cp /var/www/index.html /var/www/index.html.pre-ifmi
       fi
       cp index.html /var/www/
       cp favicon.ico /var/www/
-      cp status.css /var/www/IFMI/
-      cp farmview.css /var/www/IFMI/
-      cp newstyle.css /var/www/IFMI/
+      cp *.css /var/www/IFMI/themes/
       cp ./images/*.png /var/www/IFMI
       if [ -f /usr/lib/cgi-bin/status.pl ]; then
         cp /usr/lib/cgi-bin/status.pl /usr/lib/cgi-bin/status.pl.pre-ifmi
