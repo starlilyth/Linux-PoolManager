@@ -43,7 +43,7 @@ case "$input" in
         cp /var/www/IFMI/newstyle.css /var/www/IFMI/newstyle.css.back
         cp newstyle.css /var/www/IFMI/
         cp ./images/*.png /var/www/IFMI
-        cp /usr/lib/cgi-bin/status.pl usr/lib/cgi-bin/status.pl.back
+        cp /usr/lib/cgi-bin/status.pl /usr/lib/cgi-bin/status.pl.back
         cp status.pl /usr/lib/cgi-bin/
         cp /usr/lib/cgi-bin/confedit.pl /usr/lib/cgi-bin/confedit.pl.back
         cp confedit.pl /usr/lib/cgi-bin/
