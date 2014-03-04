@@ -1,0 +1,94 @@
+/* Status.CSS for Linux-PoolManager
+
+Theme: Default
+
+
+   Updated: 2014-Mar-02
+
+COLORS
+bg: ffffff
+headerbg: 0000ff
+border: 0000ff
+text: 000000
+brighttext: 0000ff
+highlight: c6e2ff
+
+
+-------------------------------------*/
+/* all text on the page */
+body, a { 
+	background-color: #ffffff;
+	font-family: Tahoma, Geneva, sans-serif;
+	font-size: 14px;
+	border: 0px;
+	margin: 0px;
+	padding: 0px;
+	color: #000000;
+}
+
+/* overview - header area */
+#overview {
+	background-color: #0000ff;
+	font-size: 16px;
+	color: #c6e2ff;
+	position: relative;
+	display: block;
+	z-index: 1;
+}
+#overview .label {
+color: #ffffff;
+}
+#overview img {
+	padding-top: 3px;
+}
+
+#overview td {
+	padding: 0 30px 0 10px;
+	font-size: 18px;
+}
+#overview .miner-name, td.overviewid, td.overviewhash {
+        color: #ffffff !important;
+        font-size: 24px !important;
+}
+
+/* hyperlinks */
+a {
+	color: #0000ff;
+}
+
+a:hover {
+	color: #0000ff;
+}
+
+/* the main table area */
+#content {
+	padding: 20px;
+	vertical-align: top;
+	text-align: center;
+	display: block;
+}
+
+#content td {
+	border: 1px solid #0000ff;
+	padding: 5px;
+}
+
+/* table headers */
+#content td.ghdr {
+	color: #0000ff;
+	background-color: #c2e6ff;
+	font-weight: bold;
+}
+
+/* errors */
+#content td.error {
+	color: #ffffff;
+	background-color: #ff0000;
+	font-weight: bold;
+}
+
+/* buttons and text boxes */
+input, button {
+	color: #0000ff;
+	background-color: #dddddd;
+}
