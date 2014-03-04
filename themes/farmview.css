@@ -26,9 +26,8 @@ padding: 0px;
  padding: 10px;
  margin: 0px;
  vertical-align: top;
- position: absolute;
- top: 75px;
- 
+ position: relative;
+ display: block;
 }
 
 a
@@ -159,13 +158,10 @@ a
 
 #overview
 {
-	position: fixed;
+	position: relative;
 	top: 0px;
 	left: 0px;
 	width: 100%;
-	height: 68px;
-	padding: 10px;
-	padding-top: 5px;
 	color: rgb(255,255,255);
 	 z-index: 1;
 	
@@ -193,7 +189,9 @@ a
   background-color: #222222;	
 }
 
-
+#overview table {
+	padding: 5px 5px 1px 5px;
+}
 
 #overview img
 {
