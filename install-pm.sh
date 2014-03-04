@@ -22,8 +22,7 @@ case "$input" in
       mkdir -p /opt/ifmi/rrdtool
       if [ -f /var/www/IFMI/status.pl.ifmi ]; then 
         rm /var/www/IFMI/*.ifmi
-        cp *.css /var/www/IFMI/
-        cp pmgraph.colors /var/www/IFMI/themes/
+        cp ./themes/* /var/www/IFMI/themes
         cp ./images/*.png /var/www/IFMI
         cp status.pl /usr/lib/cgi-bin/
         cp confedit.pl /usr/lib/cgi-bin/
@@ -35,14 +34,7 @@ case "$input" in
         cp run-poolmanager.pl /opt/ifmi/
         cp pmgraph.pl /opt/ifmi/rrdtool/
       else 
-        cp /var/www/IFMI/themes/status.css /var/www/IFMI/themes/status.css.back
-        cp status.css /var/www/IFMI/themes/
-        cp /var/www/IFMI/themes/farmview.css /var/www/IFMI/themes/farmview.css.back
-        cp farmview.css /var/www/IFMI/themes/
-        cp /var/www/IFMI/themes/newstyle.css /var/www/IFMI/themes/newstyle.css.back
-        cp newstyle.css /var/www/IFMI/themes/
-        cp /var/www/IFMI/themes/pmgraph.colors /var/www/IFMI/themes/pmgraph.colors.back
-        cp pmgraph.colors /var/www/IFMI/themes/
+        cp ./themes/* /var/www/IFMI/themes/
         cp ./images/*.png /var/www/IFMI
         cp /usr/lib/cgi-bin/status.pl /usr/lib/cgi-bin/status.pl.back
         cp status.pl /usr/lib/cgi-bin/
@@ -81,8 +73,7 @@ case "$input" in
       fi
       cp index.html /var/www/
       cp favicon.ico /var/www/
-      cp *.css /var/www/IFMI/themes/
-      cp pmgraph.colors /var/www/IFMI/themes/
+      cp ./themes/* /var/www/IFMI/themes
       cp ./images/*.png /var/www/IFMI
       if [ -f /usr/lib/cgi-bin/status.pl ]; then
         cp /usr/lib/cgi-bin/status.pl /usr/lib/cgi-bin/status.pl.pre-ifmi
