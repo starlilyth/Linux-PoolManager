@@ -25,10 +25,8 @@ padding: 0px;
  background-color: rgb(255,255,255);
  padding: 10px;
  margin: 0px;
- vertical-align: top;
- position: absolute;
- top: 75px;
- 
+ position: relative;
+ display: block;
 }
 
 a
@@ -159,13 +157,11 @@ a
 
 #overview
 {
-	position: fixed;
+	position: relative;
+	display: block;
 	top: 0px;
 	left: 0px;
 	width: 100%;
-	height: 68px;
-	padding: 10px;
-	padding-top: 5px;
 	color: rgb(255,255,255);
 	 z-index: 1;
 	
@@ -193,7 +189,10 @@ a
   background-color: #222222;	
 }
 
-
+#overview table {
+	padding: 10px 5px 5px 5px;
+}
+}
 
 #overview img
 {
@@ -219,29 +218,4 @@ a
 }
 
 
-h1
-{
- font-family: "Trebuchet MS", Helvetica, sans-serif;
- font-size: 18px;
-}
-
-h2
-{
- font-size: 14px;
-}
-
-h3
-{
- font-size: 12px;
-}
-
-h4
-{
- font-size: 10px;
-}
-
-h5
-{
-	font-family: "Trebuchet MS", Helvetica, sans-serif;
-	font-size: 12px;
-}
+h
