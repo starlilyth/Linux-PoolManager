@@ -11,6 +11,7 @@ use warnings;
 use strict;
 use RRDs;
 use IO::Socket::INET;
+use YAML qw( LoadFile );
 
 my $login = (getpwuid $>);
 die "must run as root" if ($login ne 'root');
@@ -21,6 +22,32 @@ my $conf = &getConfig;
 my %conf = %{$conf};
 my $PICPATH = "/var/www/IFMI/graphs/";
 my $DBPATH = "/opt/ifmi/rrdtool/";
+
+my $colorfile = "/opt/ifmi/pmgraph.colors";
+$colorfile = "/opt/ifmi/" . ${$conf}{'settings'}{'graphcolors'} 
+ if (defined (${$conf}{'settings'}{'graphcolors'})); 
+my $gconf = LoadFile($colorfile) if (-e $colorfile);
+my $hashcolor = "#00008B";
+$hashcolor = $gconf->{hashcolor} if (defined ($gconf->{hashcolor}));
+my $wucolor = "#4876FFcc"; 
+$wucolor = $gconf->{wucolor} if (defined ($gconf->{wucolor}));
+my $acccolor = "#32CD32cc";
+$acccolor = $gconf->{acccolor} if (defined ($gconf->{acccolor}));
+my $rejcolor = "#EEEE00";
+$rejcolor = $gconf->{rejcolor} if (defined ($gconf->{rejcolor}));
+my $stfcolor = "#777777cc";
+$stfcolor = $gconf->{stfcolor} if (defined ($gconf->{stfcolor})); 
+my $fontcolor = "#000000";
+$fontcolor = $gconf->{fontcolor} if (defined ($gconf->{fontcolor}));
+my $fancolor = "#000000";
+$fancolor = $gconf->{fancolor} if (defined ($gconf->{fancolor}));
+my $tempcolor = "#FF7F24";
+$tempcolor = $gconf->{tempcolor} if (defined ( $gconf->{tempcolor})); 
+my $errorcolor = "#FF0000cc";
+$errorcolor = $gconf->{errorcolor} if (defined ($gconf->{errorcolor})); 
+my $fontfam = "Helvetica";
+$fontfam = $gconf->{fontfam} if (defined ($gconf->{fontfam}));
+
 my $mport = 4028;
 if (defined(${$conf}{'settings'}{'cgminer_port'})) {
        $mport = ${$conf}{'settings'}{'cgminer_port'};
@@ -98,9 +125,10 @@ my $gpucount = &getCGMinerGPUCount;
    "--width","700","--height","300",
    "--color","BACK#00000000",
    "--color","CANVAS#00000000",
+   "--color","FONT$fontcolor",
    "--border","1", 
-   "--font","DEFAULT:0:Helvetica",
-   "--font","WATERMARK:4:Helvetica",
+   "--font","DEFAULT:0:$fontfam",
+   "--font","WATERMARK:4:$fontfam",
    "--slope-mode", "--interlaced",
    "DEF:gdhash=$GDB:hash:LAST",
    "DEF:gdshacc=$GDB:shacc:LAST",
@@ -114,13 +142,13 @@ my $gpucount = &getCGMinerGPUCount;
    "CDEF:gcfan=gdfan,10,*",
    "COMMENT:<span font_desc='10'>GPU $gnum</span>",
    "TEXTALIGN:left",
-   "AREA:gdhash#4876FF: Hashrate",
-   "AREA:gccshacc#32CD32: Shares Accepted / Min",
+   "AREA:gdhash$hashcolor: Hashrate",
+   "AREA:gccshacc$acccolor: Shares Accepted / Min",
    "GPRINT:gvshacc:%2.2lf",
    "COMMENT:                 ",
-   "LINE3:gctemp#FF7F24: Temp C",
-   "LINE3:gcfan#000000: Fan %",
-   "TICK:gdhwe#FF0000cc:-0.1: HW error",
+   "LINE3:gctemp$tempcolor: Temp C",
+   "LINE3:gcfan$fancolor: Fan %",
+   "TICK:gdhwe$errorcolor:-0.1: HW error",
    ) or
   die "graph failed ($RRDs::error)";
 }
@@ -187,10 +215,11 @@ RRDs::graph("-P", $PICPATH . "msummary.png",
  "--end","now",
  "--width","700","--height","200",
  "--color","BACK#00000000",
- "--color","CANVAS#00000000", 
+ "--color","CANVAS#00000000",
+ "--color","FONT$fontcolor", 
  "--border","1",
- "--font","DEFAULT:0:Helvetica",
- "--font","WATERMARK:4:Helvetica",
+ "--font","DEFAULT:0:$fontfam",
+ "--font","WATERMARK:4:$fontfam",
  "--slope-mode", "--interlaced",
  "DEF:mdhash=$SDB:mhash:LAST",
  "DEF:mdwu=$SDB:mwu:LAST",
@@ -211,13 +240,13 @@ RRDs::graph("-P", $PICPATH . "msummary.png",
  "VDEF:mvfb=mdfb,LAST",
  "COMMENT:<span font_desc='10'>$mname</span>",
  "TEXTALIGN:left",
- "AREA:mchash#00008B: Hashrate",
- "AREA:mcwu#4876FFcc: WU",
- "TICK:mdfb#505050cc:-0.1: Found Block",
- "TICK:mdhwe#FF0000cc:-0.1: HW Error",
- "AREA:mcshacc#32CD32cc: Avg. Shares Accepted / Min",
+ "AREA:mchash$hashcolor: Hashrate",
+ "AREA:mcwu$wucolor: WU",
+ "TICK:mdfb$stfcolor:-0.1: Found Block",
+ "TICK:mdhwe$errorcolor:-0.1: HW Error",
+ "AREA:mcshacc$acccolor: Avg. Shares Accepted / Min",
  "GPRINT:mvshacc:%2.2lf  ",
- "AREA:mccshrej#EEEE00: Avg. Shares Rejected / Min",
+ "AREA:mccshrej$rejcolor: Avg. Shares Rejected / Min",
  "GPRINT:mvshrej:%2.2lf  ",
  ) or
  die "graph failed ($RRDs::error)";
@@ -283,9 +312,10 @@ if ($psock) {
      "--width","700","--height","300",
      "--color","BACK#00000000",
      "--color","CANVAS#00000000",
+     "--color","FONT$fontcolor",
      "--border","1",
-     "--font","DEFAULT:0:Helvetica",
-     "--font","WATERMARK:4:Helvetica",
+     "--font","DEFAULT:0:$fontfam",
+     "--font","WATERMARK:4:$fontfam",
      "--slope-mode", "--interlaced",
      "DEF:pdlive=$PDB:plive:LAST",
      "DEF:pdshacc=$PDB:pshacc:LAST",
@@ -300,13 +330,13 @@ if ($psock) {
      "VDEF:pvstale=pcstale,AVERAGE",
      "TEXTALIGN:left",
      "COMMENT:<span font_desc='10'>Pool $poid</span>",
-     "AREA:pcshacc#32CD32: Shares Accepted / Min",
+     "AREA:pcshacc$acccolor: Shares Accepted / Min",
      "GPRINT:pvshacc:%2.2lf  ",
-     "AREA:pcstale#777777: Stales / Min",
+     "AREA:pcstale$stfcolor: Stales / Min",
      "GPRINT:pvstale:%2.2lf  ",
-     "AREA:pcshrej#EEEE00: Shares Rejected / Min",
+     "AREA:pcshrej$rejcolor: Shares Rejected / Min",
      "GPRINT:pvshrej:%2.2lf  ",
-     "TICK:pdrfail#FF0000cc:-0.1: Remote Failure",
+     "TICK:pdrfail$errorcolor:-0.1: Remote Failure",
      ) or
      die "graph failed ($RRDs::error)";
   }
