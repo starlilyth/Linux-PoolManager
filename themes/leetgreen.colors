@@ -1,0 +1,17 @@
+# PoolManager graph color config
+# hex colors including transparency. Default colors are used if values are missing. 
+#
+# Theme: Leetgreen
+#
+---
+hashcolor: #073002
+wucolor: #91F786cc
+acccolor: #E8E11Ecc
+rejcolor: #FF0000
+stfcolor: #FF0000cc
+fancolor: #E8E11E
+tempcolor: #91F786
+fontcolor: #91F786
+fontfam: Helvetica
+errorcolor: #FF0000cc
+

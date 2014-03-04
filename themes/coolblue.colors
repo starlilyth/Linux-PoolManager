@@ -1,0 +1,18 @@
+# PoolManager graph color config
+# hex colors including transparency. Default colors are used if values are missing. 
+#
+# Theme: CoolBlue
+#
+#
+---
+hashcolor: #2D3F52
+wucolor: #3498DBcc
+acccolor: #2980B9cc
+rejcolor: #FF0000
+stfcolor: #FF0000cc
+fancolor: #2980B9
+tempcolor: #3498DB
+fontcolor: #3498DB
+fontfam: Helvetica
+errorcolor: #FF0000cc
+

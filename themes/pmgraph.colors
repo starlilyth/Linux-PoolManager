@@ -1,0 +1,14 @@
+# PoolManager graph color config
+# hex colors including transparency. Default colors are used if values are missing. 
+---
+hashcolor: #0033FF
+wucolor: #4876FFcc
+acccolor: #32CD32cc
+rejcolor: #EEEE00
+stfcolor: #777777cc
+fancolor: #FF7F24
+tempcolor: #000000
+fontcolor: #000000
+fontfam: Helvetica
+errorcolor: #FF0000cc
+

@@ -1,0 +1,94 @@
+/* Status.CSS for Linux-PoolManager
+
+Theme: Coolblue
+
+
+   Updated: 2014-Mar-02
+
+COLORS
+bg: 2c3e50
+headerbg: 2c3e50
+border: 3498db
+text: dddddd
+brighttext: 3498db
+highlight: 2980b9
+
+
+-------------------------------------*/
+/* all text on the page */
+body, a { 
+	background-color: #2c3e50;
+	font-family: Tahoma, Geneva, sans-serif;
+	font-size: 14px;
+	border: 0px;
+	margin: 0px;
+	padding: 0px;
+	color: #dddddd;
+	position: relative;
+	display: block;
+	z-index: 1;
+}
+
+/* overview - header area */
+#overview {
+	font-size: 16px;
+	color: #3498db;
+}
+#overview .miner-name, td.overviewid, td.overviewhash {
+	color: #2980b9;
+	font-size: 24px;
+}
+#overview .label {
+color: #2c3e50;
+}
+#overview img {
+	padding-top: 3px;
+}
+
+#overview td {
+	padding: 0 30px 0 10px;
+	font-weight: 300;
+}
+
+
+/* hyperlinks */
+a {
+	color: #3498db;
+}
+
+a:hover {
+	color: #2c3e50;
+}
+
+/* the main table area */
+#content {
+	padding: 20px;
+	vertical-align: top;
+	text-align: center;
+	display: block;
+}
+
+#content td {
+	border: 1px solid #3498db;
+	padding: 5px;
+}
+
+/* table headers */
+#content td.ghdr {
+	color: #dddddd;
+	background-color: #3498db;
+	font-weight: bold;
+}
+
+/* errors */
+#content td.error {
+	color: #ffffff;
+	background-color: #ff0000;
+	font-weight: bold;
+}
+
+/* buttons and text boxes */
+input, button {
+	color: #3498db;
+	background-color: #2d3f52;
+}
