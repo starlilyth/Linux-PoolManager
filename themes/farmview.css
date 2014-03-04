@@ -8,6 +8,7 @@ border-left-width: 0px; border-right-width: 0px; border-top-width: 0px; border-b
 border-left-style: none; border-right-style: none; border-top-style: none; border-bottom-style: none;
 margin: 0px;
 padding: 0px;
+
 }
 
 #waiting
@@ -25,10 +26,8 @@ padding: 0px;
  background-color: rgb(255,255,255);
  padding: 10px;
  margin: 0px;
- vertical-align: top;
- position: absolute;
- top: 75px;
- 
+ position: relative;
+ display: block;
 }
 
 a
@@ -159,13 +158,11 @@ a
 
 #overview
 {
-	position: fixed;
+	position: relative;
+	display: block;
 	top: 0px;
 	left: 0px;
 	width: 100%;
-	height: 68px;
-	padding: 10px;
-	padding-top: 5px;
 	color: rgb(255,255,255);
 	 z-index: 1;
 	
@@ -193,7 +190,10 @@ a
   background-color: #222222;	
 }
 
-
+#overview table {
+	padding: 10px 5px 5px 5px;
+}
+}
 
 #overview img
 {
