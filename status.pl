@@ -286,6 +286,7 @@ for (my $i=0;$i<@gpus;$i++)
 		
 	my $ghashrate = $gpus[$i]{'hashrate'}; 
 	$ghashrate = $gpus[$i]{'hashavg'} if ($ghashrate eq "");
+	$ghashrate = $gpus[$i]{'hashavg'} if (defined($conf{settings}{usehashavg})); 
 	if (defined($conf{settings}{monitor_hash_lo}) && ($ghashrate < $conf{settings}{monitor_hash_lo}))
 	{
 		$problems++;
@@ -450,6 +451,7 @@ if (@summary) {
     $mrunt = sprintf("%d days, %02d:%02d.%02d",(gmtime $melapsed)[7,2,1,0]);
     $mratem = ${@summary[$i]}{'hashrate'};
     $mratem = ${@summary[$i]}{'hashavg'} if ($mratem eq "");
+    $mratem = ${@summary[$i]}{'hashavg'} if (defined($conf{settings}{usehashavg})); 
     $minerate = sprintf("%.2f", $mratem);
     $mineacc = ${@summary[$i]}{'shares_accepted'};
     $minerej = ${@summary[$i]}{'shares_invalid'};
