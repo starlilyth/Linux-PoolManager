@@ -5,14 +5,14 @@
 #
 #
 ---
-hashcolor: #2D3F52
-wucolor: #3498DBcc
-acccolor: #2980B9cc
+hashcolor: #47677f
+wucolor: #3498DB
+acccolor: #dddddd
 rejcolor: #FF0000
-stfcolor: #FF0000cc
+stfcolor: #FF0000
 fancolor: #2980B9
 tempcolor: #3498DB
 fontcolor: #3498DB
 fontfam: Helvetica
-errorcolor: #FF0000cc
+errorcolor: #FF0000
 
