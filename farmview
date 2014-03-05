@@ -241,22 +241,22 @@ sub genhttp
 			}			
 
 			my $sput = ""; 
-			$sput .= "<div class='gpudata'><TABLE><TR class='ghdr'>";
-			$sput .= "<TD class='ghdr'>Node</TD>";
-			$sput .= "<TD class='ghdr'>IP</TD>";
-			$sput .= "<TD class='ghdr'>Version</TD>";
-			$sput .= "<TD class='ghdr'>Runtime</TD>";
-			$sput .= "<TD class='ghdr'>Hashrate</TD>";
-			$sput .= "<TD class='ghdr'>WU</TD>";
-			$sput .= "<TD class='ghdr'>Rej</TD>";
-			$sput .= "<TD class='ghdr'>HW</TD>";
-			$sput .= "<TD class='ghdr'>Pools</TD>";
-			$sput .= "<TD class='ghdr'>Active Pool</TD>";
-			$sput .= "<TD class='ghdr'>ID</TD>";
-			$sput .= "<TD class='ghdr'>Worker</TD>";
-			$sput .= "<TD class='ghdr'>Status</TD>";
-			$sput .= "<TD class='ghdr' colspan=2>Accept/Reject</TD>";
-			$sput .= "</TR><TR><td class='sumdata'>";
+			$sput .= "<div class='data'><TABLE><TR class='header'>";
+			$sput .= "<TD class='header'>Node</TD>";
+			$sput .= "<TD class='header'>IP</TD>";
+			$sput .= "<TD class='header'>Version</TD>";
+			$sput .= "<TD class='header'>Runtime</TD>";
+			$sput .= "<TD class='header'>Hashrate</TD>";
+			$sput .= "<TD class='header'>WU</TD>";
+			$sput .= "<TD class='header'>Rej</TD>";
+			$sput .= "<TD class='header'>HW</TD>";
+			$sput .= "<TD class='header'>Pools</TD>";
+			$sput .= "<TD class='header'>Active Pool</TD>";
+			$sput .= "<TD class='header'>ID</TD>";
+			$sput .= "<TD class='header'>Worker</TD>";
+			$sput .= "<TD class='header'>Status</TD>";
+			$sput .= "<TD class='header' colspan=2>Accept/Reject</TD>";
+			$sput .= "</TR><TR class='sumdata'><td class='sumhdr'>";
 
 			if ($miner eq $miners{$miner}{id}) 
 			{
@@ -364,36 +364,36 @@ sub genhttp
 			    $sput .= $pstatus;
 			    $sput .= "<td>" . $pacc . " / " . $prej . "</td>";
 			    $sput .= $prat;
-			    $sput .= "</tr>";      
+			    $sput .= "</tr></table>";      
 
 			} else { 
 				$sput .= "<td colspan=7>Pool Info Not Available</td></tr></table>";
    			}
 
    			my $ghput = ""; 
-			$ghput .= "<div class='gpudata'><table><TR class='ghdr'>";
-			$ghput .= "<TD class='ghdr'>Messages</TD>";
-			$ghput .= "<TD class='ghdr'>GPUs</TD>";
-			$ghput .= "<TD class='ghdr'>  </TD>" if (@gpus < 1); 
+			$ghput .= "<table><TR class='header'>";
+			$ghput .= "<TD class='header'>Messages</TD>";
+			$ghput .= "<TD class='header'>GPUs</TD>";
+			$ghput .= "<TD class='header'>  </TD>" if (@gpus < 1); 
 
 			my $g = 0; 
 			while ($g < @gpus) { 
-				$ghput .= "<TD class='ghdr'>temp $g</TD>";
+				$ghput .= "<TD class='header'>temp $g</TD>";
 				$g++
 			}
 			my $g = 0; 
 			while ($g < @gpus) { 
-				$ghput .= "<TD class='ghdr'>fan $g</TD>";
+				$ghput .= "<TD class='header'>fan $g</TD>";
 				$g++
 			}				
 			my $g = 0; 
 			while ($g < @gpus) { 	
-				$ghput .= "<TD class='ghdr'>hash $g</TD>";
+				$ghput .= "<TD class='header'>hash $g</TD>";
 				$g++
 			}
 			my $g = 0; 
 			while ($g < @gpus) { 
-				$ghput .= "<TD class='ghdr'>rej $g</TD>";
+				$ghput .= "<TD class='header'>rej $g</TD>";
 				$g++
 			}
 			$ghput .= "</tr>";
@@ -512,7 +512,7 @@ sub genhttp
 
 				}
 
-				$gput .= "</tr></table>";
+				$gput .= "</tr>";
 
 				for (my $i = 0; $i < @gpus;$i++) 
 				{
@@ -526,7 +526,7 @@ sub genhttp
 			}
 			else
 			{
-				$gput .= "<td >No GPU data is available</td></tr></table>";
+				$gput .= "<td >No GPU data is available</td></tr>";
 			}
 
 			my $simg = ${$config}{httpimgpath} . '/';
@@ -552,7 +552,7 @@ sub genhttp
 			}
 
 			my $mput = ""; 
-			$mput .= "<tr><td class='sumdata'><img src='$simg'> ";
+			$mput .= "<tr class='sumdata'><td class='sumhdr'><img src='$simg'> ";
 
 			if (@nodemsg)
 			{					
@@ -575,9 +575,6 @@ sub genhttp
 			$nhtml .= $ghput;	
 		    $nhtml .= $mput . $gput;
 		    $nhtml .= "</TD></TR>";
-			
-			#blank
-			$nhtml .= "<TR><TD colspan=2 class='space'> </TD></TR>";		
 
 # Location HTML starts here		
 		 }
