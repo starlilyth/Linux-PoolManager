@@ -768,7 +768,7 @@ given($x) {
 		print "tok=1> << Back to overview</A>";
 		print "</td></tr>";	
 		print "<tr><td class='ghdr'>";	
-		print "<table><tr><td width=100px class='bigger'>GPU $showgpu<br>";	
+		print "<table><tr><td class='bigger'>GPU $showgpu<br>";	
 		print sprintf("%d", $gpus[$showgpu]{'hashrate'}) . " Kh/s</td></tr>";	
 		print "<tr><td>";
 		if (@gpumsg) {
@@ -792,7 +792,7 @@ given($x) {
         print "tok=1> << Back to overview</A>";
         print "</td></tr>";
         print "<tr><td class='ghdr'>";
-        print "<table><tr><td width=100px class='bigger'>Pool $showpool<br>";
+        print "<table><tr><td class='bigger'>Pool $showpool<br>";
         my $psacc = ${@pools[$showpool]}{'accepted'};
         my $psrej = ${@pools[$showpool]}{'rejected'};
 		if ($psacc ne "0") { 
@@ -823,7 +823,7 @@ given($x) {
         print "tok=1> << Back to overview</A>";
         print "</td></tr>";
         print "<tr><td class='ghdr'>";
-        print "<table><tr><td width=150px class='bigger'>" . $miner_name . "<br>";
+        print "<table><tr><td class='bigger'>" . $miner_name . "<br>";
 		if (($minerate ne "0") && ($minewu ne "0")) {
  	      print sprintf("%.1f%%", ($minewu / $minerate) / 10);
 		} else { print "0"; }

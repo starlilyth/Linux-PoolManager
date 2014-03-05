@@ -5,15 +5,15 @@ This is the original look for PoolManager
 
    Updated: 2014-Mar-04 by Lily
 -------------------------------------*/
-/* all text on the page */
 
+/* all text on the page */
 body {
-    background-color: #FFFFFF;
-    color: #000000;
-    font-family: "Trebuchet MS", Helvetica, sans-serif;
-    border: 0px;
-    margin: 0px;
-    padding: 0px;
+  background-color: #FFFFFF;
+  color: #000000;
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
+  border: 0px;
+  margin: 0px;
+  padding: 0px;
 }
 
 a {
@@ -22,10 +22,10 @@ a {
 
 /* overview - header area */
 #overview {
-    color: rgb(255,255,255);
-    position: relative;
-    display: block;
-    z-index: 1;
+  color: #ffffff;
+  position: relative;
+  display: block;
+  z-index: 1;
 
   /* Safari 4-5, Chrome 1-9 */
   background: -webkit-gradient(linear, top, bottom, from(#0000CC), to(#3366FF));
@@ -46,14 +46,14 @@ a {
 }
 
 #overview table {
-        padding: 5px 5px 1px 5px;
+  padding: 5px 5px 1px 5px;
 } 
 
 #overview td {
-    padding-right: 15px;
-    vertical-align: top;
-    text-wrap:none;
-    font-size: 16px;
+  padding-right: 15px;
+  vertical-align: top;
+  text-wrap:none;
+  font-size: 16px;
 }
 
 #overview td.overviewhash {
@@ -62,37 +62,38 @@ a {
 
 /* the main table area */
 #content {
-    padding: 20px;
-    vertical-align: top;
-    display: block;
-    text-align: center;
+  padding: 20px;
+  vertical-align: top;
+  display: block;
+  text-align: center;
 }
 
 #content table {
-    border: 0px;
-    border-collapse:collapse;
+  border: 0px;
+  border-collapse:collapse;
 }
 
 #content td {
-    padding: 5px;
+  padding: 5px;
 	padding-left: 8px;
 	padding-right: 8px;
 	border: 1px solid #cccccc;
 }
 
 #content td.big {
-    font-size: 18px;
-    font-weight:normal;
+  font-size: 18px;
+  font-weight:normal;
 }
 #content td.bigger {
-    font-size: 25px;
-    font-weight:normal;
+  font-size: 25px;
+  font-weight:normal;
+  background-color: #E0FFFF;
 }
 #content table.datatbl {
 	border: 1px solid #cccccc;
 }
 #sumdata tr td {
-    border-bottom: 1px solid #cccccc;
+  border-bottom: 1px solid #cccccc;
 }
 #showgpu td {
 	font-size: 14px;
@@ -103,11 +104,11 @@ a {
 
 /* table headers */
 #content td.ghdr {
-    color: rgb(0,0,0);
-    background-color: rgb(198,226,255);
-    font-weight: bold;
-    font-size: 12px;
-    vertical-align: top;
+  color: #000000;
+  background-color: #C6E2FF;
+  font-weight: bold;
+  font-size: 12px;
+  vertical-align: top;
 }
 
 /* errors */
