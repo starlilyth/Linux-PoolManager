@@ -859,7 +859,7 @@ given($x) {
 	    print $p1sum;
 	    print $g1put;
 
-		print "</div>";
+		print "</div><br>";
 		print "<div id=gpugraphs>";	
 		print "<table id=graphs>";
 		print "<tr><td>";	
