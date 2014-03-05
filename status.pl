@@ -161,7 +161,7 @@ my $problemgpus = 0;
 my @nodemsg;
 my @gpumsg;
 
-$g1put .= "<TABLE><TR class='ghdr'><TD class='ghdr'>GPU</TD>";
+$g1put .= "<TABLE id='gpucontent'><TR class='ghdr'><TD class='ghdr'>GPU</TD>";
 $g1put .= "<TD class='ghdr'>Status</TD>";
 $g1put .= "<TD class='ghdr'>Temp</TD>";
 $g1put .= "<TD class='ghdr'>Fan</TD>";
@@ -432,7 +432,7 @@ for (my $i=0;$i<@gpus;$i++)
 }
 $g1put .= "</table>";
 
-$mcontrol .= "<table><tr>";
+$mcontrol .= "<table id='mcontrol'><tr>";
 my $surl = "?"; $surl .= "miner=$i";
 $mcontrol .= '<TD class="bigger"><A href="' . $surl . '">Miner</a></td>';
 if ($version =~ m/(\w+?)=(\d+\.\d+\.\d+),API=(\d+\.\d+)/) {
@@ -763,7 +763,7 @@ print "<div id=content>";
 
 given($x) {
 	when ($showgpu > -1) {
-		print "<div id='showgpu'>";
+		print "<div id='showdata'>";
 		print "<table><tr colspan=2><td><A HREF=?";	
 		print "tok=1> << Back to overview</A>";
 		print "</td></tr>";	
@@ -787,7 +787,7 @@ given($x) {
 		print "</div>";
 	}
 	when ($showpool > -1) {
-        print "<div id='showgpu'>";
+        print "<div id='showdata'>";
         print "<table><tr><td colspan=2><A HREF=?";
         print "tok=1> << Back to overview</A>";
         print "</td></tr>";
@@ -818,7 +818,7 @@ given($x) {
 		print "</div>";
 	}
 	when ($showminer > -1) {
-        print "<div id='showgpu'>";
+        print "<div id='showdata'>";
         print "<table><tr><td colspan=2><A HREF=?";
         print "tok=1> << Back to overview</A>";
         print "</td></tr>";
@@ -850,7 +850,7 @@ given($x) {
     	print "</div>";
 	}
 	default {
-	  print "<div class='gpudata'>";
+	  print "<div class='data'>";
 
 	  if ($UHOH eq "true") {
 		print "<table><tr><td class=big><p>Uh Oh! No data could be retreived! Please check your configuration and try again.</p></td></tr></table>";
@@ -859,9 +859,9 @@ given($x) {
 	    print $p1sum;
 	    print $g1put;
 
-		print "</div><br>";
-		print "<div id=gpugraphs>";	
-		print "<table class=graphs>";
+		print "<br></div>";
+		print "<div class=graphs>";	
+		print "<table>";
 		print "<tr><td>";	
 		my $img = "/var/www/IFMI/graphs/msummary.png";
 		if (-e $img) {
