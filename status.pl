@@ -782,7 +782,7 @@ given($x) {
 		}
 		print "</td></tr></table>";
 
-		print "</td><td><div id='sumdata'><table class=datatbl>$gsput</table></div></td></tr>";	
+		print "</td><td><div id='sumdata'><table>$gsput</table></div></td></tr>";	
 		print "<tr><td colspan=2>$ggimg</td></tr></table>";
 		print "</div>";
 	}
@@ -813,7 +813,7 @@ given($x) {
                 print "All OK";
         }
    		print "</td></tr></table>";
-		print "</td><td><div id='sumdata'><table class=datatbl>$psput</table></div></td></tr>";
+		print "</td><td><div id='sumdata'><table>$psput</table></div></td></tr>";
 		print "<tr><td colspan=2>$pgimg</td></tr></table>";
 		print "</div>";
 	}
@@ -840,7 +840,7 @@ given($x) {
                 print "All OK";
         }
    		print "</td></tr></table>";        
-        print "</td><td><table class=datatbl>$msput</td></tr>";
+        print "</td><td><table>$msput</td></tr>";
         print "<tr><td colspan=4><hr></td></tr>";
         print "<tr><td colspan=4>PoolManager was written by Lily, and updates are available at ";
         print "<a href=https://github.com/starlilyth/Linux-PoolManager target=_blank>GitHub</a>.<br>"; 

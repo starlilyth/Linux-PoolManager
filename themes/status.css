@@ -69,7 +69,6 @@ a {
 }
 
 #content table {
-  border: 0px;
   border-collapse:collapse;
 }
 
@@ -89,7 +88,7 @@ a {
   font-weight:normal;
   background-color: #E0FFFF;
 }
-#content table.datatbl {
+#sumdata table {
 	border: 1px solid #cccccc;
 }
 #sumdata tr td {
