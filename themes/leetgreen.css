@@ -76,7 +76,7 @@ a:hover {
 }
 
 /* table headers */
-#content td.ghdr {
+#content td.header {
 	color: #000000;
 	background-color: #073002;
 	font-weight: bold;

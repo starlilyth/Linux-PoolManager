@@ -102,7 +102,7 @@ a {
 }
 
 /* table headers */
-#content td.ghdr {
+#content td.header {
   color: #000000;
   background-color: #C6E2FF;
   font-weight: bold;

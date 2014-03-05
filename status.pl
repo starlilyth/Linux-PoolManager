@@ -161,18 +161,18 @@ my $problemgpus = 0;
 my @nodemsg;
 my @gpumsg;
 
-$g1put .= "<TABLE id='gpucontent'><TR class='ghdr'><TD class='ghdr'>GPU</TD>";
-$g1put .= "<TD class='ghdr'>Status</TD>";
-$g1put .= "<TD class='ghdr'>Temp</TD>";
-$g1put .= "<TD class='ghdr'>Fan</TD>";
-$g1put .= "<TD class='ghdr'>Rate</TD>";
-$g1put .= "<TD class='ghdr'>Pool</TD>";
-$g1put .= "<TD class='ghdr' colspan=2>Accept/Reject</TD>";
-$g1put .= "<TD class='ghdr'>I</TD>";
-$g1put .= "<TD class='ghdr'>HW</TD>";
-$g1put .= "<TD class='ghdr'>Core</TD>";
-$g1put .= "<TD class='ghdr'>Memory</TD>";
-$g1put .= "<TD class='ghdr'>Power</TD></tr>";
+$g1put .= "<TABLE id='gpucontent'><TR class='header'><TD class='header'>GPU</TD>";
+$g1put .= "<TD class='header'>Status</TD>";
+$g1put .= "<TD class='header'>Temp</TD>";
+$g1put .= "<TD class='header'>Fan</TD>";
+$g1put .= "<TD class='header'>Rate</TD>";
+$g1put .= "<TD class='header'>Pool</TD>";
+$g1put .= "<TD class='header' colspan=2>Accept/Reject</TD>";
+$g1put .= "<TD class='header'>I</TD>";
+$g1put .= "<TD class='header'>HW</TD>";
+$g1put .= "<TD class='header'>Core</TD>";
+$g1put .= "<TD class='header'>Memory</TD>";
+$g1put .= "<TD class='header'>Power</TD></tr>";
 
 my $gsput = "";
 
@@ -555,16 +555,16 @@ $mcontrol .= "</tr></table><br>";
 $p1sum .= "<table id='pcontent'>";
 
 if ($ispriv eq "S") {
-	$p1sum .= "<TR class='ghdr'><TD class='ghdr'>Pool</TD>";
-	$p1sum .= "<TD class='ghdr'>Pool URL</TD>";
+	$p1sum .= "<TR class='header'><TD class='header'>Pool</TD>";
+	$p1sum .= "<TD class='header'>Pool URL</TD>";
 	if ($avers > 1.16) {
-	  $p1sum .= "<TD class='ghdr'>Worker</TD>"; 
+	  $p1sum .= "<TD class='header'>Worker</TD>"; 
 	}
-	$p1sum .= "<TD class='ghdr'>Status</TD>";
-	$p1sum .= "<TD class='ghdr' colspan=2>Accept/Reject</TD>";
-	$p1sum .= "<TD class='ghdr'>Active</TD>";
-	$p1sum .= "<TD class='ghdr'>Prio</TD>";
-	#$p1sum .= "<TD class='ghdr' colspan=2>Quota (ratio or %)</TD>";
+	$p1sum .= "<TD class='header'>Status</TD>";
+	$p1sum .= "<TD class='header' colspan=2>Accept/Reject</TD>";
+	$p1sum .= "<TD class='header'>Active</TD>";
+	$p1sum .= "<TD class='header'>Prio</TD>";
+	#$p1sum .= "<TD class='header' colspan=2>Quota (ratio or %)</TD>";
 	$p1sum .= "</TR>";
 
 	my @poolmsg; $pqb=0;
@@ -767,7 +767,7 @@ given($x) {
 		print "<table><tr colspan=2><td><A HREF=?";	
 		print "tok=1> << Back to overview</A>";
 		print "</td></tr>";	
-		print "<tr><td class='ghdr'>";	
+		print "<tr><td class='header'>";	
 		print "<table><tr><td class='bigger'>GPU $showgpu<br>";	
 		print sprintf("%d", $gpus[$showgpu]{'hashrate'}) . " Kh/s</td></tr>";	
 		print "<tr><td>";
@@ -791,7 +791,7 @@ given($x) {
         print "<table><tr><td colspan=2><A HREF=?";
         print "tok=1> << Back to overview</A>";
         print "</td></tr>";
-        print "<tr><td class='ghdr'>";
+        print "<tr><td class='header'>";
         print "<table><tr><td class='bigger'>Pool $showpool<br>";
         my $psacc = ${@pools[$showpool]}{'accepted'};
         my $psrej = ${@pools[$showpool]}{'rejected'};
@@ -822,7 +822,7 @@ given($x) {
         print "<table><tr><td colspan=2><A HREF=?";
         print "tok=1> << Back to overview</A>";
         print "</td></tr>";
-        print "<tr><td class='ghdr'>";
+        print "<tr><td class='header'>";
         print "<table><tr><td class='bigger'>" . $miner_name . "<br>";
 		if (($minerate ne "0") && ($minewu ne "0")) {
  	      print sprintf("%.1f%%", ($minewu / $minerate) / 10);
