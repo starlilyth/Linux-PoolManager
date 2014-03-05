@@ -6,13 +6,13 @@
 #
 ---
 hashcolor: #47677f
-wucolor: #3498DB
-acccolor: #dddddd
+wucolor: #3498DBcc
+acccolor: #ddddddcc
 rejcolor: #FF0000
-stfcolor: #FF0000
+stfcolor: #FF0000cc
 fancolor: #2980B9
 tempcolor: #3498DB
 fontcolor: #3498DB
 fontfam: Helvetica
-errorcolor: #FF0000
+errorcolor: #FF0000cc
 
