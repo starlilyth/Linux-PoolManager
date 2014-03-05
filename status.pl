@@ -764,11 +764,11 @@ print "<div id=content>";
 given($x) {
 	when ($showgpu > -1) {
 		print "<div id='showgpu'>";
-		print "<A HREF=?";	
+		print "<table><tr colspan=2><td><A HREF=?";	
 		print "tok=1> << Back to overview</A>";
-		print "<P>";	
-		print "<table><tr><td id='showgpustats'>";	
-		print "<table><tr><td width=200px class='bigger'>GPU $showgpu<br>";	
+		print "</td></tr>";	
+		print "<tr><td class='ghdr'>";	
+		print "<table><tr><td width=100px class='bigger'>GPU $showgpu<br>";	
 		print sprintf("%d", $gpus[$showgpu]{'hashrate'}) . " Kh/s</td></tr>";	
 		print "<tr><td>";
 		if (@gpumsg) {
@@ -782,17 +782,17 @@ given($x) {
 		}
 		print "</td></tr></table>";
 
-		print "</td><td><div id='sumdata'><table class=datatbl>$gsput</table></div></td></tr></table></td>";	
-		print "<tr><td>$ggimg</td></tr>";
+		print "</td><td><div id='sumdata'><table class=datatbl>$gsput</table></div></td></tr>";	
+		print "<tr><td colspan=2>$ggimg</td></tr></table>";
 		print "</div>";
 	}
 	when ($showpool > -1) {
         print "<div id='showgpu'>";
-        print "<A HREF=?";
+        print "<table><tr><td colspan=2><A HREF=?";
         print "tok=1> << Back to overview</A>";
-        print "<P>";
-        print "<table><tr><td id='showgpustats'>";
-        print "<table><tr><td width=200px class='bigger'>Pool $showpool<br>";
+        print "</td></tr>";
+        print "<tr><td class='ghdr'>";
+        print "<table><tr><td width=100px class='bigger'>Pool $showpool<br>";
         my $psacc = ${@pools[$showpool]}{'accepted'};
         my $psrej = ${@pools[$showpool]}{'rejected'};
 		if ($psacc ne "0") { 
@@ -813,21 +813,21 @@ given($x) {
                 print "All OK";
         }
    		print "</td></tr></table>";
-		print "</td><td><div id='sumdata'><table class=datatbl>$psput</table></div></td></tr></table></td>";
-		print "<tr><td>$pgimg</td></tr>";
+		print "</td><td><div id='sumdata'><table class=datatbl>$psput</table></div></td></tr>";
+		print "<tr><td colspan=2>$pgimg</td></tr></table>";
 		print "</div>";
 	}
 	when ($showminer > -1) {
         print "<div id='showgpu'>";
-        print "<A HREF=?";
+        print "<table><tr><td colspan=2><A HREF=?";
         print "tok=1> << Back to overview</A>";
-        print "<P>";
-        print "<table><tr><td id='showgpustats'>";
-        print "<table><tr><td width=200px class='bigger'>" . $miner_name . "<br>";
+        print "</td></tr>";
+        print "<tr><td class='ghdr'>";
+        print "<table><tr><td width=150px class='bigger'>" . $miner_name . "<br>";
 		if (($minerate ne "0") && ($minewu ne "0")) {
  	      print sprintf("%.1f%%", ($minewu / $minerate) / 10);
 		} else { print "0"; }
-		print "</td></tr><tr><td>Efficiency (WU / Hashrate)</td></tr>"; 
+		print "</td></tr><tr><td>Efficiency <br>(WU / Hashrate)</td></tr>"; 
 		print "<tr><td>";
         if (@nodemsg) {
                 print "<img src='/IFMI/error.png'><p>";
@@ -861,7 +861,7 @@ given($x) {
 
 		print "</div><br>";
 		print "<div id=gpugraphs>";	
-		print "<table id=graphs>";
+		print "<table class=graphs>";
 		print "<tr><td>";	
 		my $img = "/var/www/IFMI/graphs/msummary.png";
 		if (-e $img) {
