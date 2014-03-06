@@ -168,7 +168,7 @@ input, button {
     border: 0 none;
 }
 #content td.locsum {
-    background-color: #C6E2FF;
+    background-color: transparent;
     font-size: 16px;
     font-weight: bold;
     text-align: left;
@@ -178,7 +178,7 @@ input, button {
     padding: 20px;
 }
 #content td.sumhdr {
-    background-color: #E0FFFF;
+    background-color: #003399;
     font-size: 14px;
     font-weight: bold;
 }
@@ -186,7 +186,7 @@ input, button {
     font-size: 13px;
 }
 #content td.refreshtime {
-    background-color: #FFFFF0;
+    background-color: #000066;
     font-size: 16px;
 }
 #content.farm td.header {
