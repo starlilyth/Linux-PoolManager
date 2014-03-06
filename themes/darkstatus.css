@@ -1,0 +1,126 @@
+/* Status.CSS for Linux-PoolManager
+
+Theme: darkstatus
+This is the original look for PoolManager
+
+   Updated: 2014-Mar-04 by Lily
+-------------------------------------*/
+
+/* all text on the page */
+body {
+  background-color: #202020;
+  color: #cccccc;
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
+  border: 0px;
+  margin: 0px;
+  padding: 0px;
+}
+
+a {
+ color: #cccccc;
+}
+
+/* overview - header area */
+#overview {
+  color: #cccccc;
+  position: relative;
+  display: block;
+  z-index: 1;
+
+  /* Safari 4-5, Chrome 1-9 */
+  background: -webkit-gradient(linear, top, bottom, from(#0000CC), to(#3366FF));
+  
+  /* Safari 5.1+, Chrome 10+ */
+  background: -webkit-linear-gradient(top, #0000CC, #3366FF);
+  
+  /* Firefox 3.6+ */
+  background: -moz-linear-gradient(top, #0000CC, #3366FF);
+  
+  /* IE 10 */
+  background: -ms-linear-gradient(top, #0000CC, #3366FF);
+  
+  /* Opera 11.10+ */
+  background: -o-linear-gradient(top, #0000CC, #3366FF);
+  
+  background-color: #222222;
+}
+
+#overview table {
+  padding: 5px 5px 1px 5px;
+} 
+
+#overview td {
+  padding-right: 15px;
+  vertical-align: top;
+  text-wrap:none;
+  font-size: 16px;
+}
+
+#overview td.overviewhash {
+    font-size: 30px;
+}
+
+/* the main table area */
+#content {
+  padding: 20px;
+  vertical-align: top;
+  display: block;
+  text-align: center;
+}
+
+#content table {
+  border-collapse:collapse;
+}
+
+#content td {
+  padding: 5px;
+	padding-left: 8px;
+	padding-right: 8px;
+	border: 1px solid #505050;
+}
+
+#content td.big {
+  font-size: 18px;
+  font-weight:normal;
+}
+#content td.bigger {
+  font-size: 25px;
+  font-weight:normal;
+  background-color: #003399;
+}
+#sumdata table {
+	border: 1px solid #505050;
+}
+#sumdata tr td {
+  border-bottom: 1px solid #505050;
+}
+#showdata td {
+	font-size: 14px;
+	text-align: left;
+  padding: 3px;
+	border: 0px solid #505050;
+}
+
+/* table headers */
+#content td.header {
+  color: #cccccc;
+  background-color: #003366;
+  font-weight: bold;
+  font-size: 12px;
+  vertical-align: top;
+}
+
+/* errors */
+#content td.error {
+    color: #ffffff;
+    background-color: #ff0000;
+    font-weight: bold;
+}
+
+/* buttons and text boxes */
+input, button {
+  color: #cccccc;
+  background-color: #202020;
+  border-style: solid;
+  border-color: #404040;
+}
