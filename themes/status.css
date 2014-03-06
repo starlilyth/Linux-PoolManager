@@ -8,52 +8,52 @@ This is the original look for PoolManager
 
 /* all text on the page */
 body {
-  background-color: #FFFFFF;
-  color: #000000;
-  font-family: "Trebuchet MS", Helvetica, sans-serif;
-  border: 0px;
-  margin: 0px;
-  padding: 0px;
+  	background-color: #FFFFFF;
+  	color: #000000;
+  	font-family: "Trebuchet MS", Helvetica, sans-serif;
+  	border: 0px;
+  	margin: 0px;
+  	padding: 0px;
 }
 
 a {
- color: #000000;
+ 	color: #000000;
 }
 
 /* overview - header area */
 #overview {
-  color: #ffffff;
-  position: relative;
-  display: block;
-  z-index: 1;
+  	color: #ffffff;
+  	position: relative;
+ 	display: block;
+ 	z-index: 1;
 
   /* Safari 4-5, Chrome 1-9 */
-  background: -webkit-gradient(linear, top, bottom, from(#0000CC), to(#3366FF));
+  	background: -webkit-gradient(linear, top, bottom, from(#0000CC), to(#3366FF));
   
   /* Safari 5.1+, Chrome 10+ */
-  background: -webkit-linear-gradient(top, #0000CC, #3366FF);
+ 	background: -webkit-linear-gradient(top, #0000CC, #3366FF);
   
   /* Firefox 3.6+ */
-  background: -moz-linear-gradient(top, #0000CC, #3366FF);
+ 	background: -moz-linear-gradient(top, #0000CC, #3366FF);
   
   /* IE 10 */
-  background: -ms-linear-gradient(top, #0000CC, #3366FF);
+  	background: -ms-linear-gradient(top, #0000CC, #3366FF);
   
   /* Opera 11.10+ */
-  background: -o-linear-gradient(top, #0000CC, #3366FF);
+  	background: -o-linear-gradient(top, #0000CC, #3366FF);
   
-  background-color: #222222;
+  	background-color: #222222;
 }
 
 #overview table {
-  padding: 5px 5px 1px 5px;
+  	padding: 5px 5px 1px 5px;
 } 
 
 #overview td {
-  padding-right: 15px;
-  vertical-align: top;
-  text-wrap:none;
-  font-size: 16px;
+  	padding-right: 15px;
+  	vertical-align: top;
+  	text-wrap:none;
+  	font-size: 16px;
 }
 
 #overview td.overviewhash {
@@ -62,52 +62,53 @@ a {
 
 /* the main table area */
 #content {
-  padding: 20px;
-  vertical-align: top;
-  display: block;
-  text-align: center;
+  	padding: 20px;
+  	vertical-align: top;
+  	display: block;
+  	text-align: center;
 }
 
 #content table {
-  border-collapse:collapse;
+  	border-collapse:collapse;
 }
 
 #content td {
-  padding: 5px;
+	color: #ffffff;
+  	padding: 5px;
 	padding-left: 8px;
 	padding-right: 8px;
 	border: 1px solid #cccccc;
 }
 
 #content td.big {
-  font-size: 18px;
-  font-weight:normal;
+  	font-size: 18px;
+  	font-weight:normal;
 }
 #content td.bigger {
-  font-size: 25px;
-  font-weight:normal;
-  background-color: #E0FFFF;
+  	font-size: 25px;
+  	font-weight:normal;
+  	background-color: #E0FFFF;
 }
 #sumdata table {
 	border: 1px solid #cccccc;
 }
 #sumdata tr td {
-  border-bottom: 1px solid #cccccc;
+  	border-bottom: 1px solid #cccccc;
 }
 #showdata td {
 	font-size: 14px;
 	text-align: left;
-  padding: 3px;
+  	padding: 3px;
 	border: 0px solid #cccccc;
 }
 
 /* table headers */
 #content td.header {
-  color: #000000;
-  background-color: #C6E2FF;
-  font-weight: bold;
-  font-size: 12px;
-  vertical-align: top;
+  	color: #000000;
+  	background-color: #C6E2FF;
+  	font-weight: bold;
+  	font-size: 12px;
+  	vertical-align: top;
 }
 
 /* errors */
@@ -137,4 +138,56 @@ a {
     border-radius: 5px;
 }
 
+/* FARMVIEW SPECIFIC CSS */
+
+/* waiting view when no data available */
+
+#waiting {
+    background-color: #F5F5D7;
+    margin: 30px;
+    padding: 30px;
+    position: absolute;
+    top: 120px;
+}
+
+/* the main table area */
+#content td.space {
+	border: 0px;
+}
+
+/* need to add farm class to outer table in #content in farmview */
+
+#content table.farm {
+    border: 0 none;
+}
+#content td.locsum {
+    background-color: #C6E2FF;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: left;
+}
+#content td.node {
+    border: 0 none;
+    padding: 20px;
+}
+#content td.sumhdr {
+    background-color: #E0FFFF;
+    font-size: 14px;
+    font-weight: bold;
+}
+#content tr.sumdata {
+    font-size: 13px;
+}
+#content td.refreshtime {
+    background-color: #FFFFF0;
+    font-size: 16px;
+}
+#content.farm td.header {
+	text-align: center;
+	padding: 2px 5px;
+}
+
+#content.farm td {
+	padding: 5px;
+}
 
