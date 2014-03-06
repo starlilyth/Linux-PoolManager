@@ -124,3 +124,23 @@ input, button {
   border-style: solid;
   border-color: #404040;
 }
+
+.logo {
+    display:block;
+    height: 63px;
+    width: 155px;
+}
+.logo a {
+    background-image: url(/IFMI/IFMI-logo-small.png);
+    display:block;
+    height: 63px;
+    width: 155px;
+}
+.reset-btn {
+    cursor:pointer;
+    background: #7000FF;
+    height: 10px;
+    width: 10px;
+    border: 0px;
+    border-radius: 5px;
+}

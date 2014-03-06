@@ -700,11 +700,11 @@ if ($ispriv eq "S") {
 
 print "<div id='overview'>";
 print "<table><TR><TD>";
-print "<table><TR><TD id='overviewlogo' rowspan=2><a href='https://github.com/starlilyth/Linux-PoolManager' target=_blank>";
-print "<IMG src='/IFMI/IFMI-logo-small.png'></a></TD>";
+print "<table><TR><TD rowspan=2><div class='logo'><a href='https://github.com/starlilyth/Linux-PoolManager' target=_blank>";
+print "</a></div></TD>";
 print "<TD class='overviewid'>" . $miner_name . "</td>";
-print "<td align='right'><form name='zero' action='status.pl' method='POST'><input type='hidden' name='zero' value='zero'>";
-print "<input type='image' src='/IFMI/button_round_navy.png' width='10' height='10' alt='Zero Stats'></form></td>";
+print "<td align='right'><form method='post' action='status.pl' name=zero'>";
+print "<input type='hidden' value='zero' name='zero' /><button type='submit' title='reset stats' class='reset-btn'/></form></td>";
 print "<tr><TD class='overviewhash' colspan=2>";
 $minerate = "0" if ($minerate eq ""); 
 print $minerate . " Mh/s</TD></tr></table></td>";
