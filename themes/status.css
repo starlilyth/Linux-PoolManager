@@ -73,6 +73,7 @@ a {
 }
 
 #content td {
+	color: #ffffff;
   	padding: 5px;
 	padding-left: 8px;
 	padding-right: 8px;
@@ -180,5 +181,13 @@ a {
 #content td.refreshtime {
     background-color: #FFFFF0;
     font-size: 16px;
+}
+#content.farm td.header {
+	text-align: center;
+	padding: 2px 5px;
+}
+
+#content.farm td {
+	padding: 5px;
 }
 
