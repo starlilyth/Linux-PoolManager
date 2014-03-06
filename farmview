@@ -512,7 +512,7 @@ sub genhttp
 
 				}
 
-				$gput .= "</tr>";
+				$gput .= "</tr></table>";
 
 				for (my $i = 0; $i < @gpus;$i++) 
 				{
@@ -574,7 +574,7 @@ sub genhttp
 			$nhtml .= $sput;	
 			$nhtml .= $ghput;	
 		    $nhtml .= $mput . $gput;
-		    $nhtml .= "</TD></TR>";
+#		    $nhtml .= "</table>";
 
 # Location HTML starts here		
 		 }
