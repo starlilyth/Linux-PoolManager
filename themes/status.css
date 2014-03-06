@@ -50,6 +50,7 @@ a {
 } 
 
 #overview td {
+	color: #ffffff;
   	padding-right: 15px;
   	vertical-align: top;
   	text-wrap:none;
@@ -73,7 +74,6 @@ a {
 }
 
 #content td {
-	color: #ffffff;
   	padding: 5px;
 	padding-left: 8px;
 	padding-right: 8px;
