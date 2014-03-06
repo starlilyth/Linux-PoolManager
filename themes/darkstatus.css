@@ -73,7 +73,8 @@ a {
 }
 
 #content td {
-  padding: 5px;
+	color: #cccccc;
+  	padding: 5px;
 	padding-left: 8px;
 	padding-right: 8px;
 	border: 1px solid #505050;
@@ -143,4 +144,55 @@ input, button {
     width: 10px;
     border: 0px;
     border-radius: 5px;
+}
+
+/* FARMVIEW SPECIFIC CSS */
+
+/* waiting view when no data available */
+
+#waiting {
+    background-color: #F5F5D7;
+    margin: 30px;
+    padding: 30px;
+    position: absolute;
+    top: 120px;
+}
+
+/* the main table area */
+#content td.space {
+	border: 0px;
+}
+
+#content table.farm {
+    border: 0 none;
+}
+#content td.locsum {
+    background-color: #C6E2FF;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: left;
+}
+#content td.node {
+    border: 0 none;
+    padding: 20px;
+}
+#content td.sumhdr {
+    background-color: #E0FFFF;
+    font-size: 14px;
+    font-weight: bold;
+}
+#content tr.sumdata {
+    font-size: 13px;
+}
+#content td.refreshtime {
+    background-color: #FFFFF0;
+    font-size: 16px;
+}
+#content.farm td.header {
+	text-align: center;
+	padding: 2px 5px;
+}
+
+#content.farm td {
+	padding: 5px;
 }
