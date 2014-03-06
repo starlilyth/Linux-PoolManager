@@ -163,7 +163,8 @@ input, button {
 	border: 0px;
 }
 
-#content table.farm {
+#content.farm table {
+    text-align: center;
     border: 0 none;
 }
 #content td.locsum {
@@ -189,7 +190,6 @@ input, button {
     font-size: 16px;
 }
 #content.farm td.header {
-	text-align: center;
 	padding: 2px 5px;
 }
 
