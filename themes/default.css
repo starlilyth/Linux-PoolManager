@@ -157,7 +157,8 @@ a {
 
 /* need to add farm class to outer table in #content in farmview */
 
-#content table.farm {
+#content.farm table {
+    text-align: center;
     border: 0 none;
 }
 #content td.locsum {
@@ -183,7 +184,6 @@ a {
     font-size: 16px;
 }
 #content.farm td.header {
-	text-align: center;
 	padding: 2px 5px;
 }
 
