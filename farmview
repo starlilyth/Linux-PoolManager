@@ -150,7 +150,7 @@ sub genhttp
 	if (keys %miners)
 	{
 			
-		$html .= "<div id='content'><TABLE>";
+		$html .= "<div id='content' class='farm'><TABLE>";
 
 		$html .= "<tr><td class='refreshtime'>";
 		use POSIX;
