@@ -24,7 +24,7 @@ if (defined($conf{settings}{IGNOREBAMT})) {
 }
 
 if ($ARGV[0] eq "start") { 
-	my $mcheck = `ps -eo command | grep [m]iner | wc -l`;
+	my $mcheck = `ps -eo command | egrep '^/.+?/.+?miner ' | wc -l`;
 	if ($mcheck > 0) {
 		die "another mining process is running."
 	}
