@@ -25,12 +25,14 @@ case "$input" in
         cp ./themes/* /var/www/IFMI/themes
         cp ./images/*.png /var/www/IFMI
         cp status.pl /usr/lib/cgi-bin/
+        cp config.pl /usr/lib/cgi-bin/
         cp confedit.pl /usr/lib/cgi-bin/
         cp mcontrol /opt/ifmi/
         cp farmview /opt/ifmi/
         cp sendstatus.pl /opt/ifmi/
         cp pm-common.pl /opt/ifmi/
         cp poolmanager.conf /opt/ifmi/
+        chown www-data /opt/ifmi/poolmanager.conf
         cp run-poolmanager.pl /opt/ifmi/
         cp pmgraph.pl /opt/ifmi/rrdtool/
       else 
@@ -38,6 +40,8 @@ case "$input" in
         cp ./images/*.png /var/www/IFMI
         cp /usr/lib/cgi-bin/status.pl /usr/lib/cgi-bin/status.pl.back
         cp status.pl /usr/lib/cgi-bin/
+        cp /usr/lib/cgi-bin/config.pl /usr/lib/cgi-bin/config.pl.back
+        cp config.pl /usr/lib/cgi-bin/
         cp /usr/lib/cgi-bin/confedit.pl /usr/lib/cgi-bin/confedit.pl.back
         cp confedit.pl /usr/lib/cgi-bin/
         cp /opt/ifmi/mcontrol /opt/ifmi/mcontrol.back
@@ -50,6 +54,7 @@ case "$input" in
         cp pm-common.pl /opt/ifmi/
         cp /opt/ifmi/poolmanager.conf /opt/ifmi/poolmanager.conf.back
         cp poolmanager.conf /opt/ifmi/
+        chown www-data /opt/ifmi/poolmanager.conf
         cp /opt/ifmi/run-poolmanager.pl /opt/ifmi/run-poolmanager.pl.back
         cp run-poolmanager.pl /opt/ifmi/
         cp /opt/ifmi/rrdtool/pmgraph.pl /opt/ifmi/rrdtool/pmgraph.pl.back
@@ -79,10 +84,12 @@ case "$input" in
         cp /usr/lib/cgi-bin/status.pl /usr/lib/cgi-bin/status.pl.pre-ifmi
       fi
       cp status.pl /usr/lib/cgi-bin/
+      cp config.pl /usr/lib/cgi-bin/
       cp confedit.pl /usr/lib/cgi-bin/
       cp mcontrol /opt/ifmi/
       cp pm-common.pl /opt/ifmi/
       cp poolmanager.conf /opt/ifmi/
+      chown www-data /opt/ifmi/poolmanager.conf
       cp sendstatus.pl /opt/ifmi/
       cp farmview /opt/ifmi/
       cp run-poolmanager.pl /opt/ifmi/

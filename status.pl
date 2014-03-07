@@ -52,12 +52,6 @@ if ($dpool ne "") {
   $dpool = "";
 }
 
-my $cgraphs = $in{'cgraphs'};
-if ($cgraphs ne "") {
-  exec `/usr/bin/touch /tmp/cleargraphs.flag`;
-  $cgraphs = "";
-}
-
 my $mstop = $in{'mstop'};
 if ($mstop eq "stop") { 
   $status = `echo $in{'ptext'} | sudo -S /opt/ifmi/mcontrol stop`;
@@ -135,14 +129,18 @@ if ($showminer > -1)
 print header;
 if ($url eq "?")
 {
-	print start_html( -title=>'PoolManager - ' . $miner_name . ' status', -style=>{-src=>'/IFMI/themes/' 
-		. $conf{display}{status_css}},  -head=>$q->meta({-http_equiv=>'REFRESH',-content=>'30'})  );
+	print start_html( -title=>'PoolManager - ' . $miner_name . ' status', 
+		-style=>{-src=>'/IFMI/themes/' . $conf{display}{status_css}},  
+		-head=>$q->meta({-http_equiv=>'REFRESH',-content=>'30'})  
+		);
 }
 else
 {
 	$url .= "tok=1";
-	print start_html( -title=>'PoolManager - ' . $miner_name . ' status', -style=>{-src=>'/IFMI/themes/' 
-		. $conf{display}{status_css}},  -head=>$q->meta({-http_equiv=>'REFRESH',-content=>'30; url=' . $url })  );
+	print start_html( -title=>'PoolManager - ' . $miner_name . ' status', 
+					  -style=>{-src=>'/IFMI/themes/' . $conf{display}{status_css}},  
+					  -head=>$q->meta({-http_equiv=>'REFRESH',-content=>'30; url=' . $url })  
+					  );
 
 }
 
@@ -526,8 +524,7 @@ if (@summary) {
 		$minebs = 0 if ($minebs eq "");
       	$msput .= "<td>Best Share:</td><td>" . $minebs . "</td></tr>";
  		$msput .= "<tr><td colspan=4><hr></td></tr>";
- 		$msput .= "<tr><td>Clear All Graphs</td><td>";
-	    $msput .= "<form name='pselect' action='status.pl' method='POST'><input type='hidden' name='cgraphs' value='cgraphs'><button type='submit'>Clear</button></form></td></tr>";
+ 		$msput .= "<tr><td><a href='config.pl'>PoolManager Configuration</a></td><td>";
   	} else {		
 		if ($melapsed > 0) {  	  
 		  $mcontrol .= "<td>Run time: " . $mrunt . "</td>";
