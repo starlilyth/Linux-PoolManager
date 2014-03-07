@@ -35,13 +35,10 @@ sub bcastStatus
  }
  my $s; 
  my @summary = &getCGMinerSummary;
- for ($s = 0;$s < @summary;$s++)
- {
-  $ts .= "|$s sum:" . encode_json $summary[$s];
- }
+  $ts .= "|sum:" . encode_json $summary[0];
 
- my $version = &getCGMinerVersion;
- $ts .= "| ver: $version";
+ my @version = &getCGMinerVersion;
+  $ts .= "|ver:$version[0]|";
 
  my $port = 54545;
 
@@ -89,14 +86,10 @@ sub directStatus
  }
 
  my @summary = &getCGMinerSummary;
- my $s; 
- for ($s = 0;$s < @summary;$s++)
- {
-  $ts .= "|$s sum:" . encode_json $summary[$s];
- }
+  $ts .= "|sum:" . encode_json $summary[0];
 
- my $version = &getCGMinerVersion;
- $ts .= "| ver: $version";
+ my @version = &getCGMinerVersion;
+ $ts .= "|ver:" . $version[0];
 
  my $port = 54545;
  

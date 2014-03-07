@@ -199,24 +199,24 @@ sub genhttp
   
 			$locnodes++;
 			
-			while ( $res =~ m/(\d+?)\:(\{.*?\})/g)
+			while ( $res =~ m/(\d+?)\:(\{.+?\})/g)
 			{
 				$locgpus++;
 				push(@gpus, decode_json $2);
 			}
 			
-			while ( $res =~ m/(\d+?) pool\:(\{.*?\})/g)
+			while ( $res =~ m/(\d+?)\spool\:(\{.+?\})/g)
 			{
 				$locpools++;
 				push(@pools, decode_json $2);
 			}
 
-			while ( $res =~ m/(\d+?) sum\:(\{.*?\})/g)
+			while ( $res =~ m/sum\:(\{.+?\})/g)
 			{
-				push(@summary, decode_json $2);
+				push(@summary, decode_json $1);
 			}
 
-			while ( $res =~ m/ver\:\s(.+)/g)
+			while ( $res =~ m/ver\:(.+?)\|/g)
 			{
 				$version = $1
 			}
@@ -273,9 +273,11 @@ sub genhttp
 			}
 			$sput .= '</td><td><A href=ssh://user@' . $iptxt . '>' . $iptxt . '</a></td>';
 
-			if ($version  =~ m/Miner=(\d+\.\d+\.\d+),/) { 
-				$mvers = $1;
-				$sput .= "<td>" . $mvers . "</td>";
+			if ($version =~ m/(\w+?)=(\d+\.\d+\.\d+),API=(\d+\.\d+)/) {
+				$mname = $1;
+			  	$mvers = $2; 
+			  	$avers = $3; 
+				$sput .= "<td>$mname $mvers</td>";
 			} else {
 				$sput .= "<td>unknown</td>";
 			}
