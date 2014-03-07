@@ -206,9 +206,6 @@ my @colorslist = glob("/var/www/IFMI/themes/*.colors");
           print "<option value=$file>$file</option>";
  		}
     }
-print "<tr><td>Clear All Graphs</td>";
-print "<td><i>just wait for it..</i></td>";
-print "<td><input type='hidden' name='cgraphs' value='cgraphs'><button type='submit'>Clear</button></td></tr>";    
 print "</select></td></tr>";
 my $hashavg = $mconf->{display}->{usehashavg};
 print "<tr><td>Hashrate Display</td>";
@@ -218,9 +215,12 @@ if ($hashavg==1) {
   print "<input type='radio' name='hashavg' value=1 checked>Overall</td></tr>";
 } else { 
   print "<td><input type='radio' name='hashavg' value=0 checked>5 sec";
-  print "<input type='radio' name='hashavg' value=1>Overall</td></tr>";
+  print "<input type='radio' name='hashavg' value=1>Overall</td></tr></form>";
 }
-print "</table></form>";
+  print "<form><tr><td>Clear All Graphs</td>";
+  print "<td><i>just wait for it..</i></td>";
+  print "<td><input type='hidden' name='cgraphs' value='cgraphs'><button type='submit'>Clear</button></td></tr>";
+  print "</table></form>";
 
 print "</td></tr>";
 
