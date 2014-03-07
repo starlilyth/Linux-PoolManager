@@ -18,7 +18,7 @@ my $conf = &getConfig;
 
 my $config = { debug=>0, 
 genhttp_last => 0, genhttp_interval => 30, genhttp_minwait => 5, httpdir => '/var/www/', 
-httpindex => 'farmview.html', httpimgpath => '/IFMI', httpcss =>'/IFMI/themes/' . $conf{settings}{farmview_css}};
+httpindex => 'farmview.html', httpimgpath => '/IFMI', httpcss =>'/IFMI/themes/' . $conf{display}{farmview_css}};
 
 
 use Proc::PID::File;
@@ -346,7 +346,7 @@ sub genhttp
 					    } else {
 					        $prr = "0.0";
 					    }
-					    if ($prr > ${$conf}{settings}{monitor_reject_hi}) {
+					    if ($prr > ${$conf}{monitoring}{monitor_reject_hi}) {
 					    	$problems++;
 					    	push(@nodemsg, "Active pool reject ratio high");
 					        $prat = "<td class='error'>" . $prr . "%</td>";
@@ -406,7 +406,7 @@ sub genhttp
 				for (my $i = 0; $i < @gpus;$i++)
 				{
 					$gproblem{$i} = 0; 	
- 					if ($gpus[$i]{'current_temp_0_c'} > $conf{settings}{monitor_temp_hi})
+ 					if ($gpus[$i]{'current_temp_0_c'} > $conf{monitoring}{monitor_temp_hi})
 					{
 						$gpuid = $i; 
 						$gproblem{$gpuid}++;
@@ -415,7 +415,7 @@ sub genhttp
 						
 						$gput .= "<td class='error'>";
 					}
-					elsif ($gpus[$i]{'current_temp_0_c'} < $conf{settings}{monitor_temp_lo})
+					elsif ($gpus[$i]{'current_temp_0_c'} < $conf{monitoring}{monitor_temp_lo})
 					{
 						$gpuid = $i; 
 						$gproblem{$gpuid}++;
@@ -435,7 +435,7 @@ sub genhttp
 
 				for (my $i = 0; $i < @gpus;$i++)
 				{
-					if (($gpus[$i]{'fan_rpm_c'} < $conf{settings}{monitor_fan_lo}) 
+					if (($gpus[$i]{'fan_rpm_c'} < $conf{monitoring}{monitor_fan_lo}) 
 						&& (! $gpus[$i]{'fan_rpm_c'} eq '0'))
 					{
 						$gpuid = $i; 
@@ -455,7 +455,7 @@ sub genhttp
 
 				for (my $i = 0; $i < @gpus;$i++)
 				{
-					if ($gpus[$i]{'hashrate'} < $conf{settings}{monitor_hash_lo})
+					if ($gpus[$i]{'hashrate'} < $conf{monitoring}{monitor_hash_lo})
 					{
 						$gpuid = $i; 
 						$gproblem{$gpuid}++;
@@ -484,7 +484,7 @@ sub genhttp
 						my $rr = $gpus[$i]{'shares_invalid'}/($gpus[$i]{'shares_accepted'} 
 							+ $gpus[$i]{'shares_invalid'})*100 ;
 						
-						if ($rr > $conf{settings}{monitor_reject_hi})
+						if ($rr > $conf{monitoring}{monitor_reject_hi})
 						{
 						$gpuid = $i; 
 						$gproblem{$gpuid}++;

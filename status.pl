@@ -135,12 +135,14 @@ if ($showminer > -1)
 print header;
 if ($url eq "?")
 {
-	print start_html( -title=>'PoolManager - ' . $miner_name . ' status', -style=>{-src=>'/IFMI/themes/' . $conf{settings}{status_css}},  -head=>$q->meta({-http_equiv=>'REFRESH',-content=>'30'})  );
+	print start_html( -title=>'PoolManager - ' . $miner_name . ' status', -style=>{-src=>'/IFMI/themes/' 
+		. $conf{display}{status_css}},  -head=>$q->meta({-http_equiv=>'REFRESH',-content=>'30'})  );
 }
 else
 {
 	$url .= "tok=1";
-	print start_html( -title=>'PoolManager - ' . $miner_name . ' status', -style=>{-src=>'/IFMI/themes/' . $conf{settings}{status_css}},  -head=>$q->meta({-http_equiv=>'REFRESH',-content=>'30; url=' . $url })  );
+	print start_html( -title=>'PoolManager - ' . $miner_name . ' status', -style=>{-src=>'/IFMI/themes/' 
+		. $conf{display}{status_css}},  -head=>$q->meta({-http_equiv=>'REFRESH',-content=>'30; url=' . $url })  );
 
 }
 
@@ -215,7 +217,7 @@ for (my $i=0;$i<@gpus;$i++)
 		
  	}	
 
-	if (defined($conf{settings}{monitor_temp_hi}) && ($gpus[$i]{'current_temp_0_c'} > $conf{settings}{monitor_temp_hi}))
+	if (defined($conf{monitoring}{monitor_temp_hi}) && ($gpus[$i]{'current_temp_0_c'} > $conf{monitoring}{monitor_temp_hi}))
 	{
 			$problems++;
 			push(@nodemsg, "GPU $i is over maximum temp");
@@ -228,7 +230,7 @@ for (my $i=0;$i<@gpus;$i++)
 			
 			$gput .= "<td class='error'>";
 	}
-	elsif (defined($conf{settings}{monitor_temp_lo}) && ($gpus[$i]{'current_temp_0_c'} < $conf{settings}{monitor_temp_lo}))
+	elsif (defined($conf{monitoring}{monitor_temp_lo}) && ($gpus[$i]{'current_temp_0_c'} < $conf{monitoring}{monitor_temp_lo}))
 	{
 			$problems++;
 			push(@nodemsg, "GPU $i is below minimum temp");
@@ -252,7 +254,7 @@ for (my $i=0;$i<@gpus;$i++)
 	$gput .= sprintf("%.1f", $gpus[$i]{'current_temp_0_c'}) . ' C</td>';
 	
 	$frpm = $gpus[$i]{'fan_rpm_c'}; $frpm = "0" if ($frpm eq "");
-	if (defined($conf{settings}{monitor_fan_lo}) && $frpm < ($conf{settings}{monitor_fan_lo}) && ($frpm > 0))
+	if (defined($conf{monitoring}{monitor_fan_lo}) && $frpm < ($conf{monitoring}{monitor_fan_lo}) && ($frpm > 0))
 	{
 		$problems++;
 		push(@nodemsg, "GPU $i is below minimum fan rpm");
@@ -286,8 +288,8 @@ for (my $i=0;$i<@gpus;$i++)
 		
 	my $ghashrate = $gpus[$i]{'hashrate'}; 
 	$ghashrate = $gpus[$i]{'hashavg'} if ($ghashrate eq "");
-	$ghashrate = $gpus[$i]{'hashavg'} if (defined($conf{settings}{usehashavg})); 
-	if (defined($conf{settings}{monitor_hash_lo}) && ($ghashrate < $conf{settings}{monitor_hash_lo}))
+	$ghashrate = $gpus[$i]{'hashavg'} if (defined($conf{display}{usehashavg})); 
+	if (defined($conf{monitoring}{monitor_hash_lo}) && ($ghashrate < $conf{monitoring}{monitor_hash_lo}))
 	{
 		$problems++;
 		push(@nodemsg, "GPU $i is below minimum hash rate");
@@ -324,7 +326,7 @@ for (my $i=0;$i<@gpus;$i++)
 	if ($gsha > 0)
 	{
 		my $rr = $gpus[$i]{'shares_invalid'}/($gpus[$i]{'shares_accepted'} + $gpus[$i]{'shares_invalid'})*100 ;		
-		if (defined(${$conf}{settings}{monitor_reject_hi}) && ($rr > ${$conf}{settings}{monitor_reject_hi}))
+		if (defined(${$conf}{monitoring}{monitor_reject_hi}) && ($rr > ${$conf}{monitoring}{monitor_reject_hi}))
 		{
 			$problems++;
 			push(@nodemsg, "GPU $i is above maximum reject rate");
@@ -386,7 +388,7 @@ for (my $i=0;$i<@gpus;$i++)
 
 	$gput .= "</TR>";
 
-	if (defined($conf{settings}{monitor_load_lo}) && ($gpus[$i]{'current_load_c'} < $conf{settings}{monitor_load_lo}))
+	if (defined($conf{monitoring}{monitor_load_lo}) && ($gpus[$i]{'current_load_c'} < $conf{monitoring}{monitor_load_lo}))
 	{
 		$problems++;
 		push(@nodemsg, "GPU $i is below minimum load");
@@ -451,7 +453,7 @@ if (@summary) {
     $mrunt = sprintf("%d days, %02d:%02d.%02d",(gmtime $melapsed)[7,2,1,0]);
     $mratem = ${@summary[$i]}{'hashrate'};
     $mratem = ${@summary[$i]}{'hashavg'} if ($mratem eq "");
-    $mratem = ${@summary[$i]}{'hashavg'} if (defined($conf{settings}{usehashavg})); 
+    $mratem = ${@summary[$i]}{'hashavg'} if (defined($conf{display}{usehashavg})); 
     $minerate = sprintf("%.2f", $mratem);
     $mineacc = ${@summary[$i]}{'shares_accepted'};
     $minerej = ${@summary[$i]}{'shares_invalid'};
@@ -597,7 +599,7 @@ if ($ispriv eq "S") {
 	    } else { 
 		   $prr = "0.0";
 	    }
-		if (defined(${$conf}{settings}{monitor_reject_hi}) && ($prr > ${$conf}{settings}{monitor_reject_hi})) {
+		if (defined(${$conf}{monitoring}{monitor_reject_hi}) && ($prr > ${$conf}{monitoring}{monitor_reject_hi})) {
 	      $problems++;
 	      push(@nodemsg, "Pool $i reject ratio too high"); 
 	  	  $prat = "<td class='error'>" . $prr . "%</td>";

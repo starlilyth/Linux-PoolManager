@@ -24,8 +24,8 @@ my $PICPATH = "/var/www/IFMI/graphs/";
 my $DBPATH = "/opt/ifmi/rrdtool/";
 
 my $colorfile = "/var/www/IFMI/themes/pmgraph.colors";
-$colorfile = "/var/www/IFMI/themes/" . ${$conf}{'settings'}{'graphcolors'} 
- if (defined (${$conf}{'settings'}{'graphcolors'})); 
+$colorfile = "/var/www/IFMI/themes/" . ${$conf}{display}{'graphcolors'} 
+ if (defined (${$conf}{display}{'graphcolors'})); 
 my $gconf = LoadFile($colorfile) if (-e $colorfile);
 my $hashcolor = "#0033FF";
 $hashcolor = $gconf->{hashcolor} if (defined ($gconf->{hashcolor}));

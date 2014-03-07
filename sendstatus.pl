@@ -20,7 +20,7 @@ sub bcastStatus
  my $mname = `hostname`;
  chomp $mname;
 
- my $ts = $mname . '|' . ${$conf}{settings}{miner_loc};
+ my $ts = $mname . '|' . ${$conf}{display}{miner_loc};
  my $k; 
  my @gpus = &getGPUData;
  for ($k = 0;$k < @gpus;$k++)
@@ -33,7 +33,6 @@ sub bcastStatus
  {
   $ts .= "|$p pool:" . encode_json $pools[$p];
  }
- my $s; 
  my @summary = &getCGMinerSummary;
   $ts .= "|sum:" . encode_json $summary[0];
 
@@ -42,9 +41,9 @@ sub bcastStatus
 
  my $port = 54545;
 
- if (defined(${$conf}{settings}{status_port}))
+ if (defined(${$conf}{farmview}{status_port}))
  {
-  $port = ${$conf}{settings}{status_port};
+  $port = ${$conf}{farmview}{status_port};
  }
 
  my $socket = IO::Socket::INET->new(Broadcast => 1, Blocking => 1, ReuseAddr => 1, Type => SOCK_DGRAM, 
@@ -70,7 +69,7 @@ sub directStatus
  my $mname = `hostname`;
  chomp $mname;
 
- my $ts = $mname . '|' . ${$conf}{settings}{miner_loc};
+ my $ts = $mname . '|' . ${$conf}{display}{miner_loc};
 
  my @gpus = &getGPUData('false');
  my $k; 
@@ -93,9 +92,9 @@ sub directStatus
 
  my $port = 54545;
  
- if (defined(${$conf}{settings}{status_port}))        
+ if (defined(${$conf}{farmview}{status_port}))        
  {
-  $port = ${$conf}{settings}{status_port};
+  $port = ${$conf}{farmview}{status_port};
  }
 
  my $socket = IO::Socket::INET->new(Blocking => 1, ReuseAddr => 1, Type => 'SOCK_DGRAM', 
