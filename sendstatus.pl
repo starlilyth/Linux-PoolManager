@@ -89,7 +89,7 @@ sub directStatus
   $ts .= "|sum:" . encode_json $summary[0];
 
  my @version = &getCGMinerVersion;
- $ts .= "|ver:" . $version[0];
+  $ts .= "|ver:$version[0]|";
 
  my $port = 54545;
  
