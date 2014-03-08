@@ -1,10 +1,51 @@
 #!/usr/bin/perl
+# IFMI PoolManager configuration file editor. 
+#    This file is part of IFMI PoolManager.
+#
+#    PoolManager is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.   
+
  use strict;
  use warnings;
  use YAML qw( DumpFile LoadFile );
  use CGI qw(:cgi-lib :standard);
 
 my $conffile = "/opt/ifmi/poolmanager.conf";
+if (! -e $conffile) { 
+  my $nconf = {
+  	monitoring => {
+  		monitor_temp_hi => '80',
+  		monitor_temp_lo => '45',
+  		monitor_load_lo => '0',
+  		monitor_hash_lo => '200',
+  		monitor_fan_lo => '1000',
+  		monitor_reject_hi => '3',
+  	},
+  	settings => {
+  		cgminer_path => '/opt/miners/cgminer/cgminer',
+  		cgminer_opts => '--api-listen --config /etc/bamt/cgminer.conf',
+  		savepath => '/opt/ifmi/cgminer.conf',
+  		IGNOREBAMT => '1',
+  	},
+  	display => {
+  		miner_loc => 'Undisclosed Location',
+  		status_css => 'default.css',
+  		farmview_css => 'default.css',
+  		graphcolors => 'pmgraph.colors',
+  		usehashavg => '0',
+  	},
+  	farmview => {
+  		do_bcast_status => '1',
+  		do_farmview => '1',
+  		status_port => '54545',
+  		listen_port => '54545',
+  	},
+  };
+  DumpFile($conffile, $nconf); 
+}
+
 my $mconf = LoadFile( $conffile );
 
 # Take care of business
