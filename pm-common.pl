@@ -262,10 +262,14 @@ sub zeroStats
 
 sub getConfig
 {
+
+ my $conffile = '/opt/ifmi/poolmanager.conf';
+ if (! -e $conffile) {
+  exec('/usr/lib/cgi-bin/config.pl');
+ }
+
  my $c;
-
- $c = LoadFile('/opt/ifmi/poolmanager.conf');
-
+ $c = LoadFile($conffile);
  return($c);
 }
 
