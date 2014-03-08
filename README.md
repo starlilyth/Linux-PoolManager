@@ -18,7 +18,11 @@ See the GitHub wiki page for screenshots.
 Reqirements: Linux running cgminer or clone. Built and tested on litecoin-bamt 1.2. 
 Packages req: Perl5 + libjson-perl, libyaml-perl, rrdtool. 
 
-NOTE! Installation does not check dependencies yet. This should work out of the box on BAMT, but will need Perl modules libjson-perl and libyaml-perl on clean Linux installs. 
+NOTE! Installation does not check dependencies yet. This should work out of the box on BAMT, but will need the following Perl modules on clean Linux installs : 
+
+* libjson-perl
+* libyaml-perl 
+* librrds-perl
 
 ------
 
