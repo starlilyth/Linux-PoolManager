@@ -31,6 +31,8 @@ case "$input" in
         cp farmview /opt/ifmi/
         cp sendstatus.pl /opt/ifmi/
         cp pm-common.pl /opt/ifmi/
+        cp poolmanager.conf /opt/ifmi/
+        chown www-data /opt/ifmi/poolmanager.conf
         chown www-data /opt/ifmi/
         cp run-poolmanager.pl /opt/ifmi/
         cp pmgraph.pl /opt/ifmi/rrdtool/
@@ -85,6 +87,8 @@ case "$input" in
       cp confedit.pl /usr/lib/cgi-bin/
       cp mcontrol /opt/ifmi/
       cp pm-common.pl /opt/ifmi/
+      cp poolmanager.conf /opt/ifmi/
+      chown www-data /opt/ifmi/poolmanager.conf
       chown www-data /opt/ifmi/
       cp sendstatus.pl /opt/ifmi/
       cp farmview /opt/ifmi/
