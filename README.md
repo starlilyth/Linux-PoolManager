@@ -5,9 +5,11 @@ Originally extended from the BAMT miner web interface of gpumon/mgpumon.
 * Stop/start the miner, with password protection and version/run time display.
 * Stats header with Total Accepted/Rejected/Ratio, Work Util, HW errors, Uptime, Load, Free Mem.
 * GPU and Pool details pages, including native graphing with persistence. 
-* Miner details page with reboot control and Configuration Editor.
+* Miner details page with reboot control, SSH to Host link and Configuration Editor.
 * Install script enables SSL redirection (and optional default page password) for security.
-* Farm Overview provides status view for all nodes running PoolManager. 
+* Farm Overview, including miner versions, active pools, and last page refresh time.
+* Easy CSS theming, with several themes included. 
+* GUI Settings Page - no need to edit a settings file
 
 See the GitHub wiki page for screenshots.
 
