@@ -35,9 +35,10 @@ if (! -e $graph || $fileage > 300) {
   exec('/opt/ifmi/rrdtool/pmgraph.pl'); 
 #  &blog("graphs updated"); 
 }
-my $fcheck = 0; 
-if ( defined($conf{farmview}{do_farmview}) && ($conf{farmview}{do_farmview} == 1) ) {
-  $fcheck = system('/bin/ps -eo command | /bin/grep [f]arm | /usr/bin/wc -l');
+
+my $fcheck = 0;
+if ($conf{farmview}{do_farmview} == 1) {
+  $fcheck = system('/bin/ps -eo command | /bin/egrep /opt/ifmi/farmview$ | /usr/bin/wc -l');
   if ($fcheck == 0) {
     my $pid = fork();
     if (not defined $pid) {
@@ -47,6 +48,4 @@ if ( defined($conf{farmview}{do_farmview}) && ($conf{farmview}{do_farmview} == 1
     }
   }
 }
-
-
 
