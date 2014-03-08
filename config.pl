@@ -25,7 +25,7 @@ if (! -e $conffile) {
   	},
   	settings => {
   		cgminer_path => '/opt/miners/cgminer/cgminer',
-  		cgminer_opts => '--api-listen --config /etc/bamt/cgminer.conf',
+  		cgminer_opts => '--api-listen --config /opt/ifmi/cgminer.conf',
   		savepath => '/opt/ifmi/cgminer.conf',
   		IGNOREBAMT => '1',
   	},
