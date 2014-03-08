@@ -23,7 +23,7 @@ if (!defined($conf{farmview}{do_bcast_status}) || ($conf{farmview}{do_bcast_stat
  &bcastStatus;
 }
 # status direct
-if (defined($conf{farmview}{do_direct_status})) {
+if ($conf{farmview}{do_direct_status} =~ m/\d+\.\d+\.\d+\.\d+/) {
 # &blog("sending status to " . $conf{farmview}{do_direct_status});
  &directStatus($conf{farmview}{do_direct_status});
 }

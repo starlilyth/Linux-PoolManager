@@ -41,6 +41,7 @@ if (! -e $conffile) {
   		do_farmview => '1',
   		status_port => '54545',
   		listen_port => '54545',
+      do_direct_status => '',
   	},
   };
   DumpFile($conffile, $nconf); 
@@ -92,6 +93,8 @@ if (&ReadParse(%in)) {
   $mconf->{farmview}->{do_farmview} = $nfarmview if($nfarmview ne "");
   my $nlp = $in{'nlp'};
   $mconf->{farmview}->{listen_port} = $nlp if($nlp ne "");
+  my $dds = $in{'dds'};
+  $mconf->{farmview}->{do_direct_status} = $dds if($dds ne "");
   DumpFile($conffile, $mconf); 
 
   my $cgraphs = $in{'cgraphs'};
@@ -105,7 +108,7 @@ if (&ReadParse(%in)) {
 print header();
 my $miner_name = `hostname`;
 chomp $miner_name;
-print start_html( -title=>'PoolManager - ' . $miner_name . ' config',
+print start_html( -title=>'PM - ' . $miner_name . ' - Config',
 				  -style=>{-src=>'/IFMI/themes/' . $mconf->{display}->{status_css}} );
 
 print "<div id='content'><table>";
@@ -183,8 +186,12 @@ my $statport = $mconf->{farmview}->{status_port};
 print "<tr><td>Broadcast Port</td>";
 print "<td><i>Port to send status on</i></td>";
 print "<td>$statport <input type='text' size='5' placeholder='54545' name='nbp'></td></tr>";
+my $directip = $mconf->{farmview}->{do_direct_status};
+print "<tr><td>FarmView IP</td>";
+print "<td><i>only needed if FV is not local</i></td>";
+print "<td>$directip <input type='text' size='15' placeholder='192.168.5.100' name='dds'></td></tr>";
 my $dfarm = $mconf->{farmview}->{do_farmview};
-print "<tr><td>Farmview</td>";
+print "<tr><td>FarmView</td>";
 print "<td><i>Run FarmView on this node?</i></td>";
 if ($dfarm==1) {
   print "<td><input type='radio' value='1' name='farmview' checked>Yes";
@@ -196,7 +203,7 @@ if ($dfarm==1) {
 print "</tr>";
 my $lport = $mconf->{farmview}->{listen_port};
 print "<tr><td>Listen Port</td>";
-print "<td><i>Port to listen for statuses on</i></td>";
+print "<td><i>Port FV should listen on</i></td>";
 print "<td>$lport <input type='text' size='5' placeholder='54545' name='nlp'></td></tr>";
 print "</table></form>";
 
