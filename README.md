@@ -34,7 +34,6 @@ EASY PEASY SURE FIRE INSTALL INSTRUCTIONS: (but see the above note!)
 1. do: wget https://github.com/starlilyth/Linux-PoolManager/archive/master.zip
 1. do: unzip master.zip
 1. cd to 'Linux-PoolManager-master' directory and run: ./install-pm.sh
-1. cd to /opt/ifmi/ and edit poolmanager.conf as needed. In particular, you may want to change the config file save path, as PoolMananger will save the config whenever you add or remove pools. 
 
 Please make sure the following entries are in your cgminer.conf:
 
