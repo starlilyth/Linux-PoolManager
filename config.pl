@@ -79,7 +79,10 @@ if (&ReadParse(%in)) {
   my $nscss = $in{'scss'};
   $mconf->{display}->{status_css} = $nscss if($nscss ne "");
   my $nfcss = $in{'fcss'};
-  $mconf->{display}->{farmview_css} = $nfcss if($nfcss ne "");
+  if($nfcss ne "") {
+    $mconf->{display}->{farmview_css} = $nfcss;
+    exec `touch /tmp/rfv`;
+  }
   my $ngcf = $in{'gcf'};
   $mconf->{display}->{graphcolors} = $ngcf if($ngcf ne "");
   my $nha = $in{'hashavg'};
@@ -92,7 +95,10 @@ if (&ReadParse(%in)) {
   my $nfarmview = $in{'farmview'};
   $mconf->{farmview}->{do_farmview} = $nfarmview if($nfarmview ne "");
   my $nlp = $in{'nlp'};
-  $mconf->{farmview}->{listen_port} = $nlp if($nlp ne "");
+  if($nlp ne "") {
+    $mconf->{farmview}->{listen_port} = $nlp;
+    exec `touch /tmp/rfv`;
+  }
   my $dds = $in{'dds'};
   $mconf->{farmview}->{do_direct_status} = $dds if($dds ne "");
   DumpFile($conffile, $mconf); 
@@ -203,7 +209,7 @@ if ($dfarm==1) {
 print "</tr>";
 my $lport = $mconf->{farmview}->{listen_port};
 print "<tr><td>Listen Port</td>";
-print "<td><i>Port FV should listen on</i></td>";
+print "<td><i>Port FV should listen on<br><small>FV will restart if changed</small></i></td>";
 print "<td>$lport <input type='text' size='5' placeholder='54545' name='nlp'></td></tr>";
 print "</table></form>";
 
@@ -230,7 +236,7 @@ my @csslist = glob("/var/www/IFMI/themes/*.css");
     }
 print "</select></td></tr>";
 my $farm_css = $mconf->{display}->{farmview_css}; 
-print "<tr><td>Farmview CSS</td><td>$farm_css</td>";
+print "<tr><td>Farmview CSS</td><td>$farm_css<br><i><small>FV will restart if changed</small></i></td>";
 print "<td><select name=fcss>";
 my @fcsslist = glob("/var/www/IFMI/themes/*.css");
     foreach my $file (@fcsslist) {
@@ -266,7 +272,7 @@ if ($hashavg==1) {
   print "<input type='radio' name='hashavg' value=1>Overall</td></tr></form>";
 }
   print "<form><tr><td>Clear All Graphs</td>";
-  print "<td><i>just wait for it..</i></td>";
+  print "<td><i>wait for it..</i></td>";
   print "<td><input type='hidden' name='cgraphs' value='cgraphs'><button type='submit'>Clear</button></td></tr>";
   print "</table></form>";
 

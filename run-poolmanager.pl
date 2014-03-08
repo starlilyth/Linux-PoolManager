@@ -36,7 +36,20 @@ if (! -e $graph || $fileage > 300) {
 #  &blog("graphs updated"); 
 }
 
+# 
 if ($conf{farmview}{do_farmview} == 1) {
+  &doFarmview; 
+}
+if ($conf{farmview}{do_farmview} == 0) {
+  &undoFarmview; 
+}
+if (-e "/tmp/rfv") {
+  &undoFarmview;
+  &doFarmview;
+  exec('/bin/rm /tmp/rfv');
+}
+
+sub doFarmview {
   my $fcheck = `/bin/ps -eo command | /bin/grep -Ec /opt/ifmi/farmview\$`;
   if ($fcheck == 0) {
     my $pid = fork();
@@ -47,8 +60,16 @@ if ($conf{farmview}{do_farmview} == 1) {
     }
   }
 }
-if ($conf{farmview}{do_farmview} == 0) {
+
+sub undoFarmview { 
   my $fvpid = `/bin/ps -eo pid,command | /bin/grep -E /opt/ifmi/farmview\$ | /bin/grep -Eo '^[0-9]+' `;
- `/bin/kill $fvpid` if ($fvpid ne "");
+  `/bin/kill $fvpid` if ($fvpid ne "");
 }
+
+
+
+
+
+
+
 
