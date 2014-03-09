@@ -27,6 +27,7 @@ if (! -e $conffile) {
   		cgminer_path => '/opt/miners/cgminer/cgminer',
   		cgminer_opts => '--api-listen --config /opt/ifmi/cgminer.conf',
   		savepath => '/opt/ifmi/cgminer.conf',
+      cgminer_port => '4028',
   		IGNOREBAMT => '1',
   	},
   	display => {
@@ -71,6 +72,8 @@ if (&ReadParse(%in)) {
   $mconf->{settings}->{cgminer_opts} = $nmo if($nmo ne "");
   my $nsp = $in{'nsp'};
   $mconf->{settings}->{savepath} = $nsp if($nsp ne "");
+  my $nap = $in{'nap'};
+  $mconf->{settings}->{cgminer_port} = $nap if($nap ne "");
   my $ibamt = $in{'ibamt'};
   $mconf->{settings}->{IGNOREBAMT} = $ibamt if($ibamt ne "");
 
@@ -79,7 +82,10 @@ if (&ReadParse(%in)) {
   my $nscss = $in{'scss'};
   $mconf->{display}->{status_css} = $nscss if($nscss ne "");
   my $nfcss = $in{'fcss'};
-  $mconf->{display}->{farmview_css} = $nfcss if($nfcss ne "");
+  if($nfcss ne "") {
+    $mconf->{display}->{farmview_css} = $nfcss;
+    `touch /tmp/rfv`;
+  }
   my $ngcf = $in{'gcf'};
   $mconf->{display}->{graphcolors} = $ngcf if($ngcf ne "");
   my $nha = $in{'hashavg'};
@@ -92,14 +98,17 @@ if (&ReadParse(%in)) {
   my $nfarmview = $in{'farmview'};
   $mconf->{farmview}->{do_farmview} = $nfarmview if($nfarmview ne "");
   my $nlp = $in{'nlp'};
-  $mconf->{farmview}->{listen_port} = $nlp if($nlp ne "");
+  if($nlp ne "") {
+    $mconf->{farmview}->{listen_port} = $nlp;
+    `touch /tmp/rfv`;
+  }
   my $dds = $in{'dds'};
   $mconf->{farmview}->{do_direct_status} = $dds if($dds ne "");
   DumpFile($conffile, $mconf); 
 
   my $cgraphs = $in{'cgraphs'};
   if ($cgraphs ne "") {
-    exec `/usr/bin/touch /tmp/cleargraphs.flag`;
+    `/usr/bin/touch /tmp/cleargraphs.flag`;
     $cgraphs = "";
   }
 }
@@ -119,7 +128,7 @@ print "</td></tr>";
 print "<tr><td colspan=2>";
 print "<form name=settings method=post>";
 print "<table class=settings><tr><td colspan=2 class=header>Miner Settings</td>";
-print "<td><input type='submit' value='Save'></td><tr>";
+print "<td class=header><input type='submit' value='Save'></td><tr>";
 my $miner_path = $mconf->{settings}->{cgminer_path};
 print "<tr><td>Miner Path</td><td>$miner_path</td>";
 print "<td><input type='text' size='45' placeholder='/path/to/miner' name='nmp'></td></tr>";
@@ -127,8 +136,12 @@ my $miner_opts = $mconf->{settings}->{cgminer_opts};
 print "<tr><td>Miner Options</td><td>$miner_opts</td>";
 print "<td><input type='text' size='45' placeholder='--api-listen --config /etc/bamt/cgminer.conf' name='nmo'></td></tr>";
 my $savepath = $mconf->{settings}->{savepath}; 
-print "<tr><td>Configuration Path</td><td>$savepath</td>";
+print "<tr><td>Configuration Path</td><td>$savepath - <i> PoolManager will save here</i></td>";
 print "<td><input type='text' size='45' placeholder='/opt/ifmi/cgminer.conf' name='nsp'></td></tr>";
+my $minerport = $mconf->{settings}->{cgminer_port};
+print "<tr><td>API port</td><td><i>Defaults to 4028 if unset</i></td>";
+print "<td>$minerport <input type='text' size='4' placeholder='4028' name='nap'></td></tr>";
+
 my $ibamt = $mconf->{settings}->{IGNOREBAMT};
 print "<tr><td>Ignore BAMT</td>";
 print "<td><i>Start/stop the miner directly, instead of 'mine stop/start'?</i></td>";
@@ -145,7 +158,7 @@ print "</td></tr><tr><td rowspan=2>";
 
 print "<form name=monitoring method=post>";
 print "<table class=monitor><tr><td colspan=2 class=header>Monitoring Settings</td>";
-print "<td><input type='submit' value='Save'></td><tr>";
+print "<td class=header><input type='submit' value='Save'></td><tr>";
 my $temphi = $mconf->{monitoring}->{monitor_temp_hi};
 print "<tr><td>High Temp</td><td>$temphi C</td>";
 print "<td><input type='text' size='2' placeholder='80' name='temphi'></td></tr>";
@@ -170,7 +183,7 @@ print "</td><td>";
 
 print "<form name=farmview method=post>";
 print "<table class=farmview><tr><td colspan=2 class=header>Farmview Settings</td>";
-print "<td><input type='submit' value='Save'></td><tr>";
+print "<td class=header><input type='submit' value='Save'></td><tr>";
 my $bcast = $mconf->{farmview}->{do_bcast_status};
 print "<tr><td>Broadcast Status</td>";
 print "<td><i>Send Node Status?</i></td>";
@@ -188,7 +201,7 @@ print "<td><i>Port to send status on</i></td>";
 print "<td>$statport <input type='text' size='5' placeholder='54545' name='nbp'></td></tr>";
 my $directip = $mconf->{farmview}->{do_direct_status};
 print "<tr><td>FarmView IP</td>";
-print "<td><i>only needed if FV is not local</i></td>";
+print "<td><i>Only needed if FV is not local</i></td>";
 print "<td>$directip <input type='text' size='15' placeholder='192.168.5.100' name='dds'></td></tr>";
 my $dfarm = $mconf->{farmview}->{do_farmview};
 print "<tr><td>FarmView</td>";
@@ -203,7 +216,7 @@ if ($dfarm==1) {
 print "</tr>";
 my $lport = $mconf->{farmview}->{listen_port};
 print "<tr><td>Listen Port</td>";
-print "<td><i>Port FV should listen on</i></td>";
+print "<td><i>Port FV should listen on<br><small>FV will restart if changed</small></i></td>";
 print "<td>$lport <input type='text' size='5' placeholder='54545' name='nlp'></td></tr>";
 print "</table></form>";
 
@@ -211,7 +224,7 @@ print "</td></tr><tr><td>";
 
 print "<form name=display method=post>";
 print "<table class=display><tr><td colspan=2 class=header>Display Settings</td>";
-print "<td><input type='submit' value='Save'></td><tr>";
+print "<td class=header><input type='submit' value='Save'></td><tr>";
 my $miner_loc = $mconf->{display}->{miner_loc};
 print "<tr><td>Miner Location</td><td>$miner_loc</td>";
 print "<td><input type='text' placeholder='Location text' name='nml'></td></tr>";
@@ -230,7 +243,7 @@ my @csslist = glob("/var/www/IFMI/themes/*.css");
     }
 print "</select></td></tr>";
 my $farm_css = $mconf->{display}->{farmview_css}; 
-print "<tr><td>Farmview CSS</td><td>$farm_css</td>";
+print "<tr><td>Farmview CSS</td><td>$farm_css<br><i><small>FV will restart if changed</small></i></td>";
 print "<td><select name=fcss>";
 my @fcsslist = glob("/var/www/IFMI/themes/*.css");
     foreach my $file (@fcsslist) {
@@ -266,7 +279,7 @@ if ($hashavg==1) {
   print "<input type='radio' name='hashavg' value=1>Overall</td></tr></form>";
 }
   print "<form><tr><td>Clear All Graphs</td>";
-  print "<td><i>just wait for it..</i></td>";
+  print "<td><i>wait for it..</i></td>";
   print "<td><input type='hidden' name='cgraphs' value='cgraphs'><button type='submit'>Clear</button></td></tr>";
   print "</table></form>";
 
