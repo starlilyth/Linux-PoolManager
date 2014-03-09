@@ -27,6 +27,7 @@ if (! -e $conffile) {
   		cgminer_path => '/opt/miners/cgminer/cgminer',
   		cgminer_opts => '--api-listen --config /opt/ifmi/cgminer.conf',
   		savepath => '/opt/ifmi/cgminer.conf',
+      cgminer_port => '4028',
   		IGNOREBAMT => '1',
   	},
   	display => {
@@ -71,6 +72,8 @@ if (&ReadParse(%in)) {
   $mconf->{settings}->{cgminer_opts} = $nmo if($nmo ne "");
   my $nsp = $in{'nsp'};
   $mconf->{settings}->{savepath} = $nsp if($nsp ne "");
+  my $nap = $in{'nap'};
+  $mconf->{settings}->{cgminer_port} = $nap if($nap ne "");
   my $ibamt = $in{'ibamt'};
   $mconf->{settings}->{IGNOREBAMT} = $ibamt if($ibamt ne "");
 
@@ -125,7 +128,7 @@ print "</td></tr>";
 print "<tr><td colspan=2>";
 print "<form name=settings method=post>";
 print "<table class=settings><tr><td colspan=2 class=header>Miner Settings</td>";
-print "<td><input type='submit' value='Save'></td><tr>";
+print "<td class=header><input type='submit' value='Save'></td><tr>";
 my $miner_path = $mconf->{settings}->{cgminer_path};
 print "<tr><td>Miner Path</td><td>$miner_path</td>";
 print "<td><input type='text' size='45' placeholder='/path/to/miner' name='nmp'></td></tr>";
@@ -135,6 +138,10 @@ print "<td><input type='text' size='45' placeholder='--api-listen --config /etc/
 my $savepath = $mconf->{settings}->{savepath}; 
 print "<tr><td>Configuration Path</td><td>$savepath</td>";
 print "<td><input type='text' size='45' placeholder='/opt/ifmi/cgminer.conf' name='nsp'></td></tr>";
+my $minerport = $mconf->{settings}->{cgminer_port};
+print "<tr><td>API port</td><td>$minerport - <i>defaults to 4028 if unset</i></td>";
+print "<td><input type='text' size='4' placeholder='4028' name='nap'></td></tr>";
+
 my $ibamt = $mconf->{settings}->{IGNOREBAMT};
 print "<tr><td>Ignore BAMT</td>";
 print "<td><i>Start/stop the miner directly, instead of 'mine stop/start'?</i></td>";
@@ -151,7 +158,7 @@ print "</td></tr><tr><td rowspan=2>";
 
 print "<form name=monitoring method=post>";
 print "<table class=monitor><tr><td colspan=2 class=header>Monitoring Settings</td>";
-print "<td><input type='submit' value='Save'></td><tr>";
+print "<td class=header><input type='submit' value='Save'></td><tr>";
 my $temphi = $mconf->{monitoring}->{monitor_temp_hi};
 print "<tr><td>High Temp</td><td>$temphi C</td>";
 print "<td><input type='text' size='2' placeholder='80' name='temphi'></td></tr>";
@@ -176,7 +183,7 @@ print "</td><td>";
 
 print "<form name=farmview method=post>";
 print "<table class=farmview><tr><td colspan=2 class=header>Farmview Settings</td>";
-print "<td><input type='submit' value='Save'></td><tr>";
+print "<td class=header><input type='submit' value='Save'></td><tr>";
 my $bcast = $mconf->{farmview}->{do_bcast_status};
 print "<tr><td>Broadcast Status</td>";
 print "<td><i>Send Node Status?</i></td>";
@@ -217,7 +224,7 @@ print "</td></tr><tr><td>";
 
 print "<form name=display method=post>";
 print "<table class=display><tr><td colspan=2 class=header>Display Settings</td>";
-print "<td><input type='submit' value='Save'></td><tr>";
+print "<td class=header><input type='submit' value='Save'></td><tr>";
 my $miner_loc = $mconf->{display}->{miner_loc};
 print "<tr><td>Miner Location</td><td>$miner_loc</td>";
 print "<td><input type='text' placeholder='Location text' name='nml'></td></tr>";
