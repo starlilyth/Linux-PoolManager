@@ -534,8 +534,8 @@ if (@summary) {
 		  $mcontrol .= "<td><form name='mstart' action='status.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > ";
 		}
 		$mcontrol .= "<input type='password' placeholder='root password' name='ptext' required></td></form>";		
-		my $mcheck = `ps -eo command | grep [f]armview | wc -l`;
-		$mcontrol .=  "<td><A href=/farmview.html>Farm Overview</A></td>" if ($mcheck >0);
+		my $fcheck = `ps -eo command | grep -Ec /opt/ifmi/farmview\$`;
+		$mcontrol .=  "<td><A href=/farmview.html>Farm Overview</A></td>" if ($fcheck >0);
 	}
   }
 } 

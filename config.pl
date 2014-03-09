@@ -84,7 +84,7 @@ if (&ReadParse(%in)) {
   my $nfcss = $in{'fcss'};
   if($nfcss ne "") {
     $mconf->{display}->{farmview_css} = $nfcss;
-    exec `touch /tmp/rfv`;
+    `touch /tmp/rfv`;
   }
   my $ngcf = $in{'gcf'};
   $mconf->{display}->{graphcolors} = $ngcf if($ngcf ne "");
@@ -100,7 +100,7 @@ if (&ReadParse(%in)) {
   my $nlp = $in{'nlp'};
   if($nlp ne "") {
     $mconf->{farmview}->{listen_port} = $nlp;
-    exec `touch /tmp/rfv`;
+    `touch /tmp/rfv`;
   }
   my $dds = $in{'dds'};
   $mconf->{farmview}->{do_direct_status} = $dds if($dds ne "");

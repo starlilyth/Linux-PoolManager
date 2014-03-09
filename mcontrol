@@ -27,7 +27,7 @@ my $minerpath = "/opt/miners/cgminer/cgminer";
 $minerpath = $conf{settings}{cgminer_path} if (defined($conf{settings}{cgminer_path}));
 
 if ($ARGV[0] eq "start") { 
-	my $mcheck = `ps -eo command | egrep ^$minerpath | wc -l`;
+	my $mcheck = `ps -eo command | grep -Ec ^$minerpath`;
 	if ($mcheck > 0) {
 		die "another mining process is running."
 	}

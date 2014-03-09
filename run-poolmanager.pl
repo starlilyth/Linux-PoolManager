@@ -33,7 +33,6 @@ my $graph = "/var/www/IFMI/graphs/msummary.png";
 my $fileage = time - (stat ($graph))[9];
 if (! -e $graph || $fileage > 300) {
   exec('/opt/ifmi/rrdtool/pmgraph.pl'); 
-#  &blog("graphs updated"); 
 }
 
 # 
@@ -65,7 +64,7 @@ sub doFarmview {
 
 sub undoFarmview { 
   if (-e "/var/run/farmview.pid") {
-    my $fvpid = `cat /var/run/farmview.pid`;
+    my $fvpid = `/bin/cat /var/run/farmview.pid`;
     `/bin/kill $fvpid`;
     `/bin/rm /var/run/farmview.pid`;
   }
