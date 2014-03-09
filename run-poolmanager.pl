@@ -18,7 +18,7 @@ my $conf = &getConfig;
 my %conf = %{$conf};
 
 # status bcast
-if (!defined($conf{farmview}{do_bcast_status}) || ($conf{farmview}{do_bcast_status} > 0) ) { 
+if ($conf{farmview}{do_bcast_status} == 1) { 
 # &blog("broadcasting status");
  &bcastStatus;
 }
@@ -33,12 +33,25 @@ my $graph = "/var/www/IFMI/graphs/msummary.png";
 my $fileage = time - (stat ($graph))[9];
 if (! -e $graph || $fileage > 300) {
   exec('/opt/ifmi/rrdtool/pmgraph.pl'); 
-#  &blog("graphs updated"); 
 }
 
-my $fcheck = 0;
+# 
 if ($conf{farmview}{do_farmview} == 1) {
-  $fcheck = system('/bin/ps -eo command | /bin/egrep /opt/ifmi/farmview$ | /usr/bin/wc -l');
+  &doFarmview; 
+}
+if ($conf{farmview}{do_farmview} == 0) {
+  &undoFarmview; 
+}
+if (-e "/tmp/rfv") {
+  if ($conf{farmview}{do_farmview} == 1) {
+    &undoFarmview;
+    &doFarmview;
+  }
+  exec('/bin/rm /tmp/rfv');
+}
+
+sub doFarmview {
+  my $fcheck = `/bin/ps -eo command | /bin/grep -Ec /opt/ifmi/farmview\$`;
   if ($fcheck == 0) {
     my $pid = fork();
     if (not defined $pid) {
@@ -48,4 +61,18 @@ if ($conf{farmview}{do_farmview} == 1) {
     }
   }
 }
+
+sub undoFarmview { 
+  if (-e "/var/run/farmview.pid") {
+    my $fvpid = `/bin/cat /var/run/farmview.pid`;
+    `/bin/kill $fvpid`;
+    `/bin/rm /var/run/farmview.pid`;
+  }
+}
+
+
+
+
+
+
 

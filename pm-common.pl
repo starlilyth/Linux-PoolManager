@@ -28,8 +28,7 @@ if (defined($conf{settings}{savepath})) {
    rename $savefile, $bkpfile; 
   }
    &blog("saving config to $savefile...");
-   if (${$conf}{'settings'}{'cgminer'})
-   {
+   
          my $cgport = 4028;
          if (defined(${$conf}{'settings'}{'cgminer_port'}))
          {
@@ -57,8 +56,7 @@ if (defined($conf{settings}{savepath})) {
         else
         {
                 &blog("failed to get socket for cgminer api");
-        }
-    }
+        }   
 }
 
 sub switchPool 
@@ -67,8 +65,6 @@ sub switchPool
  %conf = %{$conf};
  my $preq = $_[0];
    &blog("switching to pool $preq ...");
-   if (${$conf}{'settings'}{'cgminer'})
-   {
          my $cgport = 4028;
          if (defined(${$conf}{'settings'}{'cgminer_port'}))
          {
@@ -97,7 +93,6 @@ sub switchPool
         {
                 &blog("failed to get socket for cgminer api");
         }
-    }
 }
 
 sub quotaPool 
@@ -107,8 +102,7 @@ sub quotaPool
  my $preq = $_[0];
  my $pqta = $_[1];
    &blog("setting quota on pool $preq to $pqta ...");
-   if (${$conf}{'settings'}{'cgminer'})
-   {
+
          my $cgport = 4028;
          if (defined(${$conf}{'settings'}{'cgminer_port'}))
          {
@@ -137,7 +131,6 @@ sub quotaPool
         {
                 &blog("failed to get socket for cgminer api");
         }
-    }
 }
 
 sub addPool 
@@ -149,8 +142,7 @@ sub addPool
  my $ppw = $_[2];
  $ppw = " " if ($ppw eq "");   
    &blog("adding new pool ...");
-   if (${$conf}{'settings'}{'cgminer'})
-   {
+
          my $cgport = 4028;
          if (defined(${$conf}{'settings'}{'cgminer_port'}))
          {
@@ -179,7 +171,6 @@ sub addPool
         {
                 &blog("failed to get socket for cgminer api");
         }
-    }
 }
 
 sub delPool 
@@ -188,8 +179,6 @@ sub delPool
  %conf = %{$conf};
  my $delreq = $_[0];
    &blog("deleting pool $delreq ...");
-   if (${$conf}{'settings'}{'cgminer'})
-   {
          my $cgport = 4028;
          if (defined(${$conf}{'settings'}{'cgminer_port'}))
          {
@@ -218,7 +207,6 @@ sub delPool
         {
                 &blog("failed to get socket for cgminer api");
         }
-    }
 }
 
 sub zeroStats 
@@ -227,8 +215,6 @@ sub zeroStats
  %conf = %{$conf};
  my $delreq = $_[0];
    &blog("zeroing stats!");
-   if (${$conf}{'settings'}{'cgminer'})
-   {
          my $cgport = 4028;
          if (defined(${$conf}{'settings'}{'cgminer_port'}))
          {
@@ -257,7 +243,6 @@ sub zeroStats
         {
                 &blog("failed to get socket for cgminer api");
         }
-    }
 }
 
 sub getConfig
@@ -817,9 +802,6 @@ sub stopCGMiner
  %conf = %{$conf};  
  
  &blog("stopping mining processes...");
- 
- if (${$conf}{'settings'}{'cgminer'})
- {
  	  my $cgport = 4028;
  	  if (defined(${$conf}{'settings'}{'cgminer_port'}))
  	  {
@@ -850,7 +832,6 @@ sub stopCGMiner
   	} else {
   		&blog("failed to get socket for cgminer api");
   	}	
-  }
 }
 
 
