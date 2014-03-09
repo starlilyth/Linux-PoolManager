@@ -62,10 +62,12 @@ sub doFarmview {
 }
 
 sub undoFarmview { 
-  my $fvpid = `/bin/ps -eo pid,command | /bin/grep -E /opt/ifmi/farmview\$ | /bin/grep -Eo '^[0-9]+' `;
-  `/bin/kill $fvpid` if ($fvpid ne "");
+  if (-e "/var/run/farmview.pid") {
+    my $fvpid = `cat /var/run/farmview.pid`;
+    `/bin/kill $fvpid`;
+    `/bin/rm /var/run/farmview.pid`;
+  }
 }
-
 
 
 
