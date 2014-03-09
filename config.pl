@@ -108,7 +108,7 @@ if (&ReadParse(%in)) {
 
   my $cgraphs = $in{'cgraphs'};
   if ($cgraphs ne "") {
-    exec `/usr/bin/touch /tmp/cleargraphs.flag`;
+    `/usr/bin/touch /tmp/cleargraphs.flag`;
     $cgraphs = "";
   }
 }
@@ -136,7 +136,7 @@ my $miner_opts = $mconf->{settings}->{cgminer_opts};
 print "<tr><td>Miner Options</td><td>$miner_opts</td>";
 print "<td><input type='text' size='45' placeholder='--api-listen --config /etc/bamt/cgminer.conf' name='nmo'></td></tr>";
 my $savepath = $mconf->{settings}->{savepath}; 
-print "<tr><td>Configuration Path</td><td>$savepath</td>";
+print "<tr><td>Configuration Path</td><td>$savepath - <i> PoolManager will save here</i></td>";
 print "<td><input type='text' size='45' placeholder='/opt/ifmi/cgminer.conf' name='nsp'></td></tr>";
 my $minerport = $mconf->{settings}->{cgminer_port};
 print "<tr><td>API port</td><td>$minerport - <i>defaults to 4028 if unset</i></td>";
