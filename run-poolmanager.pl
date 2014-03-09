@@ -18,7 +18,7 @@ my $conf = &getConfig;
 my %conf = %{$conf};
 
 # status bcast
-if (!defined($conf{farmview}{do_bcast_status}) || ($conf{farmview}{do_bcast_status} > 0) ) { 
+if ($conf{farmview}{do_bcast_status} == 1) { 
 # &blog("broadcasting status");
  &bcastStatus;
 }
@@ -44,8 +44,10 @@ if ($conf{farmview}{do_farmview} == 0) {
   &undoFarmview; 
 }
 if (-e "/tmp/rfv") {
-  &undoFarmview;
-  &doFarmview;
+  if ($conf{farmview}{do_farmview} == 1) {
+    &undoFarmview;
+    &doFarmview;
+  }
   exec('/bin/rm /tmp/rfv');
 }
 
