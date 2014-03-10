@@ -91,8 +91,10 @@ our $conf = &getConfig;
 %conf = %{$conf};
 my $miner_name = `hostname`;
 chomp $miner_name;
-my $miner_ip = `/sbin/ifconfig | grep RUNNING -B3 | grep "inet .*Bcast" | cut -d':' -f2 | cut -d' ' -f1`;
-chomp $miner_ip;
+my $nicget = `/sbin/ifconfig`; 
+  while ($nicget =~ m/(\w\w\w\w?\d)\s.+\n\s+inet addr:(\d+\.\d+\.\d+\.\d+)\s/g) {
+  $iptxt = $2; 
+}
 
 $q=CGI->new();
 
@@ -471,11 +473,8 @@ if (@summary) {
 #      	$msput .= "<tr><td>Catalyst Version:</td><td>" . $mcatv . "</td></tr>";
 #   	$msdkv = "1";
 #      	$msput .= "<tr><td>SDK Version:</td><td>" . $msdkv . "</td></tr>";		
-      	my $nicget = `/sbin/ifconfig`; 
-      	while ($nicget =~ m/(\w\w\w\w?\d)\s.+\n\s+inet addr:(\d+\.\d+\.\d+\.\d+)\s/g) {
-      	  $iptxt = $2; 
-		  $msput .= '<td class=big colspan=2><A href=ssh://user@' . $iptxt . '>SSH to Host</a></td></tr>';
-		}
+      	
+		$msput .= '<td class=big colspan=2><A href=ssh://user@' . $iptxt . '>SSH to Host</a></td></tr>';
       	$msput .= "<tr><td class='big' colspan=2><a href='/cgi-bin/confedit.pl' target='_blank'>Configuration Editor</a></td></tr>";
 		$msput .= "<form name='reboot' action='status.pl' method='POST'><input type='hidden' name='reboot' value='reboot'>";
 		$msput .= "<tr><td></td></tr><tr><td colspan=2><input type='submit' value='Reboot' onclick='this.disabled=true;this.form.submit();' > ";
@@ -703,7 +702,7 @@ print "<div id='overview'>";
 print "<table><TR><TD>";
 print "<table><TR><TD rowspan=2><div class='logo'><a href='https://github.com/starlilyth/Linux-PoolManager' target=_blank>";
 print "</a></div></TD>";
-print "<TD class='overviewid'>" . $miner_name . " at " . $miner_ip . "</td>";
+print "<TD class='overviewid'>" . $miner_name . " @ " . $iptxt . "</td>";
 print "<td align='right'><form method='post' action='status.pl' name='zero'>";
 print "<input type='hidden' value='zero' name='zero' /><button type='submit' title='reset stats' class='reset-btn'/></form></td>";
 print "<tr><TD class='overviewhash' colspan=2>";
