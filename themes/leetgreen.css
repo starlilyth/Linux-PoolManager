@@ -51,6 +51,26 @@ color: #ffffff;
 	padding: 0 30px 0 10px;
 	font-weight: 300;
 }
+.logo {
+    display: block;
+    height: 63px;
+    width: 155px;
+}
+.logo a {
+    background-image: url("/IFMI/IFMI-logo-small.png");
+    display: block;
+    height: 63px;
+    width: 155px;
+}
+.reset-btn {
+    background: none repeat scroll 0 0 #073002;
+    border: 0 none;
+    border-radius: 5px;
+    cursor: pointer;
+    height: 10px;
+    width: 10px;
+}
+
 
 
 /* hyperlinks */
