@@ -18,21 +18,16 @@ require '/opt/ifmi/pm-common.pl';
 my $conf = &getConfig;
 my %conf = %{$conf};
 
-my $nobamt = 0; 
-if (defined($conf{settings}{IGNOREBAMT})) {
-	$nobamt = 1;
-}
-
-my $minerpath = "/opt/miners/cgminer/cgminer";
-$minerpath = $conf{settings}{cgminer_path} if (defined($conf{settings}{cgminer_path}));
+my $nobamt = $conf{settings}{IGNOREBAMT};
+my $minerpath = $conf{settings}{cgminer_path};
 
 if ($ARGV[0] eq "start") { 
 	my $mcheck = `ps -eo command | grep -Ec ^$minerpath`;
 	if ($mcheck > 0) {
 		die "another mining process is running."
 	}
-	if (-e "/opt/bamt" && $nobamt == 0) { 
-		system `/usr/sbin/mine start`;
+	if (-e "/opt/bamt/" && $nobamt eq "0") { 
+		`/usr/sbin/mine start`;
 		&blog("starting mining with mine start");
 	} else { 
 		&startCGMiner();
@@ -41,8 +36,8 @@ if ($ARGV[0] eq "start") {
 }
 
 if ($ARGV[0] eq "stop") { 
-	if (-e "/opt/bamt" && $nobamt == 0) { 
-		system `/usr/sbin/mine stop`;
+	if (-e "/opt/bamt/" && $nobamt eq "0") { 
+		`/usr/sbin/mine stop`;
 		&blog("stopping mining with mine stop");
 	} else { 
 		&stopCGMiner();

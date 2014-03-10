@@ -135,23 +135,29 @@ print "<td><input type='text' size='45' placeholder='/path/to/miner' name='nmp'>
 my $miner_opts = $mconf->{settings}->{cgminer_opts};
 print "<tr><td>Miner Options</td><td>$miner_opts</td>";
 print "<td><input type='text' size='45' placeholder='--api-listen --config /etc/bamt/cgminer.conf' name='nmo'></td></tr>";
+my $ibamt = $mconf->{settings}->{IGNOREBAMT};
+if (-e "/opt/bamt/") {
+  print "<tr><td>Ignore BAMT</td>";
+  print "<td><i>Start miner using the above, instead of 'mine start'?</i></td>";
+  if ($ibamt==1) {
+    print "<td><input type='radio' name='ibamt' value=1 checked>Yes ";
+    print "<input type='radio' name='ibamt' value=0>No </td></tr>";
+  } else { 
+    print "<td><input type='radio' name='ibamt' value=1>Yes ";
+    print "<input type='radio' name='ibamt' value=0 checked>No </td></tr>"; 
+  }
+}
 my $savepath = $mconf->{settings}->{savepath}; 
-print "<tr><td>Configuration Path</td><td>$savepath - <i> PoolManager will save here</i></td>";
-print "<td><input type='text' size='45' placeholder='/opt/ifmi/cgminer.conf' name='nsp'></td></tr>";
+print "<tr><td>Miner Config<br>Save Path</td>";
+print "<td>$savepath<br><i><small>Changes to the miner config are saved here</small></i></td>";
+print "<td><input type='text' size='45' placeholder='/opt/ifmi/cgminer.conf' name='nsp'>";
+if ($savepath eq "/opt/ifmi/cgminer.conf") {
+ print "<br><i><small>The default is probably not what you want.</small></i>";
+}
+print "</td></tr>";
 my $minerport = $mconf->{settings}->{cgminer_port};
 print "<tr><td>API port</td><td><i>Defaults to 4028 if unset</i></td>";
 print "<td>$minerport <input type='text' size='4' placeholder='4028' name='nap'></td></tr>";
-
-my $ibamt = $mconf->{settings}->{IGNOREBAMT};
-print "<tr><td>Ignore BAMT</td>";
-print "<td><i>Start/stop the miner directly, instead of 'mine stop/start'?</i></td>";
-if ($ibamt==1) {
-  print "<td><input type='radio' name='ibamt' value=1 checked>Yes ";
-  print "<input type='radio' name='ibamt' value=0>No </td></tr>";
-} else { 
-  print "<td><input type='radio' name='ibamt' value=1>Yes ";
-  print "<input type='radio' name='ibamt' value=0 checked>No </td></tr>";
-}
 print "</table></form><br>";
 
 print "</td></tr><tr><td rowspan=2>";
