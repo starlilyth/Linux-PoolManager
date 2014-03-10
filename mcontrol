@@ -26,7 +26,7 @@ if ($ARGV[0] eq "start") {
 	if ($mcheck > 0) {
 		die "another mining process is running."
 	}
-	if (-e "/opt/bamt/" && $nobamt eq "0") { 
+	if (-d "/opt/bamt/" && $nobamt eq "0") { 
 		`/usr/sbin/mine start`;
 		&blog("starting mining with mine start");
 	} else { 
@@ -36,7 +36,7 @@ if ($ARGV[0] eq "start") {
 }
 
 if ($ARGV[0] eq "stop") { 
-	if (-e "/opt/bamt/" && $nobamt eq "0") { 
+	if (-d "/opt/bamt/" && $nobamt eq "0") { 
 		`/usr/sbin/mine stop`;
 		&blog("stopping mining with mine stop");
 	} else { 

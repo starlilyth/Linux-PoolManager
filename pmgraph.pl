@@ -26,7 +26,7 @@ my $DBPATH = "/opt/ifmi/rrdtool/";
 my $colorfile = "/var/www/IFMI/themes/pmgraph.colors";
 $colorfile = "/var/www/IFMI/themes/" . ${$conf}{display}{'graphcolors'} 
  if (defined (${$conf}{display}{'graphcolors'})); 
-my $gconf = LoadFile($colorfile) if (-e $colorfile);
+my $gconf = LoadFile($colorfile) if (-f $colorfile);
 my $hashcolor = "#0033FF";
 $hashcolor = $gconf->{hashcolor} if (defined ($gconf->{hashcolor}));
 my $wucolor = "#4876FFcc"; 
@@ -53,7 +53,7 @@ if (defined(${$conf}{'settings'}{'cgminer_port'})) {
        $mport = ${$conf}{'settings'}{'cgminer_port'};
 }
 
-if (-e '/tmp/cleargraphs.flag') {
+if (-f '/tmp/cleargraphs.flag') {
   system('/bin/rm /tmp/cleargraphs.flag');
   system('/bin/rm ' . $DBPATH . '*.rrd');
   system('/bin/rm ' . $PICPATH . '*.png');

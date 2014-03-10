@@ -465,6 +465,7 @@ if (@summary) {
   	if ($showminer == $i) {
   		$getmlinv = `cat /proc/version`;
   		$mlinv = $1 if ($getmlinv =~ /version\s(.*?\s+\(.*?\))\s+\(/);
+  		$msput .= "<tr><td class='big'>Host IP:</td><td  colspan=3>$iptxt</td></tr>";
       	$msput .= "<tr><td class='big'>Linux Version:</td><td  colspan=3>" . $mlinv . "</td></tr>";
 # It is unclear how relevant this information is, and it is difficult to extract. 
 #  		$madlv = "1";
@@ -702,7 +703,7 @@ print "<div id='overview'>";
 print "<table><TR><TD>";
 print "<table><TR><TD rowspan=2><div class='logo'><a href='https://github.com/starlilyth/Linux-PoolManager' target=_blank>";
 print "</a></div></TD>";
-print "<TD class='overviewid'>" . $miner_name . " @ " . $iptxt . "</td>";
+print "<TD class='overviewid'>$miner_name<br><small>@ $iptxt</small></td>";
 print "<td align='right'><form method='post' action='status.pl' name='zero'>";
 print "<input type='hidden' value='zero' name='zero' /><button type='submit' title='reset stats' class='reset-btn'/></form></td>";
 print "<tr><TD class='overviewhash' colspan=2>";

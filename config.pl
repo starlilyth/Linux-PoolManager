@@ -13,7 +13,7 @@
  use CGI qw(:cgi-lib :standard);
 
 my $conffile = "/opt/ifmi/poolmanager.conf";
-if (! -e $conffile) { 
+if (! -f $conffile) { 
   my $nconf = {
   	monitoring => {
   		monitor_temp_hi => '80',
@@ -136,7 +136,7 @@ my $miner_opts = $mconf->{settings}->{cgminer_opts};
 print "<tr><td>Miner Options</td><td>$miner_opts</td>";
 print "<td><input type='text' size='45' placeholder='--api-listen --config /etc/bamt/cgminer.conf' name='nmo'></td></tr>";
 my $ibamt = $mconf->{settings}->{IGNOREBAMT};
-if (-e "/opt/bamt/") {
+if (-d "/opt/bamt/") {
   print "<tr><td>Ignore BAMT</td>";
   print "<td><i>Start miner using the above, instead of 'mine start'?</i></td>";
   if ($ibamt==1) {

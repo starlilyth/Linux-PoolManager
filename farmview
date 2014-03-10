@@ -153,7 +153,7 @@ sub genhttp
 		$html .= "<div id='content' class='farm'><TABLE>";
 
 		$html .= "<tr><td class='refreshtime'>";
-		use POSIX;
+		use POSIX qw(strftime);
 		$now = POSIX::strftime( "%A, %T %Z", localtime());			 
 		$html .= "<p>Last refresh: $now</p>";
 		$html .= "</td></tr>";
