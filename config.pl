@@ -48,69 +48,73 @@ if (! -f $conffile) {
   DumpFile($conffile, $nconf); 
 }
 
-my $mconf = LoadFile( $conffile );
-
 # Take care of business
-our %in;
-if (&ReadParse(%in)) {
-  my $nht = $in{'temphi'};
-  $mconf->{monitoring}->{monitor_temp_hi} = $nht if($nht ne"");
-  my $nlt = $in{'templo'};
-  $mconf->{monitoring}->{monitor_temp_lo} = $nlt if($nlt ne "");
-  my $nll = $in{'loadlo'};
-  $mconf->{monitoring}->{monitor_load_lo} = $nll if($nll ne ""); 
-  my $nhl = $in{'hashlo'};
-  $mconf->{monitoring}->{monitor_hash_lo} = $nhl if($nhl ne "");
-  my $nfl = $in{'fanlo'};
-  $mconf->{monitoring}->{monitor_fan_lo} = $nfl if($nfl ne "");
-  my $nrh = $in{'rejhi'};
-  $mconf->{monitoring}->{monitor_reject_hi} = $nrh if($nrh ne "");
+my $conferror = 0;
+my $mconf = LoadFile( $conffile );
+if (-o $conffile) {
+  our %in;
+  if (&ReadParse(%in)) {
+    my $nht = $in{'temphi'};
+    $mconf->{monitoring}->{monitor_temp_hi} = $nht if($nht ne"");
+    my $nlt = $in{'templo'};
+    $mconf->{monitoring}->{monitor_temp_lo} = $nlt if($nlt ne "");
+    my $nll = $in{'loadlo'};
+    $mconf->{monitoring}->{monitor_load_lo} = $nll if($nll ne ""); 
+    my $nhl = $in{'hashlo'};
+    $mconf->{monitoring}->{monitor_hash_lo} = $nhl if($nhl ne "");
+    my $nfl = $in{'fanlo'};
+    $mconf->{monitoring}->{monitor_fan_lo} = $nfl if($nfl ne "");
+    my $nrh = $in{'rejhi'};
+    $mconf->{monitoring}->{monitor_reject_hi} = $nrh if($nrh ne "");
 
-  my $nmp = $in{'nmp'};
-  $mconf->{settings}->{cgminer_path} = $nmp if($nmp ne "");
-  my $nmo = $in{'nmo'};
-  $mconf->{settings}->{cgminer_opts} = $nmo if($nmo ne "");
-  my $nsp = $in{'nsp'};
-  $mconf->{settings}->{savepath} = $nsp if($nsp ne "");
-  my $nap = $in{'nap'};
-  $mconf->{settings}->{cgminer_port} = $nap if($nap ne "");
-  my $ibamt = $in{'ibamt'};
-  $mconf->{settings}->{IGNOREBAMT} = $ibamt if($ibamt ne "");
+    my $nmp = $in{'nmp'};
+    $mconf->{settings}->{cgminer_path} = $nmp if($nmp ne "");
+    my $nmo = $in{'nmo'};
+    $mconf->{settings}->{cgminer_opts} = $nmo if($nmo ne "");
+    my $nsp = $in{'nsp'};
+    $mconf->{settings}->{savepath} = $nsp if($nsp ne "");
+    my $nap = $in{'nap'};
+    $mconf->{settings}->{cgminer_port} = $nap if($nap ne "");
+    my $ibamt = $in{'ibamt'};
+    $mconf->{settings}->{IGNOREBAMT} = $ibamt if($ibamt ne "");
 
-  my $nml = $in{'nml'};
-  $mconf->{display}->{miner_loc} = $nml if($nml ne "");
-  my $nscss = $in{'scss'};
-  $mconf->{display}->{status_css} = $nscss if($nscss ne "");
-  my $nfcss = $in{'fcss'};
-  if($nfcss ne "") {
-    $mconf->{display}->{farmview_css} = $nfcss;
-    `touch /tmp/rfv`;
+    my $nml = $in{'nml'};
+    $mconf->{display}->{miner_loc} = $nml if($nml ne "");
+    my $nscss = $in{'scss'};
+    $mconf->{display}->{status_css} = $nscss if($nscss ne "");
+    my $nfcss = $in{'fcss'};
+    if($nfcss ne "") {
+      $mconf->{display}->{farmview_css} = $nfcss;
+      `touch /tmp/rfv`;
+    }
+    my $ngcf = $in{'gcf'};
+    $mconf->{display}->{graphcolors} = $ngcf if($ngcf ne "");
+    my $nha = $in{'hashavg'};
+    $mconf->{display}->{usehashavg} = $nha if($nha ne "");
+
+    my $nbcast = $in{'bcast'};
+    $mconf->{farmview}->{do_bcast_status} = $nbcast if($nbcast ne "");
+    my $nbp = $in{'nbp'};
+    $mconf->{farmview}->{status_port} = $nbp if($nbp ne "");
+    my $nfarmview = $in{'farmview'};
+    $mconf->{farmview}->{do_farmview} = $nfarmview if($nfarmview ne "");
+    my $nlp = $in{'nlp'};
+    if($nlp ne "") {
+      $mconf->{farmview}->{listen_port} = $nlp;
+      `touch /tmp/rfv`;
+    }
+    my $dds = $in{'dds'};
+    $mconf->{farmview}->{do_direct_status} = $dds if($dds ne "");
+    DumpFile($conffile, $mconf); 
+
+    my $cgraphs = $in{'cgraphs'};
+    if ($cgraphs ne "") {
+      `/usr/bin/touch /tmp/cleargraphs.flag`;
+      $cgraphs = "";
+    }
   }
-  my $ngcf = $in{'gcf'};
-  $mconf->{display}->{graphcolors} = $ngcf if($ngcf ne "");
-  my $nha = $in{'hashavg'};
-  $mconf->{display}->{usehashavg} = $nha if($nha ne "");
-
-  my $nbcast = $in{'bcast'};
-  $mconf->{farmview}->{do_bcast_status} = $nbcast if($nbcast ne "");
-  my $nbp = $in{'nbp'};
-  $mconf->{farmview}->{status_port} = $nbp if($nbp ne "");
-  my $nfarmview = $in{'farmview'};
-  $mconf->{farmview}->{do_farmview} = $nfarmview if($nfarmview ne "");
-  my $nlp = $in{'nlp'};
-  if($nlp ne "") {
-    $mconf->{farmview}->{listen_port} = $nlp;
-    `touch /tmp/rfv`;
-  }
-  my $dds = $in{'dds'};
-  $mconf->{farmview}->{do_direct_status} = $dds if($dds ne "");
-  DumpFile($conffile, $mconf); 
-
-  my $cgraphs = $in{'cgraphs'};
-  if ($cgraphs ne "") {
-    `/usr/bin/touch /tmp/cleargraphs.flag`;
-    $cgraphs = "";
-  }
+} else { 
+  $conferror = 1; 
 }
 
 # Carry on
@@ -122,8 +126,12 @@ print start_html( -title=>'PM - ' . $miner_name . ' - Config',
 
 print "<div id='content'><table>";
 print "<tr><td colspan=2>";
-print "<table class=title><tr><td class=bigger>PoolManager Configuration for $miner_name</td><tr></table><br>";
-print "</td></tr>";
+print "<table class=title><tr><td class=bigger>PoolManager Configuration for $miner_name</td><tr>";
+if ($conferror == 1) {
+  print "<tr><td class=error colspan=2>PoolManager cannot write to its config!";
+  print "<br>Please ensure /opt/ifmi/poolmanager.conf is owned by the webserver user.</td><tr>";
+}
+print "</table><br></td></tr>";
 
 print "<tr><td colspan=2>";
 print "<form name=settings method=post>";
