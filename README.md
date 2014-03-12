@@ -33,7 +33,7 @@ EASY PEASY SURE FIRE INSTALL INSTRUCTIONS: (but see the above note!)
 1. ssh into your miner, so you are at the command prompt. be root (if you are user, do: sudo su - ).
 1. do: wget https://github.com/starlilyth/Linux-PoolManager/archive/master.zip
 1. do: unzip master.zip
-1. cd to 'Linux-PoolManager-master' directory and run: ./install-pm.sh
+1. cd to 'Linux-PoolManager-master' directory and run: ./install-pm.pl
 
 Please make sure the following entries are in your cgminer.conf:
 

@@ -5,7 +5,6 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 echo -e "This script will REMOVE the IFMI PoolManager web interface.\n"
-echo -e "It will not undo the Apache security changes.\n"
 read -p "Are you sure?(y/n)" input
 shopt -s nocasematch
 case "$input" in
@@ -24,8 +23,16 @@ case "$input" in
       mv /usr/lib/cgi-bin/status.pl.pre-ifmi /usr/lib/cgi-bin/status.pl
     fi
     mv /usr/lib/cgi-bin/confedit.pl /var/www/IFMI/
+    mv /usr/lib/cgi-bin/config.pl /var/www/IFMI/
     mv /etc/sudoers.pre-ifmi /etc/sudoers
     mv /etc/crontab.pre-ifmi /etc/crontab
+    service cron restart
+    mv /etc/apache2/sites-available/default.pre-ifmi /etc/apache2/sites-available/default
+    mv /etc/apache2/sites-available/default-ssl.pre-ifmi /etc/apache2/sites-available/default-ssl
+    if [ -f /var/htpasswd ]; then 
+      rm /var/htpasswd
+    fi 
+    service apache2 restart
     rm -r /var/www/IFMI/
     rm -r /opt/ifmi/
     echo -e "Done!\n"

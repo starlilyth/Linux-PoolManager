@@ -124,8 +124,8 @@ chomp $miner_name;
 print start_html( -title=>'PM - ' . $miner_name . ' - Config',
 				  -style=>{-src=>'/IFMI/themes/' . $mconf->{display}->{status_css}} );
 
-print "<div id='content'><table>";
-print "<tr><td colspan=2>";
+print "<div id='content'><table class=configpage>";
+print "<tr><td colspan=2 align=center>";
 print "<table class=title><tr><td class=bigger>PoolManager Configuration for $miner_name</td><tr>";
 if ($conferror == 1) {
   print "<tr><td class=error colspan=2>PoolManager cannot write to its config!";
@@ -133,7 +133,7 @@ if ($conferror == 1) {
 }
 print "</table><br></td></tr>";
 
-print "<tr><td colspan=2>";
+print "<tr><td colspan=2 align=center>";
 print "<form name=settings method=post>";
 print "<table class=settings><tr><td colspan=2 class=header>Miner Settings</td>";
 print "<td class=header><input type='submit' value='Save'></td><tr>";
@@ -168,7 +168,7 @@ print "<tr><td>API port</td><td><i>Defaults to 4028 if unset</i></td>";
 print "<td>$minerport <input type='text' size='4' placeholder='4028' name='nap'></td></tr>";
 print "</table></form><br>";
 
-print "</td></tr><tr><td rowspan=2>";
+print "</td></tr><tr><td rowspan=2 align=center valign=top>";
 
 print "<form name=monitoring method=post>";
 print "<table class=monitor><tr><td colspan=2 class=header>Monitoring Settings</td>";
@@ -193,7 +193,7 @@ print "<tr><td>Low Fanspeed</td><td>$fanlo RPM</td>";
 print "<td><input type='text' size='4' placeholder='1000' name='fanlo'></td></tr>";
 print "</table></form><br>";
 
-print "</td><td>";
+print "</td><td align=center>";
 
 print "<form name=farmview method=post>";
 print "<table class=farmview><tr><td colspan=2 class=header>Farmview Settings</td>";
@@ -234,7 +234,7 @@ print "<td><i>Port FV should listen on<br><small>FV will restart if changed</sma
 print "<td>$lport <input type='text' size='5' placeholder='54545' name='nlp'></td></tr>";
 print "</table></form>";
 
-print "</td></tr><tr><td>";
+print "</td></tr><tr><td align=center>";
 
 print "<form name=display method=post>";
 print "<table class=display><tr><td colspan=2 class=header>Display Settings</td>";
