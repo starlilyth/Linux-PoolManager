@@ -36,7 +36,7 @@ if ($ireply =~ m/y(es)?/i) {
 
 sub doInstall {
 	use POSIX qw(strftime);
-	my $now = POSIX::strftime("%Y-%m-%d.%H:%M", localtime());	
+	my $now = POSIX::strftime("%Y-%m-%d.%H.%M", localtime());	
 	my $instlog = "PoolManager Install Log.\n$now\n";
 	print "Perl module check \n";
 	require RRDs;

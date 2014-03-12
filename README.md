@@ -56,33 +56,33 @@ If you wish to remove PoolManager, you can run the remove-pm.sh script in the sa
 
 FAQ: 
 
-Q: I cant get to my miner page anymore! 
+Q1: I cant get to my miner page anymore! 
 
-A: PoolManager changes your Apache configuration to use https, which is on port 443, not port 80. Please make sure you have port 443 open on any firewalls or routers between you and your miner. 
+A1: PoolManager changes your Apache configuration to use https, which is on port 443, not port 80. Please make sure you have port 443 open on any firewalls or routers between you and your miner. 
 
-Q: FarmView doesnt work/shows bad or double status in BAMT
+Q2: FarmView doesnt work/shows no/bad or double status in BAMT
 
-A: Make sure mgpumon and broadcast are stopped. Edit bamt.conf, set do_mgpumon to 0 and set do_bcast_status to 0. If you need to use mgpumon, put it on a different port. 
+A2: Make sure mgpumon and broadcast are stopped. Edit bamt.conf, set do_mgpumon to 0 and set do_bcast_status to 0. If you need to use mgpumon, put it on a different port. 
 
-Q: How can I see my miner page/farmview remotely?
+Q3: How can I see my miner page/farmview remotely?
 
-A: In general, you will either have to allow access to your miner from the internet, or you can export the farmview.html page to an internet web server (probably with some combination of rsync/scp and cron). The specifics will depend on your setup and needs, and are beyond the scope of this document. 
+A3: In general, you will either have to allow access to your miner from the internet, or you can export the farmview.html page to an internet web server (probably with some combination of rsync/scp and cron). The specifics will depend on your setup and needs, and are beyond the scope of this document. 
 
-Q: My graphs are messed up after updating. 
+Q4: My graphs are messed up after updating. 
 
-A: Press 'Clear All Graphs' on the Miner detail page. It will take about ten minutes for the graphs to clear and start redrawing. 
+A4: Press 'Clear All Graphs' on the settings page. It will take about ten minutes for the graphs to clear and start redrawing. 
 
-Q: How do I change the default page password? 
+Q5: How do I change the default page password? 
 
-A: Your htpasswd file is in /var, so you can do: 'htpasswd /var/htpasswd username', where username is the name you want to manage. 
+A5: Your htpasswd file is in /var, so you can do: 'htpasswd /var/htpasswd username', where username is the name you want to manage. 
 
-Q: How do I disable the default page password? I dont want it anymore.  
+Q6: How do I disable the default page password? I dont want it anymore.  
 
-A: Edit /etc/apache2/sites-available/default-ssl and comment out "Require valid-user", near the top. Then do 'apachectl restart'. 
+A6: Edit /etc/apache2/sites-available/default-ssl and comment out "Require valid-user", near the top. Then do 'apachectl restart'. 
 
-Q: Why doesnt PoolManager let me: save a pool as X priority/switch to a dead pool/save priority list on restart/have pool aliases?
+Q7: Why doesnt PoolManager let me: save a pool as X priority/switch to a dead pool/save priority list on restart/have pool aliases?
 
-A: PoolManager only mirrors what cgminer can do, via the API, these are things that cgminer doesnt do, and are non-trivial to implement yet. As development progresses in some other areas, some of this may be easier, and I will add it. 
+A7: PoolManager only mirrors what cgminer can do, via the API, these are things that cgminer doesnt do, and are non-trivial to implement yet. As development progresses in some other areas, some of this may be easier, and I will add it. 
 
 -----
 
