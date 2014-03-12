@@ -79,7 +79,7 @@ while($socket)
  {
    foreach $fh (@ready) 
    {
-     my $ip = $socket->recv(my $data, 4000);
+     my $ip = $socket->recv(my $data, 8000);
      my ($port, $ipaddr) = sockaddr_in($socket->peername);
      my $host = inet_ntoa($ipaddr);
      
