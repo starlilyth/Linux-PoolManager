@@ -13,7 +13,7 @@ use File::Copy;
 
 my $login = (getpwuid $>);
 die "Please run as root (do not use sudo)" if ($login ne 'root');
-die "please execute from the install directory.\n" if (!-f "./pminstall.pl") ;
+die "please execute from the install directory.\n" if (!-f "./install-pm.pl") ;
 
 print "This will install the IFMI PoolManager for cgminer and clones on Linux.\n";
 print "Are you sure? (y/n) ";
