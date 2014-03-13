@@ -124,10 +124,10 @@ if (-o $conffile) {
 print header();
 my $miner_name = `hostname`;
 chomp $miner_name;
-print start_html( -title=>'PM - ' . $miner_name . ' - Config',
+print start_html( -title=>'PM - ' . $miner_name . ' - Settings',
 				  -style=>{-src=>'/IFMI/themes/' . $mconf->{display}->{status_css}} );
 
-print "<div id='content'><table class=configpage>";
+print "<div id='content'><table class=settingspage>";
 print "<tr><td colspan=2 align=center>";
 print "<table class=title><tr><td class=bigger>PoolManager Configuration for $miner_name</td><tr>";
 if ($conferror == 1) {
