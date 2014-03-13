@@ -21,6 +21,7 @@ if (! -f $conffile) {
   		monitor_load_lo => '0',
   		monitor_hash_lo => '200',
   		monitor_fan_lo => '1000',
+      monitor_fan_hi => '4000',
   		monitor_reject_hi => '3',
   	},
   	settings => {
@@ -64,6 +65,8 @@ if (-o $conffile) {
     $mconf->{monitoring}->{monitor_hash_lo} = $nhl if($nhl ne "");
     my $nfl = $in{'fanlo'};
     $mconf->{monitoring}->{monitor_fan_lo} = $nfl if($nfl ne "");
+    my $nfh = $in{'fanhi'};
+    $mconf->{monitoring}->{monitor_fan_hi} = $nfh if($nfh ne "");
     my $nrh = $in{'rejhi'};
     $mconf->{monitoring}->{monitor_reject_hi} = $nrh if($nrh ne "");
 
@@ -191,6 +194,9 @@ print "<td><input type='text' size='2' placeholder='3' name='rejhi'></td></tr>";
 my $fanlo = $mconf->{monitoring}->{monitor_fan_lo};
 print "<tr><td>Low Fanspeed</td><td>$fanlo RPM</td>";
 print "<td><input type='text' size='4' placeholder='1000' name='fanlo'></td></tr>";
+my $fanhi = $mconf->{monitoring}->{monitor_fan_hi};
+print "<tr><td>High Fanspeed</td><td>$fanhi RPM</td>";
+print "<td><input type='text' size='4' placeholder='4000' name='fanhi'></td></tr>";
 print "</table></form><br>";
 
 print "</td><td align=center>";

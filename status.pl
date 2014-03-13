@@ -259,11 +259,24 @@ for (my $i=0;$i<@gpus;$i++)
 	if (defined($conf{monitoring}{monitor_fan_lo}) && $frpm < ($conf{monitoring}{monitor_fan_lo}) && ($frpm > 0))
 	{
 		$problems++;
-		push(@nodemsg, "GPU $i is below minimum fan rpm");
+		push(@nodemsg, "GPU $i is below minimum fan RPM");
 		
 		if ($i == $showgpu)
 		{
-			push(@gpumsg, "Below minimum fan rpm");
+			push(@gpumsg, "Below minimum fan RPM");
+			$gsput .= "<td>Fan speed:</td><td class='error'>" .  $gpus[$i]{'fan_speed_c'} . '% (' . $gpus[$i]{'fan_rpm_c'}  . " rpm)</td></tr>";
+		}
+		
+		$gput .= "<td class='error'>";
+	}
+	elsif (defined($conf{monitoring}{monitor_fan_hi}) && $frpm > ($conf{monitoring}{monitor_fan_hi}))
+	{
+		$problems++;
+		push(@nodemsg, "GPU $i is above maximum fan RPM");
+		
+		if ($i == $showgpu)
+		{
+			push(@gpumsg, "Above maximum fan RPM");
 			$gsput .= "<td>Fan speed:</td><td class='error'>" .  $gpus[$i]{'fan_speed_c'} . '% (' . $gpus[$i]{'fan_rpm_c'}  . " rpm)</td></tr>";
 		}
 		
