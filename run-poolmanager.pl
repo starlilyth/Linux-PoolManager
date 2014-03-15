@@ -30,10 +30,9 @@ if ($conf{farmview}{do_direct_status} =~ m/\d+\.\d+\.\d+\.\d+/) {
 
 # graphs should be no older than 5 minutes
 my $graph = "/var/www/IFMI/graphs/msummary.png";
-my $fileage = time - (stat ($graph))[9];
-if (! -f $graph || $fileage > 300) {
-  exec('/opt/ifmi/rrdtool/pmgraph.pl'); 
-}
+if (-f $graph) {
+  if (time - (stat ($graph))[9] > 300) { exec('/opt/ifmi/rrdtool/pmgraph.pl'); }
+} else { exec('/opt/ifmi/rrdtool/pmgraph.pl'); }
 
 # 
 if ($conf{farmview}{do_farmview} == 1) {
