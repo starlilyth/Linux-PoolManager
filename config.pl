@@ -23,6 +23,8 @@ if (! -f $conffile) {
   		monitor_fan_lo => '1000',
       monitor_fan_hi => '4000',
   		monitor_reject_hi => '3',
+      do_email => '0',
+
   	},
   	settings => {
   		cgminer_path => '/opt/miners/cgminer/cgminer',
@@ -45,6 +47,17 @@ if (! -f $conffile) {
   		listen_port => '54545',
       do_direct_status => '',
   	},
+    email => {
+      smtp_to => 'root@localhost', 
+      smtp_host => 'localhost',
+      smtp_from => 'poolmanager@localhost',
+      smtp_port => '25',
+      smtp_tls => '1',
+      smtp_ssl => '0',
+      smtp_auth_user => '',
+      smtp_auth_pass => '',
+      smtp_min_wait => '300',
+    }
   };
   DumpFile($conffile, $nconf); 
 }
@@ -56,19 +69,42 @@ if (-o $conffile) {
   our %in;
   if (&ReadParse(%in)) {
     my $nht = $in{'temphi'};
-    $mconf->{monitoring}->{monitor_temp_hi} = $nht if($nht ne"");
+    if($nht ne "") {
+      $nht = "80" if (! ($nht =~ m/^\d+?$/));    
+      $mconf->{monitoring}->{monitor_temp_hi} = $nht;
+    }
     my $nlt = $in{'templo'};
-    $mconf->{monitoring}->{monitor_temp_lo} = $nlt if($nlt ne "");
+    if($nlt ne "") {
+      $nlt = "45" if (! ($nlt =~ m/^\d+?$/));
+      $mconf->{monitoring}->{monitor_temp_lo} = $nlt;
+    }
     my $nll = $in{'loadlo'};
-    $mconf->{monitoring}->{monitor_load_lo} = $nll if($nll ne ""); 
+    if($nll ne "") {
+      $nll = "10" if (! ($nll =~ m/^\d+?$/));
+      $mconf->{monitoring}->{monitor_load_lo} = $nll; 
+    }
     my $nhl = $in{'hashlo'};
-    $mconf->{monitoring}->{monitor_hash_lo} = $nhl if($nhl ne "");
+    if($nhl ne "") {
+      $nhl = "200" if (! ($nhl =~ m/^\d+?$/));
+      $mconf->{monitoring}->{monitor_hash_lo} = $nhl;
+    }
     my $nfl = $in{'fanlo'};
-    $mconf->{monitoring}->{monitor_fan_lo} = $nfl if($nfl ne "");
+    if($nfl ne "") {
+      $nfl = "1000" if (! ($nfl =~ m/^\d+?$/));
+      $mconf->{monitoring}->{monitor_fan_lo} = $nfl;
+    }
     my $nfh = $in{'fanhi'};
-    $mconf->{monitoring}->{monitor_fan_hi} = $nfh if($nfh ne "");
+    if($nfh ne "") {
+      $nfh = "4000" if (! ($nfh =~ m/^\d+?$/));
+      $mconf->{monitoring}->{monitor_fan_hi} = $nfh;
+    }
     my $nrh = $in{'rejhi'};
-    $mconf->{monitoring}->{monitor_reject_hi} = $nrh if($nrh ne "");
+    if($nrh ne "") {
+      $nrh = "3" if (! ($nrh =~ m/^(\d+)?\.?\d+?$/));
+      $mconf->{monitoring}->{monitor_reject_hi} = $nrh;
+    }
+    my $doe = $in{'emaildo'};
+    $mconf->{monitoring}->{do_email} = $doe if($doe ne "");
 
     my $nmp = $in{'nmp'};
     $mconf->{settings}->{cgminer_path} = $nmp if($nmp ne "");
@@ -77,7 +113,10 @@ if (-o $conffile) {
     my $nsp = $in{'nsp'};
     $mconf->{settings}->{savepath} = $nsp if($nsp ne "");
     my $nap = $in{'nap'};
-    $mconf->{settings}->{cgminer_port} = $nap if($nap ne "");
+    if($nap ne "") {
+      $nap = "4028" if (! ($nap =~ m/^\d+?$/));    
+      $mconf->{settings}->{cgminer_port} = $nap;
+    }
     my $ibamt = $in{'ibamt'};
     $mconf->{settings}->{IGNOREBAMT} = $ibamt if($ibamt ne "");
 
@@ -94,20 +133,51 @@ if (-o $conffile) {
     $mconf->{display}->{graphcolors} = $ngcf if($ngcf ne "");
     my $nha = $in{'hashavg'};
     $mconf->{display}->{usehashavg} = $nha if($nha ne "");
-
     my $nbcast = $in{'bcast'};
+
     $mconf->{farmview}->{do_bcast_status} = $nbcast if($nbcast ne "");
     my $nbp = $in{'nbp'};
-    $mconf->{farmview}->{status_port} = $nbp if($nbp ne "");
+    if($nbp ne "") {
+      $nbp = "54545" if (! ($nbp =~ m/^\d+?$/));    
+      $mconf->{farmview}->{status_port} = $nbp;
+    }
     my $nfarmview = $in{'farmview'};
     $mconf->{farmview}->{do_farmview} = $nfarmview if($nfarmview ne "");
     my $nlp = $in{'nlp'};
     if($nlp ne "") {
+      $nlp = "54545" if (! ($nlp =~ m/^\d+?$/));    
       $mconf->{farmview}->{listen_port} = $nlp;
       `touch /tmp/rfv`;
     }
     my $dds = $in{'dds'};
     $mconf->{farmview}->{do_direct_status} = $dds if($dds ne "");
+
+    my $nst = $in{'mailto'};
+    $mconf->{email}->{smtp_to} = $nst if ($nst ne "");
+    my $nsf = $in{'mailfrom'};
+    $mconf->{email}->{smtp_from} = $nsf if ($nsf ne "");
+    my $nsh = $in{'mailhost'};
+    $mconf->{email}->{smtp_host} = $nsh if ($nsh ne "");
+    my $nsmp = $in{'mailport'};
+    if ($nsmp ne "") {
+      $nsmp = "25" if (! ($nsmp =~ m/^\d+?$/));
+      $mconf->{email}->{smtp_port} = $nsmp;
+    }
+    my $nssl = $in{'mailssl'};
+    $mconf->{email}->{smtp_ssl} = $nssl if ($nssl ne "");
+    my $ntls = $in{'mailtls'};
+    $mconf->{email}->{smtp_tls} = $ntls if ($ntls ne "");
+    my $nsau = $in{'authuser'};
+    $mconf->{email}->{smtp_auth_user} = $nsau if ($nsau ne "");
+    my $nsap = $in{'authpass'};
+    $mconf->{email}->{smtp_auth_pass} = $nsap if ($nsap ne "");
+    my $nmw = $in{'mailwait'};
+    if ($nmw ne "") {
+      $nmw = "5" if (! ($nmw =~ m/^\d+?$/));
+      $nmw = $nmw * 60; 
+      $mconf->{email}->{smtp_min_wait} = $nmw;
+    }
+      
     DumpFile($conffile, $mconf); 
 
     my $cgraphs = $in{'cgraphs'};
@@ -197,8 +267,60 @@ print "<td><input type='text' size='4' placeholder='1000' name='fanlo'></td></tr
 my $fanhi = $mconf->{monitoring}->{monitor_fan_hi};
 print "<tr><td>High Fanspeed</td><td>$fanhi RPM</td>";
 print "<td><input type='text' size='4' placeholder='4000' name='fanhi'></td></tr>";
-print "</table></form><br>";
+my $emaildo = $mconf->{monitoring}->{do_email};
+print "<tr><td>Send Email</td>";
+if ($emaildo==1) {
+  print "<td colspan=2><input type='radio' name='emaildo' value=1 checked>Yes ";
+  print "<input type='radio' name='emaildo' value=0>No </td></tr>";
+} else { 
+  print "<td colspan=2><input type='radio' name='emaildo' value=1>Yes ";
+  print "<input type='radio' name='emaildo' value=0 checked>No </td></tr>"; 
+}
 
+if ($emaildo==1) {
+  my $mailto = $mconf->{email}->{smtp_to};
+  print "<tr><td>Email To:</td><td>$mailto</td>";
+  print "<td><input type='text' placeholder='user\@email.com' name='mailto'></td></tr>";
+  my $mailfrom = $mconf->{email}->{smtp_from};
+  print "<tr><td>Email From:</td><td>$mailfrom</td>";
+  print "<td><input type='text' placeholder='poolmanager\@email.com' name='mailfrom'></td></tr>";
+  my $mailhost = $mconf->{email}->{smtp_host};
+  print "<tr><td>SMTP Host</td><td>$mailhost</td>";
+  print "<td><input type='text' placeholder='smtp.email.com' name='mailhost'></td></tr>";
+  my $mailport = $mconf->{email}->{smtp_port};
+  print "<tr><td>SMTP Port</td><td>$mailport</td>";
+  print "<td><input type='text' size='5' placeholder='25' name='mailport'></td></tr>";
+  my $mailwait = ($mconf->{email}->{smtp_min_wait} / 60);
+  print "<tr><td>Email Frequency</td><td>$mailwait minutes</td>";
+  print "<td><input type='text' size='5' placeholder='5' name='mailwait'></td></tr>";
+  my $mailssl = $mconf->{email}->{smtp_ssl};
+  print "<tr><td>Use SSL?</td>";
+  if ($mailssl==1) {
+    print "<td colspan=2><input type='radio' name='mailssl' value=1 checked>Yes ";
+    print "<input type='radio' name='mailssl' value=0>No </td></tr>";
+    my $authuser = $mconf->{email}->{smtp_auth_user};
+    print "<tr><td>Auth User</td><td>$authuser</td>";
+    print "<td><input type='text' placeholder='mailuser' name='authuser'></td></tr>";
+    my $authpass = $mconf->{email}->{smtp_auth_pass};
+    my $authshow = "*******" if ($authpass ne "");
+    print "<tr><td>Auth Pass</td><td>$authshow</td>";
+    print "<td><input type='password' placeholder='mailpassword' name='authpass' autocomplete='off'></td></tr>";
+    my $mailtls = $mconf->{email}->{smtp_tls};
+    print "<tr><td>Use TLS?</td>";
+    if ($mailtls==1) {
+      print "<td colspan=2><input type='radio' name='mailtls' value=1 checked>Yes ";
+      print "<input type='radio' name='mailtls' value=0>No </td></tr>";
+    } else { 
+      print "<td colspan=2><input type='radio' name='mailtls' value=1>Yes ";
+      print "<input type='radio' name='mailtls' value=0 checked>No </td></tr>"; 
+    }
+  } else { 
+    print "<td colspan=2><input type='radio' name='mailssl' value=1>Yes ";
+    print "<input type='radio' name='mailssl' value=0 checked>No </td></tr>"; 
+  }
+}
+
+print "</table></form><br>";
 print "</td><td align=center>";
 
 print "<form name=farmview method=post>";

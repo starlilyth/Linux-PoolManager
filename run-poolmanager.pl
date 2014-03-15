@@ -17,15 +17,22 @@ require '/opt/ifmi/sendstatus.pl';
 my $conf = &getConfig;
 my %conf = %{$conf};
 
-# status bcast
+#  broadcast node status
 if ($conf{farmview}{do_bcast_status} == 1) { 
 # &blog("broadcasting status");
  &bcastStatus;
 }
-# status direct
+# send status direct
 if ($conf{farmview}{do_direct_status} =~ m/\d+\.\d+\.\d+\.\d+/) {
 # &blog("sending status to " . $conf{farmview}{do_direct_status});
  &directStatus($conf{farmview}{do_direct_status});
+}
+
+# Email
+if ($conf{monitoring}{do_email} == 1) { 
+  if (time - (stat ('/tmp/pmnotify.lastsent'))[9] > ($conf{email}{smtp_min_wait} -10) ) {
+    exec('/opt/ifmi/pmnotify.pl');
+  }
 }
 
 # graphs should be no older than 5 minutes
@@ -34,7 +41,7 @@ if (-f $graph) {
   if (time - (stat ($graph))[9] > 300) { exec('/opt/ifmi/rrdtool/pmgraph.pl'); }
 } else { exec('/opt/ifmi/rrdtool/pmgraph.pl'); }
 
-# 
+# FarmView
 if ($conf{farmview}{do_farmview} == 1) {
   &doFarmview; 
 }
