@@ -42,7 +42,8 @@ sub doInstall {
 	require RRDs;
 	require YAML;
 	require JSON;
-	require Email;
+	require Email::Simple;
+	require Email::Sender;
 	require Try::Tiny;
 	print " ..all set!\n";
 	$instlog .= "Perl test passed.";
