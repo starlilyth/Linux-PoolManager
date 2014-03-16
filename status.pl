@@ -853,13 +853,14 @@ given($x) {
                 print "<p><img src='/IFMI/ok.png'><p>";
                 print "All OK";
         }
+        my $release = $conf{display}{pm_version};
    		print "</td></tr></table>";        
         print "</td><td><table>$msput</td></tr>";
         print "<tr><td colspan=4><hr></td></tr>";
-        print "<tr><td colspan=4>PoolManager was written by Lily, and updates are available at ";
-        print "<a href=https://github.com/starlilyth/Linux-PoolManager target=_blank>GitHub</a>.<br>"; 
-        print "If you love PoolManager, please consider donating. Thank you!<br> ";
-        print "BTC: 1JBovQ1D3P4YdBntbmsu6F1CuZJGw9gnV6 <br>LTC: LdMJB36zEfTo7QLZyKDB55z9epgN78hhFb<br>";
+        print "<tr><td colspan=4>PoolManager v$release New releases are available at ";
+        print "<a href=https://github.com/starlilyth/Linux-PoolManager/releases target=_blank>GitHub</a>.<br>"; 
+        print "<b>If you love PoolManager, please consider donating. </b>Thank you!<br> ";
+        print "BTC: <b>1JBovQ1D3P4YdBntbmsu6F1CuZJGw9gnV6</b> <br>LTC: <b>LdMJB36zEfTo7QLZyKDB55z9epgN78hhFb</b><br>";
         print "</table></td></tr></table>";
     	print "</div>";
 	}
