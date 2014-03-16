@@ -76,6 +76,7 @@ sub doInstall {
 	      	copy "mcontrol", $appdir;
 	      	copy "pm-common.pl", $appdir;
 		  	copy "pmgraph.pl", $appdir . "/rrdtool"; 
+		  	copy "pmnotify.pl", $appdir;
 	        copy "run-poolmanager.pl", $appdir;
 		    copy "sendstatus.pl", $appdir;
 	      	`cp themes/* $webdir/IFMI/themes`;
