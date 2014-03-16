@@ -26,6 +26,7 @@ my $iptxt = "";
 while ($nicget =~ m/(\w\w\w\w?\d)\s.+\n\s+inet addr:(\d+\.\d+\.\d+\.\d+)\s/g) {
   $iptxt = $2; 
 }
+my $now = POSIX::strftime("%m/%d at %H:%M", localtime());	
 
 sub doEmail {
   my $emaildo = $conf{monitoring}{do_email};
@@ -37,7 +38,6 @@ sub doEmail {
 	my $rejhi = $conf{monitoring}{monitor_reject_hi};
 	my $fanlo = $conf{monitoring}{monitor_fan_lo};
 	my $fanhi = $conf{monitoring}{monitor_fan_hi};
-	my $now = POSIX::strftime("%m/%d at %H:%M", localtime());	
 	my $msg = "";
 	my @gpus = &getFreshGPUData(1);
 	for (my $i=0;$i<@gpus;$i++) {
@@ -101,6 +101,9 @@ sub sendAnEmail {
 	my $port = $conf{email}{smtp_port};	
 	my $tls = $conf{email}{smtp_tls};
 	my $ssl = $conf{email}{smtp_ssl};
+	if ($subject eq "TEST") {
+		$subject = "Test Email from $miner_name ($iptxt) - $now";
+	}
 	if ($to ne "") {
 		my $helo = $miner_name . 'nohost.net';
 		#domain name picked entirely at random, and apparently perfect for the cause. 

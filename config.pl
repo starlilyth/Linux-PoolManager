@@ -11,7 +11,9 @@
  use warnings;
  use YAML qw( DumpFile LoadFile );
  use CGI qw(:cgi-lib :standard);
+ require '/opt/ifmi/pmnotify.pl';
 
+my $version = "1.0.1+";
 my $conffile = "/opt/ifmi/poolmanager.conf";
 if (! -f $conffile) { 
   my $nconf = {
@@ -39,6 +41,7 @@ if (! -f $conffile) {
   		farmview_css => 'default.css',
   		graphcolors => 'pmgraph.colors',
   		usehashavg => '0',
+      pmversion => '$version',
   	},
   	farmview => {
   		do_bcast_status => '1',
@@ -134,6 +137,7 @@ if (-o $conffile) {
     my $nha = $in{'hashavg'};
     $mconf->{display}->{usehashavg} = $nha if($nha ne "");
     my $nbcast = $in{'bcast'};
+    $mconf->{display}->{pm_version} = $version if ($mconf->{display}->{pm_version} eq "");
 
     $mconf->{farmview}->{do_bcast_status} = $nbcast if($nbcast ne "");
     my $nbp = $in{'nbp'};
@@ -177,6 +181,26 @@ if (-o $conffile) {
       $nmw = $nmw * 60; 
       $mconf->{email}->{smtp_min_wait} = $nmw;
     }
+    my $se = $in{'sendemail'};
+    if ($se ne "") {
+      my $currsettings = "Email Settings:\n";
+      $currsettings .= "- Email To: " . $mconf->{email}->{smtp_to} . "\n";
+      $currsettings .= "- Email From: " . $mconf->{email}->{smtp_from} . "\n";
+      $currsettings .= "- SMTP Host: " . $mconf->{email}->{smtp_host} . "\n";
+      $currsettings .= "- SMTP port: " . $mconf->{email}->{smtp_port} . "\n";
+      $currsettings .= "- Email Frequency: " . $mconf->{email}->{smtp_min_wait} / 60 . "minutes\n";
+      $currsettings .= "- Auth User: " . $mconf->{email}->{smtp_auth_user} . "\n";
+      $currsettings .= "\nMonitoring Settings: \n";
+      $currsettings .= "- High Temp: " . $mconf->{monitoring}->{monitor_temp_hi} . "C\n"; 
+      $currsettings .= "- Low Temp: " . $mconf->{monitoring}->{monitor_temp_lo} . "C\n"; 
+      $currsettings .= "- High Fanspeed: " . $mconf->{monitoring}->{monitor_fan_hi} . "RPM\n"; 
+      $currsettings .= "- Low Fanspeed: " . $mconf->{monitoring}->{monitor_fan_lo} . "RPM\n"; 
+      $currsettings .= "- Low Load: " . $mconf->{monitoring}->{monitor_load_lo} . "\n"; 
+      $currsettings .= "- Low Hashrate: " . $mconf->{monitoring}->{monitor_hash_lo} . "Kh/s\n"; 
+      $currsettings .= "- High Reject Rate: " . $mconf->{monitoring}->{monitor_reject_hi} . "%\n"; 
+      
+      &sendAnEmail("TEST",$currsettings);
+  }
       
     DumpFile($conffile, $mconf); 
 
@@ -318,9 +342,11 @@ if ($emaildo==1) {
     print "<td colspan=2><input type='radio' name='mailssl' value=1>Yes ";
     print "<input type='radio' name='mailssl' value=0 checked>No </td></tr>"; 
   }
+  print "</form><form name=testemail method=post><tr><td colspan=2>Send a Test Email</td><td>";
+  print "<input type=submit name='sendemail' value='Send' method=post></td></tr></form>";
 }
+print "</table><br>";
 
-print "</table></form><br>";
 print "</td><td align=center>";
 
 print "<form name=farmview method=post>";
