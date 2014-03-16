@@ -27,8 +27,9 @@ while ($nicget =~ m/(\w\w\w\w?\d)\s.+\n\s+inet addr:(\d+\.\d+\.\d+\.\d+)\s/g) {
   $iptxt = $2; 
 }
 
-my $emaildo = $conf{monitoring}{do_email};
-if ($emaildo == 1) {
+sub doEmail {
+  my $emaildo = $conf{monitoring}{do_email};
+  if ($emaildo == 1) {
 	my $temphi = $conf{monitoring}{monitor_temp_hi};
 	my $templo = $conf{monitoring}{monitor_temp_lo};
 	my $hashlo = $conf{monitoring}{monitor_hash_lo};
@@ -147,6 +148,7 @@ sub sendAnEmail {
 	} else {
 		die "No recipient!\n";
 	}
+  }
 }
 
 1;

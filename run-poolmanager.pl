@@ -13,6 +13,7 @@ use strict;
 
 require '/opt/ifmi/pm-common.pl';
 require '/opt/ifmi/sendstatus.pl';
+require '/opt/ifmi/pmnotify.pl';
 
 my $conf = &getConfig;
 my %conf = %{$conf};
@@ -28,10 +29,17 @@ if ($conf{farmview}{do_direct_status} =~ m/\d+\.\d+\.\d+\.\d+/) {
  &directStatus($conf{farmview}{do_direct_status});
 }
 
+# Email 
+if ($conf{monitoring}{do_email} == 1) { 
+  if (time - (stat ('/tmp/pmnotify.lastsent'))[9] > ($conf{email}{smtp_min_wait} -10)) {
+    &doEmail;
+  }
+}
+
 # Graphs should be no older than 5 minutes
 my $graph = "/var/www/IFMI/graphs/msummary.png";
 if (-f $graph) {
-  if (time - (stat ($graph))[9] >= 300) { 
+  if (time - (stat ($graph))[9] > 290) { 
     exec('/opt/ifmi/rrdtool/pmgraph.pl'); 
   }
 } else { 
@@ -51,13 +59,6 @@ if (-f "/tmp/rfv") {
     &doFarmview;
   }
   exec('/bin/rm /tmp/rfv');
-}
-
-# Email
-if ($conf{monitoring}{do_email} == 1) { 
-  if (time - (stat ('/tmp/pmnotify.lastsent'))[9] > ($conf{email}{smtp_min_wait} -10)) {
-    exec('/opt/ifmi/pmnotify.pl');
-  }
 }
 
 
