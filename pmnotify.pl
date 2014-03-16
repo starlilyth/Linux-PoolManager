@@ -133,7 +133,6 @@ sub sendAnEmail {
 				host => $host,
 				port => $port,
 				helo => $helo,
-#				ssl => $ssl,			
 			);
 		}
 
@@ -150,3 +149,4 @@ sub sendAnEmail {
 	}
 }
 
+1;

@@ -28,10 +28,10 @@ if ($conf{farmview}{do_direct_status} =~ m/\d+\.\d+\.\d+\.\d+/) {
  &directStatus($conf{farmview}{do_direct_status});
 }
 
-# graphs should be no older than 5 minutes
+# Graphs should be no older than 5 minutes
 my $graph = "/var/www/IFMI/graphs/msummary.png";
 if (-f $graph) {
-  if (time - (stat ($graph))[9] > 300) { 
+  if (time - (stat ($graph))[9] >= 300) { 
     exec('/opt/ifmi/rrdtool/pmgraph.pl'); 
   }
 } else { 
@@ -59,6 +59,7 @@ if ($conf{monitoring}{do_email} == 1) {
     exec('/opt/ifmi/pmnotify.pl');
   }
 }
+
 
 sub doFarmview {
   my $fcheck = `/bin/ps -eo command | /bin/grep -Ec /opt/ifmi/farmview\$`;
