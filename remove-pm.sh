@@ -25,6 +25,7 @@ case "$input" in
     mv /usr/lib/cgi-bin/confedit.pl /var/www/IFMI/
     mv /usr/lib/cgi-bin/config.pl /var/www/IFMI/
     mv /etc/sudoers.pre-ifmi /etc/sudoers
+    chmod 0440 /etc/sudoers
     mv /etc/crontab.pre-ifmi /etc/crontab
     service cron restart
     mv /etc/apache2/sites-available/default.pre-ifmi /etc/apache2/sites-available/default
