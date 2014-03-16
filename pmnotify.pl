@@ -36,14 +36,13 @@ sub doEmail {
 		if ($ispriv ne "S") {
 			$msg .= "No miner data available - mining process may be stopped or hung!\n";
 		} else { 
-
-		my $temphi = $conf{monitoring}{monitor_temp_hi};
-		my $templo = $conf{monitoring}{monitor_temp_lo};
-		my $hashlo = $conf{monitoring}{monitor_hash_lo};
-		my $loadlo = $conf{monitoring}{monitor_load_lo};
-		my $rejhi = $conf{monitoring}{monitor_reject_hi};
-		my $fanlo = $conf{monitoring}{monitor_fan_lo};
-		my $fanhi = $conf{monitoring}{monitor_fan_hi};
+			my $temphi = $conf{monitoring}{monitor_temp_hi};
+			my $templo = $conf{monitoring}{monitor_temp_lo};
+			my $hashlo = $conf{monitoring}{monitor_hash_lo};
+			my $loadlo = $conf{monitoring}{monitor_load_lo};
+			my $rejhi = $conf{monitoring}{monitor_reject_hi};
+			my $fanlo = $conf{monitoring}{monitor_fan_lo};
+			my $fanhi = $conf{monitoring}{monitor_fan_hi};
 			my @gpus = &getFreshGPUData(1);
 			for (my $i=0;$i<@gpus;$i++) {
 				# stuff with settings

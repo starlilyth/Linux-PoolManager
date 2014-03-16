@@ -101,6 +101,7 @@ sub doInstall {
 	      	open my $sin, '>>', "/etc/sudoers";
 	 		print $sin "Defaults targetpw\n$apacheuser ALL=(ALL) /opt/ifmi/mcontrol,/bin/cp,/usr/bin/reboot\n";
 			close $sin;
+			`chmod 0440 /etc/sudoers`;
 			$instlog .= "sudoers modified.\n";
 		}
 		print "PoolManager attempts to set up some basic security for your web service.\n";
