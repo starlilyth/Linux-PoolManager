@@ -31,9 +31,11 @@ if ($conf{farmview}{do_direct_status} =~ m/\d+\.\d+\.\d+\.\d+/) {
 
 # Email 
 if ($conf{monitoring}{do_email} == 1) { 
-  if (time - (stat ('/tmp/pmnotify.lastsent'))[9] > ($conf{email}{smtp_min_wait} -10)) {
-    &doEmail;
-  }
+  if (-f "/tmp/pmnotify.lastsent") {
+    if (time - (stat ('/tmp/pmnotify.lastsent'))[9] > ($conf{email}{smtp_min_wait} -10)) {
+      &doEmail;
+    }
+  } else { &doEmail; }
 }
 
 # Graphs should be no older than 5 minutes
