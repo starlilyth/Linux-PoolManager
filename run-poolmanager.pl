@@ -28,18 +28,15 @@ if ($conf{farmview}{do_direct_status} =~ m/\d+\.\d+\.\d+\.\d+/) {
  &directStatus($conf{farmview}{do_direct_status});
 }
 
-# Email
-if ($conf{monitoring}{do_email} == 1) { 
-  if (time - (stat ('/tmp/pmnotify.lastsent'))[9] > ($conf{email}{smtp_min_wait} -10) ) {
-    exec('/opt/ifmi/pmnotify.pl');
-  }
-}
-
 # graphs should be no older than 5 minutes
 my $graph = "/var/www/IFMI/graphs/msummary.png";
 if (-f $graph) {
-  if (time - (stat ($graph))[9] > 300) { exec('/opt/ifmi/rrdtool/pmgraph.pl'); }
-} else { exec('/opt/ifmi/rrdtool/pmgraph.pl'); }
+  if (time - (stat ($graph))[9] > 300) { 
+    exec('/opt/ifmi/rrdtool/pmgraph.pl'); 
+  }
+} else { 
+  exec('/opt/ifmi/rrdtool/pmgraph.pl'); 
+}
 
 # FarmView
 if ($conf{farmview}{do_farmview} == 1) {
@@ -54,6 +51,13 @@ if (-f "/tmp/rfv") {
     &doFarmview;
   }
   exec('/bin/rm /tmp/rfv');
+}
+
+# Email
+if ($conf{monitoring}{do_email} == 1) { 
+  if (time - (stat ('/tmp/pmnotify.lastsent'))[9] > ($conf{email}{smtp_min_wait} -10)) {
+    exec('/opt/ifmi/pmnotify.pl');
+  }
 }
 
 sub doFarmview {
