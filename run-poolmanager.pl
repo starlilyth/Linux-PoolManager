@@ -65,7 +65,7 @@ if (-f "/tmp/rfv") {
 
 
 sub doFarmview {
-  my $fcheck = `/bin/ps -eo command | /bin/grep -Ec /opt/ifmi/farmview\$`;
+  my $fcheck = `/bin/ps -eo command | /bin/grep -Ec /opt/ifmi/farmview`;
   if ($fcheck == 0) {
     my $pid = fork();
     if (not defined $pid) {

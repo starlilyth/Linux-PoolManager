@@ -60,8 +60,10 @@ if (-f '/tmp/cleargraphs.flag') {
 }
 
 #GPUs 
+my $ispriv = &CGMinerIsPriv; 
+if ($ispriv eq "S") {
 
-my $gpucount = &getCGMinerGPUCount;
+  my $gpucount = &getCGMinerGPUCount;
   for (my $i=0;$i<$gpucount;$i++)
   {
     my $gnum = $i; 
@@ -151,6 +153,7 @@ my $gpucount = &getCGMinerGPUCount;
    "TICK:gdhwe$errorcolor:-0.1: HW error",
    ) or
   die "graph failed ($RRDs::error)";
+  }
 }
 
 # Summary

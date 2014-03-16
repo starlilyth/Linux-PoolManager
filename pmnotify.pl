@@ -31,6 +31,12 @@ my $now = POSIX::strftime("%m/%d at %H:%M", localtime());
 sub doEmail {
   my $emaildo = $conf{monitoring}{do_email};
   if ($emaildo == 1) {
+		my $msg = "";
+		my $ispriv = &CGMinerIsPriv; 
+		if ($ispriv ne "S") {
+			$msg .= "No miner data available - mining process may be stopped or hung!\n";
+		} else { 
+
 		my $temphi = $conf{monitoring}{monitor_temp_hi};
 		my $templo = $conf{monitoring}{monitor_temp_lo};
 		my $hashlo = $conf{monitoring}{monitor_hash_lo};
@@ -38,9 +44,7 @@ sub doEmail {
 		my $rejhi = $conf{monitoring}{monitor_reject_hi};
 		my $fanlo = $conf{monitoring}{monitor_fan_lo};
 		my $fanhi = $conf{monitoring}{monitor_fan_hi};
-		my $msg = "";
-		my @gpus = &getFreshGPUData(1);
-		if (@gpus) {
+			my @gpus = &getFreshGPUData(1);
 			for (my $i=0;$i<@gpus;$i++) {
 				# stuff with settings
 				if ($gpus[$i]{'current_temp_0_c'} > $conf{monitoring}{monitor_temp_hi}) {
@@ -59,8 +63,12 @@ sub doEmail {
 				if ($frpm > $conf{monitoring}{monitor_fan_hi}) {
 					$msg .= "GPU$i fan is: $gpus[$i]{'fan_rpm_c'} RPM. ";
 					$msg .= "Alert level is: $conf{monitoring}{monitor_fan_hi}\n";
-				}	
-				my $rr = $gpus[$i]{'shares_invalid'}/($gpus[$i]{'shares_accepted'} + $gpus[$i]{'shares_invalid'})*100 ;		
+				}
+				my $rr = "0";
+				my $gsha = $gpus[$i]{'shares_accepted'}; $gsha = 0 if ($gsha eq "");
+				if ($gsha > 0) {
+					$rr = $gpus[$i]{'shares_invalid'}/($gpus[$i]{'shares_accepted'} + $gpus[$i]{'shares_invalid'})*100 ;		
+				}
 				if ($rr > ${$conf}{monitoring}{monitor_reject_hi}) {
 					$msg .= "GPU$i reject rate is: $rr %. ";
 					$msg .= "Alert level is: $conf{monitoring}{monitor_reject_hi}\n";
@@ -85,8 +93,6 @@ sub doEmail {
 					$msg .= "GPU$i has $ghwe Hardware Errors.\n";
 				}
 			}
-		} else { 
-			$msg .= "No miner data available - mining process may be stopped or hung!\n";
 		}
 		if ($msg ne "") { 
 			my $email = "Alerts for $miner_name ($iptxt) - $now\n";		

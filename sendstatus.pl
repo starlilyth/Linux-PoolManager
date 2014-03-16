@@ -20,44 +20,46 @@ sub bcastStatus
  my $mname = `hostname`;
  chomp $mname;
 
- my $ts = $mname . '|' . ${$conf}{display}{miner_loc};
- my $k; 
- my @gpus = &getGPUData;
- for ($k = 0;$k < @gpus;$k++)
- {
-  $ts .= "|$k:" . encode_json $gpus[$k];
- }
- my $p;
- my @pools = &getCGMinerPools;
- for ($p = 0;$p < @pools;$p++)
- {
-  $ts .= "|$p pool:" . encode_json $pools[$p];
- }
- my @summary = &getCGMinerSummary;
-  $ts .= "|sum:" . encode_json $summary[0];
+ my $ispriv = &CGMinerIsPriv; 
+ if ($ispriv eq "S") {
+   my $ts = $mname . '|' . ${$conf}{display}{miner_loc};
+   my $k; 
+   my @gpus = &getGPUData;
+   for ($k = 0;$k < @gpus;$k++)
+   {
+    $ts .= "|$k:" . encode_json $gpus[$k];
+   }
+   my $p;
+   my @pools = &getCGMinerPools;
+   for ($p = 0;$p < @pools;$p++)
+   {
+    $ts .= "|$p pool:" . encode_json $pools[$p];
+   }
+   my @summary = &getCGMinerSummary;
+    $ts .= "|sum:" . encode_json $summary[0];
 
- my @version = &getCGMinerVersion;
-  $ts .= "|ver:$version[0]|";
+   my @version = &getCGMinerVersion;
+    $ts .= "|ver:$version[0]|";
 
- my $port = 54545;
+   my $port = 54545;
 
- if (defined(${$conf}{farmview}{status_port}))
- {
-  $port = ${$conf}{farmview}{status_port};
- }
+   if (defined(${$conf}{farmview}{status_port}))
+   {
+    $port = ${$conf}{farmview}{status_port};
+   }
 
- my $socket = IO::Socket::INET->new(Broadcast => 1, Blocking => 1, ReuseAddr => 1, Type => SOCK_DGRAM, 
-  Proto => 'udp', PeerPort => $port, LocalPort => 0, PeerAddr => inet_ntoa(INADDR_BROADCAST));
- 
- if ($socket)
- {
- 	$socket->send($ts, 0);
-	 close $socket;
-#   &blog("status sent");
- } else {
-   &blog("sendstatus failed to get socket");
- }
-
+   my $socket = IO::Socket::INET->new(Broadcast => 1, Blocking => 1, ReuseAddr => 1, Type => SOCK_DGRAM, 
+    Proto => 'udp', PeerPort => $port, LocalPort => 0, PeerAddr => inet_ntoa(INADDR_BROADCAST));
+   
+   if ($socket)
+   {
+   	$socket->send($ts, 0);
+  	 close $socket;
+  #   &blog("status sent");
+   } else {
+     &blog("sendstatus failed to get socket");
+   }
+  }
 }
 
 sub directStatus
@@ -69,46 +71,49 @@ sub directStatus
  my $mname = `hostname`;
  chomp $mname;
 
- my $ts = $mname . '|' . ${$conf}{display}{miner_loc};
+my $ispriv = &CGMinerIsPriv; 
+ if ($ispriv eq "S") {
 
- my @gpus = &getGPUData('false');
- my $k; 
- for ($k = 0;$k < @gpus;$k++)
- {
-  $ts .= "|$k:" . encode_json $gpus[$k];
- }
- my $p;
- my @pools = &getCGMinerPools;
- for ($p = 0;$p < @pools;$p++)
- {
-  $ts .= "|$p pool:" . encode_json $pools[$p];
- }
+   my $ts = $mname . '|' . ${$conf}{display}{miner_loc};
 
- my @summary = &getCGMinerSummary;
-  $ts .= "|sum:" . encode_json $summary[0];
+   my @gpus = &getGPUData('false');
+   my $k; 
+   for ($k = 0;$k < @gpus;$k++)
+   {
+    $ts .= "|$k:" . encode_json $gpus[$k];
+   }
+   my $p;
+   my @pools = &getCGMinerPools;
+   for ($p = 0;$p < @pools;$p++)
+   {
+    $ts .= "|$p pool:" . encode_json $pools[$p];
+   }
 
- my @version = &getCGMinerVersion;
-  $ts .= "|ver:$version[0]|";
+   my @summary = &getCGMinerSummary;
+    $ts .= "|sum:" . encode_json $summary[0];
 
- my $port = 54545;
- 
- if (defined(${$conf}{farmview}{status_port}))        
- {
-  $port = ${$conf}{farmview}{status_port};
- }
+   my @version = &getCGMinerVersion;
+    $ts .= "|ver:$version[0]|";
 
- my $socket = IO::Socket::INET->new(Blocking => 1, ReuseAddr => 1, Type => 'SOCK_DGRAM', 
-  Proto => 'udp', PeerPort => $port, LocalPort => 0, PeerAddr => $target);
- 
- if ($socket)
- {
-  $socket->send($ts, 0);
-  close $socket;
-#   &blog("direct status sent");
- } else {
-   &blog("sendstatus failed to get socket");
- }
+   my $port = 54545;
+   
+   if (defined(${$conf}{farmview}{status_port}))        
+   {
+    $port = ${$conf}{farmview}{status_port};
+   }
 
+   my $socket = IO::Socket::INET->new(Blocking => 1, ReuseAddr => 1, Type => 'SOCK_DGRAM', 
+    Proto => 'udp', PeerPort => $port, LocalPort => 0, PeerAddr => $target);
+   
+   if ($socket)
+   {
+    $socket->send($ts, 0);
+    close $socket;
+  #   &blog("direct status sent");
+   } else {
+     &blog("sendstatus failed to get socket");
+   }
+  }
 }
 
 
