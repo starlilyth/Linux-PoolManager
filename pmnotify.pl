@@ -166,12 +166,9 @@ sub sendAnEmail {
 		}
 
 		try { 
-
-			sendmail($email, { transport => $transport }); 
-
-#			if ( sendmail($email, { transport => $transport }) ) {
-#				`/usr/bin/touch /tmp/pmnotify.lastsent`;
-#			}
+			sendmail($email, { transport => $transport });
+		} finally {
+			`/usr/bin/touch /tmp/pmnotify.lastsent`;
 		} catch {
 			return "Email Error: $_";
 		};
