@@ -325,7 +325,7 @@ for (my $i=0;$i<@gpus;$i++)
     if ($poolurl =~ m/.+\@(.+)/) {
       $poolurl = $1;
     }	
-    if ($poolurl =~ m|://\S*?\.?(\S+\.\w+:\d+)$|) {
+    if ($poolurl =~ m|://\S+?\.?(\w+?\.\w+?:\d+)|) {
        $shorturl = $1;
     }
  	$shorturl = "N/A" if ($shorturl eq ""); 
@@ -663,7 +663,7 @@ if ($ispriv eq "S") {
 	      $psum .= '<TR><TD class="bigger"><A href="' . $purl . '">' . $i . '</TD>';
 	      $psum .= "<td>" . $pname . "</td>";
 	      if (length($pusr) > 20) { 
-	        $pusr = substr($pusr, 1, 6) . " ... " . substr($pusr, -6, 6) if (index($pusr, '.') < 0);
+	        $pusr = substr($pusr, 0, 6) . " ... " . substr($pusr, -6, 6) if (index($pusr, '.') < 0);
 	      }
 	      if ($avers > 1.16) {
 	        $psum .= "<td>" . $pusr . "</td>";
