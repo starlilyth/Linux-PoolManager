@@ -11,7 +11,6 @@
  use warnings;
  use YAML qw( DumpFile LoadFile );
  use CGI qw(:cgi-lib :standard);
- require '/opt/ifmi/pmnotify.pl';
 
 my $version = "1.0.1+";
 my $conffile = "/opt/ifmi/poolmanager.conf";
@@ -183,6 +182,7 @@ if (-o $conffile) {
     }
     my $se = $in{'sendemail'};
     if ($se ne "") {
+      require '/opt/ifmi/pmnotify.pl';
       my $currsettings = "Email Settings:\n";
       $currsettings .= "- Email To: " . $mconf->{email}->{smtp_to} . "\n";
       $currsettings .= "- Email From: " . $mconf->{email}->{smtp_from} . "\n";
