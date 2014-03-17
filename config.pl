@@ -313,7 +313,7 @@ if ($emaildo==1) {
   print "<td><input type='text' placeholder='smtp.email.com' name='mailhost'></td></tr>";
   my $mailport = $mconf->{email}->{smtp_port};
   print "<tr><td>SMTP Port</td><td>$mailport</td>";
-  print "<td><input type='text' size='5' placeholder='25' name='mailport'></td></tr>";
+  print "<td><input type='text' size='5' placeholder='587' name='mailport'></td></tr>";
   my $mailwait = ($mconf->{email}->{smtp_min_wait} / 60);
   print "<tr><td>Email Frequency</td><td>$mailwait minutes</td>";
   print "<td><input type='text' size='5' placeholder='5' name='mailwait'></td></tr>";

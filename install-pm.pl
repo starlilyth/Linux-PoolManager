@@ -84,6 +84,7 @@ sub doInstall {
 		    copy "sendstatus.pl", $appdir;
 	      	`cp themes/* $webdir/IFMI/themes`;
 	      	`cp images/*.png $webdir/IFMI`;
+	      	`chmod -R 0755 $appdir/*.pl`;
 	      	`chmod 0755 $cgidir/*.pl`; #because windows
 			`chown $apacheuser $appdir/poolmanager.conf` if (-f "$appdir/poolmanager.conf");
 	      	$instlog .= "files copied.\n";
