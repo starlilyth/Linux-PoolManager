@@ -170,7 +170,8 @@ sub doInstall {
 		  	`/usr/sbin/a2enmod rewrite`;
 		  	$restart++;
 	  	}
- 		print "Would you like to password protect the default site?(y/n) ";
+ 		print "Would you like to set up password protection the default site?\n";
+	 	print "(You can skip this if you have already done it) (y/n) ";
 		my $hreply = <>; chomp $hreply;
 		if ($hreply =~ m/y(es)?/i) {
 			if (! `grep AuthUserFile /etc/apache2/sites-available/default-ssl`) {
