@@ -10,14 +10,14 @@ Originally extended from the BAMT miner web interface of gpumon/mgpumon.
 * Farm Overview, including miner versions, active pools, and last page refresh time.
 * Easy CSS theming, with several themes included. 
 * GUI Settings Page - no need to edit a settings file
-NEW! PoolManager can now be configured to send an email when GPU alert conditions are met, including sick and dead status, hardware errors, and stopped/hung miner, along with all the previously available alert settings, and a new Fan High setting. 
+* NEW! PoolManager can now be configured to send an email when GPU alert conditions are met, including sick and dead status, hardware errors, and stopped/hung miner, along with all the previously available alert settings, and a new Fan High setting. 
 
 See the GitHub wiki page for screenshots.
 
 -----
 
 Reqirements: Linux running cgminer or clone. Built and tested on litecoin-bamt 1.2.
-This should work out of the box on BAMT, but will need the following Perl modules on clean Linux installs : 
+This should work out of the box on BAMT, but will need the following Perl modules on clean Linux installs: 
 
 * libjson-perl
 * libyaml-perl 
@@ -44,15 +44,19 @@ Please make sure the following entries are in your cgminer.conf:
     "api-listen" : true,
     "api-allow" : "W:127.0.0.1",
 
+Once installed, simply visit the IP of your miner in a browser. PoolManager enables and uses SSL (https), so be sure to open port 443 on any firewalls or routers if necessary. 
 
-PoolManager installation attempts to modify /etc/sudoers to allow the web service to stop/start the miner application, modify files, and boot the machine, all as a specified user. If it fails, you will need to modify sudoers yourself with the following: 
+UPGRADING IS JUST AS EASY!
+  Do all the steps as above.
+
+Install Notes:
+
+PoolManager installation attempts to modify /etc/sudoers to allow the web service to stop/start the miner application, modify files, and boot the machine, all as a specified user. This works on BAMT and most other distros, but if it fails you will need to modify sudoers yourself with the following: 
 
     Defaults targetpw  
     apacheuser ALL=(ALL) /opt/ifmi/mcontrol,/bin/cp,/path/to/reboot
 
 Where apacheuser is the user that your web service runs as, and /path/to/reboot is the path to the reboot command. 
-
-Once installed, simply visit the IP of your miner in a browser. PoolManager enables and uses SSL (https), so be sure to open port 443 on any firewalls or routers if necessary. 
 
 If you wish to remove PoolManager, you can run the remove-pm.sh script in the same directory you ran install-pm.sh
 

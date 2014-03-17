@@ -47,30 +47,31 @@ sub doEmail {
 			for (my $i=0;$i<@gpus;$i++) {
 				# stuff with settings
 				if ($gpus[$i]{'current_temp_0_c'} > $conf{monitoring}{monitor_temp_hi}) {
-					$msg .= "GPU$i temp is: $gpus[$i]{'current_temp_0_c'} C. ";
-					$msg .= "Alert level is: $conf{monitoring}{monitor_temp_hi}\n";
+					$msg .= "GPU$i temp is: $gpus[$i]{'current_temp_0_c'}C. ";
+					$msg .= "Alert level is: $conf{monitoring}{monitor_temp_hi}C\n";
 				}
 				if ($gpus[$i]{'current_temp_0_c'} < $conf{monitoring}{monitor_temp_lo}) { 
-					$msg .= "GPU$i temp is: $gpus[$i]{'current_temp_0_c'} C. ";
-					$msg .= "Alert level is: $conf{monitoring}{monitor_temp_lo}\n";
+					$msg .= "GPU$i temp is: $gpus[$i]{'current_temp_0_c'}C. ";
+					$msg .= "Alert level is: $conf{monitoring}{monitor_temp_lo}C\n";
 				}
 				my $frpm = $gpus[$i]{'fan_rpm_c'}; $frpm = "0" if ($frpm eq "");
 				if (($frpm < $conf{monitoring}{monitor_fan_lo}) && ($frpm > 0)) {
-					$msg .= "GPU$i fan is: $gpus[$i]{'fan_rpm_c'} RPM. ";
-					$msg .= "Alert level is: $conf{monitoring}{monitor_fan_lo}\n";
+					$msg .= "GPU$i fan is: $gpus[$i]{'fan_rpm_c'}RPM. ";
+					$msg .= "Alert level is: $conf{monitoring}{monitor_fan_lo} RPM\n";
 				}
-				if ($frpm > $conf{monitoring}{monitor_fan_hi}) {
-					$msg .= "GPU$i fan is: $gpus[$i]{'fan_rpm_c'} RPM. ";
-					$msg .= "Alert level is: $conf{monitoring}{monitor_fan_hi}\n";
+				if (($frpm > $conf{monitoring}{monitor_fan_hi}) && ($frpm > 0)) {
+					$msg .= "GPU$i fan is: $gpus[$i]{'fan_rpm_c'}RPM. ";
+					$msg .= "Alert level is: $conf{monitoring}{monitor_fan_hi}RPM\n";
 				}
 				my $rr = "0";
-				my $gsha = $gpus[$i]{'shares_accepted'}; $gsha = 0 if ($gsha eq "");
-				if ($gsha > 0) {
-					$rr = $gpus[$i]{'shares_invalid'}/($gpus[$i]{'shares_accepted'} + $gpus[$i]{'shares_invalid'})*100 ;		
+				my $gsha = $gpus[$i]{'shares_accepted'};
+				my $gshr = $gpus[$i]{'shares_invalid'}; $gshr = 0 if ($gshr eq "");
+				if ($gshr > 0) {
+			      $rr = sprintf("%.2f", $gshr / ($gsha + $gshr)*100);
 				}
 				if ($rr > ${$conf}{monitoring}{monitor_reject_hi}) {
-					$msg .= "GPU$i reject rate is: $rr %. ";
-					$msg .= "Alert level is: $conf{monitoring}{monitor_reject_hi}\n";
+					$msg .= "GPU$i reject rate is: $rr%. ";
+					$msg .= "Alert level is: $conf{monitoring}{monitor_reject_hi}%\n";
 				}
 				if ($gpus[$i]{'current_load_c'} < $conf{monitoring}{monitor_load_lo}) { 
 					$msg .= "GPU$i load is: $gpus[$i]{'current_load_c'}. ";
@@ -79,8 +80,8 @@ sub doEmail {
 				my $ghashrate = $gpus[$i]{'hashrate'}; 
 				$ghashrate = $gpus[$i]{'hashavg'} if ($ghashrate eq "");
 				if ($ghashrate < $conf{monitoring}{monitor_hash_lo}) { 
-					$msg .= "GPU$i hashrate is: $ghashrate. ";
-					$msg .= "Alert level is: $conf{monitoring}{monitor_hash_lo}\n";
+					$msg .= "GPU$i hashrate is: $ghashrate Kh/s. ";
+					$msg .= "Alert level is: $conf{monitoring}{monitor_hash_lo}Kh/s\n";
 				}
 				# stuff without settings
 				my $ghealth = $gpus[$i]{'status'}; 
@@ -90,6 +91,21 @@ sub doEmail {
 		    	my $ghwe = $gpus[$i]{'hardware_errors'};	
 				if ($ghwe > 0) { 
 					$msg .= "GPU$i has $ghwe Hardware Errors.\n";
+				}
+			}
+			my @pools = &getCGMinerPools(1);
+			if (@pools) { 
+				my $prr = "0"; 
+				for (my $i=0;$i<@pools;$i++) {
+			    my $pacc = ${$pools[$i]}{'accepted'}; 
+			    my $prej = ${$pools[$i]}{'rejected'}; $prej = 0 if ($prej eq ""); 
+			    if ($prej > 0) {
+			      $prr = sprintf("%.2f", $prej / ($pacc + $prej)*100);
+			    }
+					if ($prr > ${$conf}{monitoring}{monitor_reject_hi}) {
+						$msg .= "Pool $i reject rate is: $prr%. ";
+						$msg .= "Alert level is: $conf{monitoring}{monitor_reject_hi}%\n";
+					}
 				}
 			}
 		}

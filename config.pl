@@ -55,7 +55,7 @@ if (! -f $conffile) {
       smtp_from => 'poolmanager@localhost',
       smtp_port => '25',
       smtp_tls => '1',
-      smtp_ssl => '0',
+      smtp_ssl => '1',
       smtp_auth_user => '',
       smtp_auth_pass => '',
       smtp_min_wait => '300',
