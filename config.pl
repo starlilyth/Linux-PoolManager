@@ -65,7 +65,7 @@ if (! -f $conffile) {
 }
 
 # Take care of business
-my $conferror = 0;
+my $conferror = 0; my $mailerror = "";
 my $mconf = LoadFile( $conffile );
 if (-o $conffile) {
   our %in;
@@ -199,7 +199,7 @@ if (-o $conffile) {
       $currsettings .= "- Low Hashrate: " . $mconf->{monitoring}->{monitor_hash_lo} . "Kh/s\n"; 
       $currsettings .= "- High Reject Rate: " . $mconf->{monitoring}->{monitor_reject_hi} . "%\n"; 
       
-      &sendAnEmail("TEST",$currsettings);
+      $mailerror = &sendAnEmail("TEST",$currsettings);
   }
       
     DumpFile($conffile, $mconf); 
@@ -224,6 +224,14 @@ print start_html( -title=>'PM - ' . $miner_name . ' - Settings',
 print "<div id='content'><table class=settingspage>";
 print "<tr><td colspan=2 align=center>";
 print "<table class=title><tr><td class=bigger>PoolManager Configuration for $miner_name</td><tr>";
+if ($mailerror ne "") {
+  if ($mailerror =~ m/success/i) {
+    print "<tr><td colspan=2 bgcolor='green'>Test Email Sent Successfully</td><tr>";
+  } elsif ($mailerror =~ m/^(.+)/) {
+    my $errmsg = $1;
+    print "<tr><td class=error colspan=2>$errmsg</td><tr>";
+  }
+}
 if ($conferror == 1) {
   print "<tr><td class=error colspan=2>PoolManager cannot write to its config!";
   print "<br>Please ensure /opt/ifmi/poolmanager.conf is owned by the webserver user.</td><tr>";

@@ -10,7 +10,7 @@ use strict;
 use warnings;
 
 use Email::Simple::Creator;
-use Email::Sender::Simple qw(try_to_sendmail);
+use Email::Sender::Simple qw(sendmail);
 use Email::Sender::Transport::SMTP;
 use Email::Sender::Transport::SMTP::TLS;
 use Try::Tiny;
@@ -166,11 +166,14 @@ sub sendAnEmail {
 		}
 
 		try { 
-			if ( try_to_sendmail($email, { transport => $transport }) ) {
-				`/usr/bin/touch /tmp/pmnotify.lastsent`;
-			}
+
+			sendmail($email, { transport => $transport }); 
+
+#			if ( sendmail($email, { transport => $transport }) ) {
+#				`/usr/bin/touch /tmp/pmnotify.lastsent`;
+#			}
 		} catch {
-			print "error sending alert email: $!\n";
+			return "Email Error: $_";
 		};
 
 	} else {
