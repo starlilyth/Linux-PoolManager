@@ -42,10 +42,10 @@ if ($conf{monitoring}{do_email} == 1) {
 my $graph = "/var/www/IFMI/graphs/msummary.png";
 if (-f $graph) {
   if (time - (stat ($graph))[9] > 290) { 
-    exec('/opt/ifmi/rrdtool/pmgraph.pl'); 
+    exec('/opt/ifmi/pmgraph.pl'); 
   }
 } else { 
-  exec('/opt/ifmi/rrdtool/pmgraph.pl'); 
+  exec('/opt/ifmi/pmgraph.pl'); 
 }
 
 # FarmView
