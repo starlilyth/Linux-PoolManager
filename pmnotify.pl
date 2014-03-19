@@ -69,7 +69,7 @@ sub doEmail {
 				if ($gshr > 0) {
 			      $rr = sprintf("%.2f", $gshr / ($gsha + $gshr)*100);
 				}
-				if ($rr > ${$conf}{monitoring}{monitor_reject_hi}) {
+				if (($gsha > 0) && ($rr > ${$conf}{monitoring}{monitor_reject_hi})) {
 					$msg .= "GPU$i reject rate is: $rr%. ";
 					$msg .= "Alert level is: $conf{monitoring}{monitor_reject_hi}%\n";
 				}
@@ -95,14 +95,14 @@ sub doEmail {
 			}
 			my @pools = &getCGMinerPools(1);
 			if (@pools) { 
-				my $prr = "0"; 
 				for (my $i=0;$i<@pools;$i++) {
+				my $prr = "0"; 
 			    my $pacc = ${$pools[$i]}{'accepted'}; 
 			    my $prej = ${$pools[$i]}{'rejected'}; $prej = 0 if ($prej eq ""); 
 			    if ($prej > 0) {
 			      $prr = sprintf("%.2f", $prej / ($pacc + $prej)*100);
 			    }
-					if ($prr > ${$conf}{monitoring}{monitor_reject_hi}) {
+					if (($pacc > 0) && ($prr > ${$conf}{monitoring}{monitor_reject_hi})) {
 						$msg .= "Pool $i reject rate is: $prr%. ";
 						$msg .= "Alert level is: $conf{monitoring}{monitor_reject_hi}%\n";
 					}
