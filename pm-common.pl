@@ -795,6 +795,71 @@ push(@summary, ({elapsed=>$melapsed, hashavg=>$mhashav, hashrate=>$mhashrate, kh
 	
 }
 
+sub getCGMinerConfig
+{    
+    my $conf = &getConfig;
+    %conf = %{$conf}; 
+
+  my @mconfig; 
+ 
+    my $cgport = 4028;
+  if (defined(${$conf}{'settings'}{'cgminer_port'}))
+  {
+    $cgport = ${$conf}{'settings'}{'cgminer_port'};
+  }
+    
+  my $sock = new IO::Socket::INET (
+          PeerAddr => '127.0.0.1',
+          PeerPort => $cgport,
+          Proto => 'tcp',
+          ReuseAddr => 1,
+          Timeout => 10,
+         );
+    
+    if ($sock)
+    {
+      print $sock "config|\n";
+    
+    my $res = "";
+    
+    while(<$sock>) 
+    {
+      $res .= $_;
+    }
+    
+    close($sock);
+
+    if ($res =~ m/Strategy=(.+?),/g) {
+      $mstrategy = $1;
+    }
+
+    if ($res =~ m/Failover-Only=(\w+),/g) {
+      $mfonly = $1;
+    }
+
+    if ($res =~ m/ScanTime=(\d+),/g) {
+      $mscant = $1;
+    }
+
+    if ($res =~ m/Queue=(\d+),/g) {
+      $mqueue = $1;
+    }
+
+    if ($res =~ m/Expiry=(\d+),/g) {
+      $mexpiry = $1;
+    }
+
+    push(@mconfig, ({strategy=>$mstrategy, fonly=>$mfonly, scantime=>$mscant, queue=>$mqueue, expiry=>$mexpiry }) );
+    return(@mconfig);
+
+
+    } else {
+      $url = "cgminer socket failed";
+    }
+  
+}
+
+
 sub stopCGMiner
 {
  		

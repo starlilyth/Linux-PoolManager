@@ -12,7 +12,7 @@
  use YAML qw( DumpFile LoadFile );
  use CGI qw(:cgi-lib :standard);
 
-my $version = "1.1.0";
+my $version = "1.1.0+";
 my $conffile = "/opt/ifmi/poolmanager.conf";
 if (! -f $conffile) { 
   my $nconf = {

@@ -70,21 +70,22 @@ if ($reboot eq "reboot") {
   $status = `echo $in{'ptext'} | sudo -S /sbin/coldreboot`;
 }  
 
-# Someday, maybe.
 my $qval = $in{'qval'};
 if ($qval ne "") {
   my $qpool = $in{'qpool'};
   &quotaPool($qpool, $qval);
+  &saveConfig();
   $qval = ""; $qpool = "";
 }
-my $qreset = $in{'qreset'};
-if ($qreset eq "reset") {
-  my @pools = &getCGMinerPools(1);
-  for (my $i=0;$i<@pools;$i++) {
-    &quotaPool($i, "1");
-  }
-  $qreset = "";
-}
+
+# my $qreset = $in{'qreset'};
+# if ($qreset eq "reset") {
+#   my @pools = &getCGMinerPools(1);
+#   for (my $i=0;$i<@pools;$i++) {
+#     &quotaPool($i, "1");
+#   }
+#   $qreset = "";
+# }
 
 # Now carry on
 our $conf = &getConfig;
@@ -154,6 +155,7 @@ my $ispriv = &CGMinerIsPriv;
 my @gpus = &getFreshGPUData(1);
 my @pools = &getCGMinerPools(1);
 my @summary = &getCGMinerSummary;
+my @mconfig = &getCGMinerConfig; 
 my $UHOH = "false";
 $UHOH = "true" if (!(@pools) && !(@summary) && !(@gpus)); 
 
@@ -219,7 +221,7 @@ for (my $i=0;$i<@gpus;$i++)
 		
  	}	
 
-	if (defined($conf{monitoring}{monitor_temp_hi}) && ($gpus[$i]{'current_temp_0_c'} > $conf{monitoring}{monitor_temp_hi}))
+	if ($gpus[$i]{'current_temp_0_c'} > $conf{monitoring}{monitor_temp_hi})
 	{
 			$problems++;
 			push(@nodemsg, "GPU $i is over maximum temp");
@@ -232,7 +234,7 @@ for (my $i=0;$i<@gpus;$i++)
 			
 			$gput .= "<td class='error'>";
 	}
-	elsif (defined($conf{monitoring}{monitor_temp_lo}) && ($gpus[$i]{'current_temp_0_c'} < $conf{monitoring}{monitor_temp_lo}))
+	elsif ($gpus[$i]{'current_temp_0_c'} < $conf{monitoring}{monitor_temp_lo})
 	{
 			$problems++;
 			push(@nodemsg, "GPU $i is below minimum temp");
@@ -256,7 +258,7 @@ for (my $i=0;$i<@gpus;$i++)
 	$gput .= sprintf("%.1f", $gpus[$i]{'current_temp_0_c'}) . ' C</td>';
 	
 	$frpm = $gpus[$i]{'fan_rpm_c'}; $frpm = "0" if ($frpm eq "");
-	if (defined($conf{monitoring}{monitor_fan_lo}) && $frpm < ($conf{monitoring}{monitor_fan_lo}) && ($frpm > 0))
+	if ($frpm < ($conf{monitoring}{monitor_fan_lo}) && ($frpm > 0))
 	{
 		$problems++;
 		push(@nodemsg, "GPU $i is below minimum fan RPM");
@@ -269,7 +271,7 @@ for (my $i=0;$i<@gpus;$i++)
 		
 		$gput .= "<td class='error'>";
 	}
-	elsif (defined($conf{monitoring}{monitor_fan_hi}) && $frpm > ($conf{monitoring}{monitor_fan_hi}))
+	elsif ($frpm > ($conf{monitoring}{monitor_fan_hi}))
 	{
 		$problems++;
 		push(@nodemsg, "GPU $i is above maximum fan RPM");
@@ -303,8 +305,8 @@ for (my $i=0;$i<@gpus;$i++)
 		
 	my $ghashrate = $gpus[$i]{'hashrate'}; 
 	$ghashrate = $gpus[$i]{'hashavg'} if ($ghashrate eq "");
-	$ghashrate = $gpus[$i]{'hashavg'} if (defined($conf{display}{usehashavg})); 
-	if (defined($conf{monitoring}{monitor_hash_lo}) && ($ghashrate < $conf{monitoring}{monitor_hash_lo}))
+	$ghashrate = $gpus[$i]{'hashavg'} if ($conf{display}{usehashavg} >0); 
+	if ($ghashrate < $conf{monitoring}{monitor_hash_lo})
 	{
 		$problems++;
 		push(@nodemsg, "GPU $i is below minimum hash rate");
@@ -341,7 +343,7 @@ for (my $i=0;$i<@gpus;$i++)
 	if ($gsha > 0)
 	{
 		my $rr = $gpus[$i]{'shares_invalid'}/($gpus[$i]{'shares_accepted'} + $gpus[$i]{'shares_invalid'})*100 ;		
-		if (defined(${$conf}{monitoring}{monitor_reject_hi}) && ($rr > ${$conf}{monitoring}{monitor_reject_hi}))
+		if ($rr > ${$conf}{monitoring}{monitor_reject_hi})
 		{
 			$problems++;
 			push(@nodemsg, "GPU $i is above maximum reject rate");
@@ -403,7 +405,7 @@ for (my $i=0;$i<@gpus;$i++)
 
 	$gput .= "</TR>";
 
-	if (defined($conf{monitoring}{monitor_load_lo}) && ($gpus[$i]{'current_load_c'} < $conf{monitoring}{monitor_load_lo}))
+	if ($gpus[$i]{'current_load_c'} < $conf{monitoring}{monitor_load_lo})
 	{
 		$problems++;
 		push(@nodemsg, "GPU $i is below minimum load");
@@ -449,6 +451,16 @@ for (my $i=0;$i<@gpus;$i++)
 }
 $g1put .= "</table>";
 
+if (@mconfig) {
+	for (my $i=0;$i<@mconfig;$i++) {
+		$mstrategy = ${@mconfig[0]}{'strategy'};
+		$mfonly = ${@mconfig[0]}{'fonly'};
+		$mscant = ${@mconfig[0]}{'scantime'};
+		$mqueue = ${@mconfig[0]}{'queue'};
+		$mexpiry = ${@mconfig[0]}{'expiry'};
+	}
+}
+
 $mcontrol .= "<table id='mcontrol'><tr>";
 my $surl = "?"; $surl .= "miner=$i";
 $mcontrol .= '<TD class="bigger"><A href="' . $surl . '">Miner</a></td>';
@@ -468,7 +480,7 @@ if (@summary) {
     $mrunt = sprintf("%d days, %02d:%02d.%02d",(gmtime $melapsed)[7,2,1,0]);
     $mratem = ${@summary[$i]}{'hashrate'};
     $mratem = ${@summary[$i]}{'hashavg'} if ($mratem eq "");
-    $mratem = ${@summary[$i]}{'hashavg'} if (defined($conf{display}{usehashavg})); 
+    $mratem = ${@summary[$i]}{'hashavg'} if ($conf{display}{usehashavg} >0 ); 
     $minerate = sprintf("%.2f", $mratem);
     $mineacc = ${@summary[$i]}{'shares_accepted'};
     $minerej = ${@summary[$i]}{'shares_invalid'};
@@ -541,7 +553,8 @@ if (@summary) {
  		$msput .= "<tr><td colspan=4><hr></td></tr>";
  		$msput .= "<tr><td><a href='config.pl'>PoolManager Configuration</a></td><td>";
   	} else {		
-		if ($melapsed > 0) {  	  
+		if ($melapsed > 0) { 
+		  $mcontrol .= "<td>$mstrategy Mode</td>";
 		  $mcontrol .= "<td>Run time: " . $mrunt . "</td>";
 		  $mcontrol .= "<td><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
 		} else { 
@@ -577,41 +590,52 @@ if ($ispriv eq "S") {
 	$p1sum .= "<TD class='header'>Status</TD>";
 	$p1sum .= "<TD class='header' colspan=2>Accept/Reject</TD>";
 	$p1sum .= "<TD class='header'>Active</TD>";
-	$p1sum .= "<TD class='header'>Prio</TD>";
-	#$p1sum .= "<TD class='header' colspan=2>Quota (ratio or %)</TD>";
+	$p1sum .= "<TD class='header'>Priority</TD>" if ($mstrategy eq "Failover");
+	$p1sum .= "<TD class='header' colspan=2>Quota (ratio or %)</TD>" if ($mstrategy eq "Load Balance"); 
 	$p1sum .= "</TR>";
 
-	my @poolmsg; $pqb=0;
+	my @poolmsg;
 	if (@pools) { 
-	  my $g0url = $gpus[0]{'pool_url'}; 
 	  for (my $i=0;$i<@pools;$i++) {
-	    $pimg = "<form name='pselect' action='status.pl' method='POST'><input type='hidden' name='swpool' value='$i'><button type='submit'>Switch</button></form>";
-	    $pnum = ${@pools[$i]}{'poolid'};
-	    $pname = ${@pools[$i]}{'url'};
-	    $pimg = "<img src='/IFMI/ok24.png'>" if ($g0url eq $pname);
-	    $pusr = ${@pools[$i]}{'user'};
-	    $pstat = ${@pools[$i]}{'status'};
+		$pimg = "<img src='/IFMI/timeout24.png'>";
+	    $pimg = "<form name='pselect' action='status.pl' method='POST'><input type='hidden' name='swpool' value='$i'><button type='submit'>Switch</button></form>" 
+	    	if ($mstrategy eq "Failover");
+
+	    my $pname = ${@pools[$i]}{'url'};
+		my $pactive = 0; 
+		for (my $g=0;$g<@gpus;$g++) {
+			if ($pname eq $gpus[$g]{'pool_url'}) {
+				$pactive++;
+			}
+		}	
+		if ($pactive >0) {
+			$pimg = "<img src='/IFMI/ok24.png'>";			
+		}
+	    my $pnum = ${@pools[$i]}{'poolid'};
+	    my $pusr = ${@pools[$i]}{'user'};
+	    my $pstat = ${@pools[$i]}{'status'};
+	    my $pstatus = "";
 	    if ($pstat eq "Dead") {
 	      $problems++;
 	      push(@nodemsg, "Pool $i is dead"); 
 	      $pstatus = "<td class='error'>" . $pstat . "</td>";
+	      $pimg = "<img src='/IFMI/error24.png'>";
 		  if ($showpool == $i) {
 		  	push(@poolmsg, "Pool is dead"); 
 		  }	
 	    } else {
 	      $pstatus = "<td>" . $pstat . "</td>";
 	    }
-	    $pimg = "<img src='/IFMI/error24.png'>" if ($pstat ne "Alive");
-	    $ppri = ${@pools[$i]}{'priority'};
-	    $pimg = "<img src='/IFMI/timeout24.png'>" if (($g0url ne $pname)&&(($ppri eq 0)&&($pstat eq "Alive")));
-	    $pacc = ${@pools[$i]}{'accepted'};
-	    $prej = ${@pools[$i]}{'rejected'};
+	    my $ppri = ${@pools[$i]}{'priority'};
+	    my $pacc = ${@pools[$i]}{'accepted'};
+	    my $prej = ${@pools[$i]}{'rejected'};
+	    my $prr = "";
 	    if ($prej ne "0") {
-	      $prr = sprintf("%.2f", $prej / ($pacc + $prej)*100);
+	       $prr = sprintf("%.2f", $prej / ($pacc + $prej)*100);
 	    } else { 
 		   $prr = "0.0";
 	    }
-		if (defined(${$conf}{monitoring}{monitor_reject_hi}) && ($prr > ${$conf}{monitoring}{monitor_reject_hi})) {
+		if ($prr > ${$conf}{monitoring}{monitor_reject_hi}) {
 	      $problems++;
 	      push(@nodemsg, "Pool $i reject ratio too high"); 
 	  	  $prat = "<td class='error'>" . $prr . "%</td>";
@@ -621,8 +645,7 @@ if ($ispriv eq "S") {
 	    } else { 
 	      $prat = "<td>" . $prr . "%</td>";
 	    }
-	#    $pquo = ${@pools[$i]}{'quota'};
-	#    $pqb++ if ($pquo ne "1");
+	    $pquo = ${@pools[$i]}{'quota'};
 	      if ($showpool == $i) { 
 	      $psgw = ${@pools[$i]}{'getworks'};
 	      $psw = ${@pools[$i]}{'works'}; 
@@ -630,13 +653,13 @@ if ($ispriv eq "S") {
 	      $pss = ${@pools[$i]}{'stale'}; 
 	      $psgf = ${@pools[$i]}{'getfails'}; 
 	      $psrf = ${@pools[$i]}{'remotefailures'};
-	      if ($g0url eq $pname) {
+		  if ($pactive >0) {
 			$current = "Active";
 	      } else { 
 			$current = "Not Active  ";
 	      }
 	      $psput .= "<tr><form name='pdelete' action='status.pl' method='POST'><td class='big' colspan=4>$current";
-	      if ($g0url ne $pname) {
+		  if ($pactive == 0) {
 	      $psput .= "<input type='hidden' name='delpool' value='$i'><input type='submit' value='Remove this pool'>";
 	      }
 	      $psput .= "</form></td></tr>";
@@ -672,29 +695,30 @@ if ($ispriv eq "S") {
 	      $psum .= "<td>" . $pacc . " / " . $prej . "</td>";
 	      $psum .= $prat;
 	      $psum .= "<td>" . $pimg . "</td>";
-	      $psum .= "<td>" . $ppri . "</td>";
-	#      $psum .= "<td>" . $pquo . "</td>";
-	#      $psum .= "<td><form name='pquota' action='status.pl' method='text'>";
-	#      $psum .= "<input type='text' size='3' name='qval' required>";
-	#      $psum .= "<input type='hidden' name='qpool' value='$i'>";
-	#      $psum .= "<input type='submit' value='Set'></form></td></tr>";
+	      $psum .= "<td>" . $ppri . "</td>" if ($mstrategy eq "Failover");
+		  if ($mstrategy eq "Load Balance") {
+	      	$psum .= "<td> " . $pquo . " </td>";
+	      	$psum .= "<td><form name='pquota' action='status.pl' method='text'>";
+	      	$psum .= "<input type='text' size='3' name='qval' required>";
+	      	$psum .= "<input type='hidden' name='qpool' value='$i'>";
+	      	$psum .= "<input type='submit' value='Set'></form></td></tr>";
+	      }
 	    }
 	  }
 	  $psum .= "<tr><form name='padd' action='status.pl' method='POST'>";
 	  $psum .= "<td colspan='2'><input type='text' size='45' placeholder='MiningURL:portnumber' name='npoolurl' required>";
 	  $psum .= "</td><td colspan='2'><input type='text' placeholder='username.worker' name='npooluser' required>";
 	  $psum .= "</td><td colspan='2'><input type='text' size='15' placeholder='worker password' name='npoolpw'>";
-	  $psum .= "</td><td colspan='2'><input type='submit' value='Add'>"; 
-	  $psum .= "</td></form></tr>";
-
-	#if ($pqb ne "0") {
-	#  $p1add .= "<td colspan='3'><form name='qreset' action='status.pl' method='text'>";
-	#  $p1add .= "<input type='hidden' name='qreset' value='reset'>";
-	#  $p1add .= "<input type='submit' value='Unset Quotas'></form></td>";
-	#} else { 
-	#  $p1add .= "<td colspan='3'><small>Failover Mode</small></td>"; 
-	#}
-
+	  $psum .= "</td><td><input type='submit' value='Add'>"; 
+	  $psum .= "</td></form>";
+	  if ($mstrategy eq "Failover") {
+		  $psum .= "<TD class='header' colspan=2>";
+	  }
+	  	  $psum .= "";
+	  if ($mstrategy eq "Load Balance") {
+		  $psum .= "<TD class='header' colspan=2>Failover-Only:<br>$mfonly";
+	  }
+	$psum .= "</TD></tr>";
 	} else { 
 	  $psum .= "<TR><TD colspan='8'><big>Active Pool Information Unavailable</big></td></tr>";
 	}
