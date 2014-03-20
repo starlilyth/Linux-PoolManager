@@ -513,28 +513,28 @@ if (@summary) {
     $minerej = ${@summary[$i]}{'shares_invalid'};
     $minewu = ${@summary[$i]}{'work_utility'};
     $minehe = ${@summary[$i]}{'hardware_errors'};
+    my $currentm = $conf{settings}{current_mconf};
+ 		my $currname = $conf{miners}{$currentm}{mconfig};
 
   	if ($showminer == $i) {
-  		$getmlinv = `cat /proc/version`;
-  		$mlinv = $1 if ($getmlinv =~ /version\s(.*?\s+\(.*?\))\s+\(/);
-  		$msput .= "<tr><td class='big'>Host IP:</td><td  colspan=3>$iptxt</td></tr>";
-      	$msput .= "<tr><td class='big'>Linux Version:</td><td  colspan=3>" . $mlinv . "</td></tr>";
-# It is unclear how relevant this information is, and it is difficult to extract. 
-#  		$madlv = "1";
-#      	$msput .= "<tr><td>ADL Version:</td><td>" . $madlv . "</td></tr>";
-#  		$mcatv = "1";
-#      	$msput .= "<tr><td>Catalyst Version:</td><td>" . $mcatv . "</td></tr>";
-#   	$msdkv = "1";
-#      	$msput .= "<tr><td>SDK Version:</td><td>" . $msdkv . "</td></tr>";		
-      	
-			$msput .= '<td class=big colspan=2><A href=ssh://user@' . $iptxt . '>SSH to Host</a></td></tr>';
-	    $msput .= "<tr><td class='big' colspan=2><a href='/cgi-bin/confedit.pl' target='_blank'>Configuration Editor</a></td></tr>";
-			$msput .= "<form name='reboot' action='status.pl' method='POST'><input type='hidden' name='reboot' value='reboot'>";
-			$msput .= "<tr><td></td></tr><tr><td colspan=2><input type='submit' value='Reboot' onclick='this.disabled=true;this.form.submit();' > ";
-			$msput .= "<input type='password' placeholder='root password' name='ptext' required></td></tr></form>";
-			$msput .= "<tr><td colspan=4><hr></td></tr>";
-	  	$msput .= "<tr><td>Miner Version (API)</td><td colspan=3>$mname $mvers ($avers)</td></tr>";
-	 		$msput .= "<tr><td colspan=4>$mstrategy Mode</td></tr>";
+	  	$msput .= "<tr><td colspan=4 class=big>Miner</td></tr>";
+	  	$msput .= "<tr><td>Miner Version: </td><td>$mname $mvers</td>";
+	 		$msput .= "<td>$mstrategy Mode</td></tr>";
+	 		$msput .= "<tr><td>Profile:  </td><td>$currname</td>";
+			$msput .= "<td colspan=2><form name=currentm method=post><select name=setmconf>";
+			for (keys %{$conf{miners}}) {
+  			my $mname = $conf{miners}{$_}{mconfig};
+  				if ($currentm eq $_) {
+    				$msput .= "<option value=$_ selected>$mname</option>";
+	  			} else { 
+  	  			$msput .= "<option value=$_>$mname</option>";
+  				}
+				}
+			$msput .= "<input type='submit' value='Select'>";
+			$msput .= "</select></form></td></tr>";
+			my $currconf = $conf{miners}{$currentm}{savepath};
+			$msput .= "<tr><td colspan=2>Config file: $currconf</td>";
+	    $msput .= "<td><a href='/cgi-bin/confedit.pl' target='_blank'>Edit Config</a></td></tr>";
 	    $msput .= "<tr><td>Run time:</td><td>" . $mrunt . "</td>";
 			if ($melapsed > 0) {  	  
 			  $msput .= "<td  colspan=2><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
@@ -542,6 +542,7 @@ if (@summary) {
 			  $msput .= "<td  colspan=2><form name='mstart' action='status.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > ";
 			}
 			$msput .= "<input type='password' placeholder='root password' name='ptext' required></form></tr>";
+			$msput .= "<tr><td colspan=4>Stats</td><tr>";
 			$mtm = ${@summary[$i]}{'total_mh'};
 			$minetm = sprintf("%.2f", $mtm); 
 	    $msput .= "<tr><td>Total MH:</td><td>" . $minetm . "</td>";
@@ -578,12 +579,21 @@ if (@summary) {
 			$minebs = ${@summary[$i]}{'best_share'};
 			$minebs = 0 if ($minebs eq "");
       $msput .= "<td>Best Share:</td><td>" . $minebs . "</td></tr>";
- 			$msput .= "<tr><td colspan=4><hr></td></tr>";
- 			$msput .= "<tr><td><a href='config.pl'>PoolManager Configuration</a></td><td>";
+			$msput .= "<tr><td colspan=4><hr></td></tr></table><table>";
+	  	$msput .= "<tr><td colspan=4 class=big>Node</td></tr>";
+  		$getmlinv = `cat /proc/version`;
+  		$mlinv = $1 if ($getmlinv =~ /version\s(.*?\s+\(.*?\))\s+\(/);
+     	$msput .= "<tr><td colspan=2>Linux Version: " . $mlinv . "</td>";
+			$msput .= "<form name='reboot' action='status.pl' method='POST'><input type='hidden' name='reboot' value='reboot'>";
+			$msput .= "<td colspan=2><input type='submit' value='Reboot' onclick='this.disabled=true;this.form.submit();' > ";
+			$msput .= "<input type='password' placeholder='root password' name='ptext' required></td></tr></form>";
+  		$msput .= "<tr><td colspan=2>Host IP: $iptxt</td>";
+			$msput .= '<td class=big colspan=2><A href=ssh://user@' . $iptxt . '>SSH to Host</a></td></tr>';
+			$msput .= "<tr><td colspan=4><hr></td></tr>";
+ 			$msput .= "<tr><td class=big><a href='config.pl'>PoolManager Configuration</a></td><td>";
+
   	} else {		
 			$mcontrol .= "<td>$mname $mvers</td>" if ($melapsed > 0);
-			my $currentm = $conf{settings}{current_mconf};
-			my $currname = $conf{miners}{$currentm}{mconfig};
 			if ($melapsed > 0) { 
 		  	$mcontrol .= "<td>$mstrategy Mode</td>";
 		  	$mcontrol .= "<td>Run time: " . $mrunt . "</td>";

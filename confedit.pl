@@ -19,7 +19,8 @@ print header;
 print start_html( -title=>'PM - ' . $hostname . ' - Config',
           -style=>{-src=>'/IFMI/themes/' . $theme } );
 
-my $savepath = $mconf->{settings}->{savepath}; 
+my $currentm = $mconf->{settings}->{current_mconf};
+my $savepath = $mconf->{miners}->{$currentm}->{savepath}; 
 our %in;
 &ReadParse(%in);
 my $confdata = $in{'configtext'};

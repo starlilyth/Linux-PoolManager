@@ -154,8 +154,7 @@ if (-o $conffile) {
     if ($mdel ne "") {
       if ($mdel != 0) {
         delete $mconf->{miners}->{$mdel};
-        $mdel--;
-        $mconf->{settings}->{current_mconf} = $mdel;
+        $mconf->{settings}->{current_mconf} = 0;
       }
     }
 
@@ -324,7 +323,6 @@ if ($savepath eq "/opt/ifmi/cgminer.conf") {
 print "</form></td></tr>";
 print "</table><br>";
 
-
 print "<tr><td colspan=2 align=center>";
 print "<form name=miscsettings method=post>";
 print "<table class=settings><tr><td colspan=2 class=header>Misc. Miner Settings</td>";
@@ -346,9 +344,7 @@ if (-d "/opt/bamt/") {
 }
 print "</table></form><br>";
 
-
 print "</td></tr><tr><td rowspan=2 align=center valign=top>";
-
 print "<form name=monitoring method=post>";
 print "<table class=monitor><tr><td colspan=2 class=header>Monitoring Settings</td>";
 print "<td class=header><input type='submit' value='Save'></td><tr>";
