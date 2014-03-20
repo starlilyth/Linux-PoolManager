@@ -84,14 +84,17 @@ if ($qval ne "") {
 my $npalias = $in{'npalias'};
 if ($npalias ne "") {
 	my $paurl = $in{'paurl'};
+	my $acount = 0;
  	for (keys %{$conf{aliases}}) {
 		if ($paurl eq ${$conf}{aliases}{$_}{url}) {
 			${$conf}{aliases}{$_}{alias} = $npalias;
-		} else {
-		 	$newa = (keys %{$conf{aliases}}); $newa++; 
-		 	${$conf}{aliases}{$newa}{alias} = $npalias;
-		 	${$conf}{aliases}{$newa}{url} = $paurl;
+			$acount++;
 		}
+	}
+	if ($acount == 0) {	
+	 	$newa = (keys %{$conf{aliases}}); $newa++; 
+	 	${$conf}{aliases}{$newa}{alias} = $npalias;
+	 	${$conf}{aliases}{$newa}{url} = $paurl;
 	}
 	my $conffile = "/opt/ifmi/poolmanager.conf";
 	DumpFile($conffile, $conf); 
