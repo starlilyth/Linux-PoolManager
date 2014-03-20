@@ -25,15 +25,20 @@ if (! -f $conffile) {
       monitor_fan_hi => '4000',
   		monitor_reject_hi => '3',
       do_email => '0',
-
   	},
-  	settings => {
-  		cgminer_path => '/opt/miners/cgminer/cgminer',
-  		cgminer_opts => '--api-listen --config /opt/ifmi/cgminer.conf',
-  		savepath => '/opt/ifmi/cgminer.conf',
+  	miners => {
+      0 => {
+    		mconfig => 'default',
+        mpath => '/opt/miners/cgminer/cgminer',
+    		mopts => '--api-listen --config /opt/ifmi/cgminer.conf',
+  	   	savepath => '/opt/ifmi/cgminer.conf',
+      },
+  	},
+    settings => {
       cgminer_port => '4028',
-  		IGNOREBAMT => '1',
-  	},
+      IGNOREBAMT => '1',
+      current_mconf => '0',
+    },
   	display => {
   		miner_loc => 'Undisclosed Location',
   		status_css => 'default.css',
@@ -112,12 +117,48 @@ if (-o $conffile) {
     my $doe = $in{'emaildo'};
     $mconf->{monitoring}->{do_email} = $doe if($doe ne "");
 
-    my $nmp = $in{'nmp'};
-    $mconf->{settings}->{cgminer_path} = $nmp if($nmp ne "");
-    my $nmo = $in{'nmo'};
-    $mconf->{settings}->{cgminer_opts} = $nmo if($nmo ne "");
-    my $nsp = $in{'nsp'};
-    $mconf->{settings}->{savepath} = $nsp if($nsp ne "");
+    my $ncmc = $in{'setmconf'};
+    $mconf->{settings}->{current_mconf} = $ncmc if ($ncmc ne "");
+
+    my $nmconfig = $in{'nmconfig'};
+    if ($nmconfig ne "") {
+      my $ncname = $in{'cnmcname'}; 
+      if (($ncname ne "") && ($ncname ne $nmconfig)) {
+        my $newa = (keys %{$mconf->{miners}}); $newa++; 
+        $mconf->{miners}->{$newa}->{mconfig} = $ncname;
+        my $nmp = $in{'nmp'};
+        $mconf->{miners}->{$newa}->{mpath} = $nmp;
+        my $nmo = $in{'nmo'};
+        $nmo = "--api-listen --config /opt/ifmi/cgminer.conf" if ($nmo eq "");
+        $mconf->{miners}->{$newa}->{mopts} = $nmo;
+        my $nsp = $in{'nsp'};
+        $nsp = "/opt/ifmi/cgminer.conf" if ($nsp eq "");
+        $mconf->{miners}->{$newa}->{savepath} = $nsp;
+        $mconf->{settings}->{current_mconf} = $newa;
+      } else { 
+        for (keys %{$mconf->{miners}}) {
+          if ($nmconfig eq $mconf->{miners}->{$_}->{mconfig}) {
+            my $nmp = $in{'nmp'};
+            $mconf->{miners}->{$_}->{mpath} = $nmp if ($nmp ne "");
+            my $nmo = $in{'nmo'};
+            $mconf->{miners}->{$_}->{mopts} = $nmo if ($nmo ne "");
+            my $nsp = $in{'nsp'};
+            $mconf->{miners}->{$_}->{savepath} = $nsp if ($nsp ne "");
+          } 
+        }
+      }  
+      $nmconfig = ""; $ncname = "";
+    }
+
+    my $mdel = $in{'deletem'};
+    if ($mdel ne "") {
+      if ($mdel != 0) {
+        delete $mconf->{miners}->{$mdel};
+        $mdel--;
+        $mconf->{settings}->{current_mconf} = $mdel;
+      }
+    }
+
     my $nap = $in{'nap'};
     if($nap ne "") {
       $nap = "4028" if (! ($nap =~ m/^\d+?$/));    
@@ -241,17 +282,56 @@ if ($conferror == 1) {
   print "<br>Please ensure /opt/ifmi/poolmanager.conf is owned by the webserver user.</td><tr>";
 }
 print "</table><br></td></tr>";
+print "<tr><td colspan=2 align=center>";
+
+
+print "<table class=settings><tr><td class=header>Miner Profile</td><td class=header>";
+my $currentm = $mconf->{settings}->{current_mconf};
+my $currname = $mconf->{miners}->{$currentm}->{mconfig};
+print "<form name=deletem method=post>$currname <input type='submit' value='Delete'>";
+#my $delminer = $mconf->{miners}->{$currentm};
+print "<input type='hidden' name='deletem' value='$currentm'></form>";
+print "</td><td class=header>";
+print "<form name=currentm method=post><select name=setmconf>";
+for (keys %{$mconf->{miners}}) {
+  my $mname = $mconf->{miners}->{$_}->{mconfig};
+  if ($currentm eq $_) {
+    print "<option value=$_ selected>$mname</option>";
+  } else { 
+    print "<option value=$_>$mname</option>";
+  }
+}
+print "<input type='submit' value='Select'>";
+print "</select></form>";
+
+print "<td class=header><form name=msettings method=post>";
+print "<input type='submit' value='Update'>";
+print "<input type='hidden' name='nmconfig' value='$currname'> ";
+print " <input type='text' placeholder='enter name for new profile' name='cnmcname'></td><tr>";
+my $miner_path = $mconf->{miners}->{$currentm}->{mpath};
+print "<tr><td>Miner Path</td><td colspan=2>$miner_path</td>";
+print "<td><input type='text' size='45' placeholder='/path/to/miner' name='nmp'></td></tr>";
+my $miner_opts = $mconf->{miners}->{$currentm}->{mopts};
+print "<tr><td>Miner Options</td><td colspan=2>$miner_opts</td>";
+print "<td><input type='text' size='45' placeholder='--api-listen --config /etc/bamt/cgminer.conf' name='nmo'></td></tr>";
+my $savepath = $mconf->{miners}->{$currentm}->{savepath}; 
+print "<tr><td>Miner Config<br>Save Path</td>";
+print "<td colspan=2>$savepath<br><i><small>Changes to the miner config are saved here</small></i></td>";
+print "<td><input type='text' size='45' placeholder='/opt/ifmi/cgminer.conf' name='nsp'>";
+if ($savepath eq "/opt/ifmi/cgminer.conf") {
+ print "<br><i><small>The default is probably not what you want.</small></i>";
+}
+print "</form></td></tr>";
+print "</table><br>";
+
 
 print "<tr><td colspan=2 align=center>";
-print "<form name=settings method=post>";
-print "<table class=settings><tr><td colspan=2 class=header>Miner Settings</td>";
+print "<form name=miscsettings method=post>";
+print "<table class=settings><tr><td colspan=2 class=header>Misc. Miner Settings</td>";
 print "<td class=header><input type='submit' value='Save'></td><tr>";
-my $miner_path = $mconf->{settings}->{cgminer_path};
-print "<tr><td>Miner Path</td><td>$miner_path</td>";
-print "<td><input type='text' size='45' placeholder='/path/to/miner' name='nmp'></td></tr>";
-my $miner_opts = $mconf->{settings}->{cgminer_opts};
-print "<tr><td>Miner Options</td><td>$miner_opts</td>";
-print "<td><input type='text' size='45' placeholder='--api-listen --config /etc/bamt/cgminer.conf' name='nmo'></td></tr>";
+my $minerport = $mconf->{settings}->{cgminer_port};
+print "<tr><td>API port</td><td><i>Defaults to 4028 if unset</i></td>";
+print "<td>$minerport <input type='text' size='4' placeholder='4028' name='nap'></td></tr>";
 my $ibamt = $mconf->{settings}->{IGNOREBAMT};
 if (-d "/opt/bamt/") {
   print "<tr><td>Ignore BAMT</td>";
@@ -264,18 +344,8 @@ if (-d "/opt/bamt/") {
     print "<input type='radio' name='ibamt' value=0 checked>No </td></tr>"; 
   }
 }
-my $savepath = $mconf->{settings}->{savepath}; 
-print "<tr><td>Miner Config<br>Save Path</td>";
-print "<td>$savepath<br><i><small>Changes to the miner config are saved here</small></i></td>";
-print "<td><input type='text' size='45' placeholder='/opt/ifmi/cgminer.conf' name='nsp'>";
-if ($savepath eq "/opt/ifmi/cgminer.conf") {
- print "<br><i><small>The default is probably not what you want.</small></i>";
-}
-print "</td></tr>";
-my $minerport = $mconf->{settings}->{cgminer_port};
-print "<tr><td>API port</td><td><i>Defaults to 4028 if unset</i></td>";
-print "<td>$minerport <input type='text' size='4' placeholder='4028' name='nap'></td></tr>";
 print "</table></form><br>";
+
 
 print "</td></tr><tr><td rowspan=2 align=center valign=top>";
 

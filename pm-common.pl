@@ -13,19 +13,20 @@ use IO::Socket::INET;
 use Sys::Syslog qw( :DEFAULT setlogsock);
 setlogsock('unix');
 use JSON::XS;
+use File::Copy;
 
 sub saveConfig 
 {
  my $savefile = $_[0];
  my $conf = &getConfig;
  %conf = %{$conf};
-$savefile = "/opt/ifmi/cgminer.conf";
-if (defined($conf{settings}{savepath})) {
-  $savefile = $conf{settings}{savepath};
-}
+
+  my $currmconf = ${$conf}{settings}{current_mconf}; 
+  my $savefile = ${$conf}{miners}{$currmconf}{mpath}; 
+
   if (-e $savefile) { 
-   $bkpfile = $savefile . "-bkp";
-   rename $savefile, $bkpfile; 
+   $bkpfile = $savefile . ".bkp";
+   copy $savefile, $bkpfile; 
   }
    &blog("saving config to $savefile...");
    
@@ -937,14 +938,15 @@ sub stopCGMiner
 sub startCGMiner
 {
 
- my $conf = &getConfig;
- %conf = %{$conf};  
+  my $conf = &getConfig;
+  %conf = %{$conf};  
 
-  my $minerbin = ${$conf}{'settings'}{'cgminer_path'}; 
+  my $currmconf = ${$conf}{settings}{current_mconf}; 
+  my $minerbin = ${$conf}{miners}{$currmconf}{mpath}; 
   if ($minerbin eq "") {
     die "No miner path defined! Exiting."; 
   }
-  my $mineropts =  ${$conf}{'settings'}{'cgminer_opts'}; 	
+  my $mineropts =  ${$conf}{miners}{$currmconf}{mopts}; 	
 	my $pid = fork(); 
 	
     if (not defined $pid)

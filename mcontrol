@@ -19,7 +19,8 @@ my $conf = &getConfig;
 my %conf = %{$conf};
 
 my $nobamt = $conf{settings}{IGNOREBAMT};
-my $minerpath = $conf{settings}{cgminer_path};
+my $currentm = $conf{settings}{current_mconf};
+my $minerpath = $conf{miners}{$currentm}{mpath};
 
 if ($ARGV[0] eq "start") { 
 	my $mcheck = `ps -eo command | grep -Ec ^$minerpath`;

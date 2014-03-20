@@ -81,6 +81,7 @@ if ($qval ne "") {
   $qval = ""; $qpool = "";
 }
 
+my $conffile = "/opt/ifmi/poolmanager.conf";
 my $npalias = $in{'npalias'};
 if ($npalias ne "") {
 	my $paurl = $in{'paurl'};
@@ -96,10 +97,16 @@ if ($npalias ne "") {
 	 	${$conf}{aliases}{$newa}{alias} = $npalias;
 	 	${$conf}{aliases}{$newa}{url} = $paurl;
 	}
-	my $conffile = "/opt/ifmi/poolmanager.conf";
 	DumpFile($conffile, $conf); 
 	$npalias = ""; $paurl = "";
 }	
+
+my $ncmc = $in{'setmconf'};
+if ($ncmc ne "") {
+	${$conf}{settings}{current_mconf} = $ncmc;
+	DumpFile($conffile, $conf); 
+	$ncmc = "";
+}
 
 # my $prilist = $in{'prilist'};
 # if ($prilist ne "") {
@@ -493,7 +500,6 @@ if ($version =~ m/(\w+?)=(\d+\.\d+\.\d+),API=(\d+\.\d+)/) {
 	$mvers = "Unknown";
 	$avers = "0"; 
 }
-$mcontrol .= "<td>$mname $mvers</td>";
 
 if (@summary) {
   for (my $i=0;$i<@summary;$i++) {
@@ -521,79 +527,93 @@ if (@summary) {
 #   	$msdkv = "1";
 #      	$msput .= "<tr><td>SDK Version:</td><td>" . $msdkv . "</td></tr>";		
       	
-		$msput .= '<td class=big colspan=2><A href=ssh://user@' . $iptxt . '>SSH to Host</a></td></tr>';
-      	$msput .= "<tr><td class='big' colspan=2><a href='/cgi-bin/confedit.pl' target='_blank'>Configuration Editor</a></td></tr>";
-		$msput .= "<form name='reboot' action='status.pl' method='POST'><input type='hidden' name='reboot' value='reboot'>";
-		$msput .= "<tr><td></td></tr><tr><td colspan=2><input type='submit' value='Reboot' onclick='this.disabled=true;this.form.submit();' > ";
-		$msput .= "<input type='password' placeholder='root password' name='ptext' required></td></tr></form>";
-		$msput .= "<tr><td colspan=4><hr></td></tr>";
-  	$msput .= "<tr><td>Miner Version (API)</td><td colspan=3>$mname $mvers ($avers)</td></tr>";
- 		$msput .= "<tr><td colspan=4>$mstrategy Mode</td></tr>";
-    $msput .= "<tr><td>Run time:</td><td>" . $mrunt . "</td>";
-		if ($melapsed > 0) {  	  
-		  $msput .= "<td  colspan=2><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
-		} else { 
-		  $msput .= "<td  colspan=2><form name='mstart' action='status.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > ";
-		}
-		$msput .= "<input type='password' placeholder='root password' name='ptext' required></form></tr>";
-		$mtm = ${@summary[$i]}{'total_mh'};
-		$minetm = sprintf("%.2f", $mtm); 
-      	$msput .= "<tr><td>Total MH:</td><td>" . $minetm . "</td>";
-		$minefb = ${@summary[$i]}{'found_blocks'};
-		$minefb = 0 if ($minefb eq "");
-      	$msput .= "<td>Found Blocks:</td><td>" . $minefb . "</td></tr>";
-		$minegw = ${@summary[$i]}{'getworks'};
-		$minegw = 0 if ($minegw eq "");
-      	$msput .= "<tr><td>Getworks:</td><td>" . $minegw . "</td>";
-		$minedis = ${@summary[$i]}{'discarded'};
-      	$minedis = 0 if ($minedis eq "");
-      	$msput .= "<td>Discarded:</td><td>" . $minedis . "</td></tr>";
-		$minest = ${@summary[$i]}{'stale'};
-		$minest = 0 if ($minest eq "");
-      	$msput .= "<tr><td>Stale:</td><td>" . $minest . "</td>";
-		$minegf = ${@summary[$i]}{'get_failures'};
-		$minegf = 0 if ($minegf eq "");
-      	$msput .= "<td>Get Failures:</td><td>" . $minegf . "</td></tr>";
-		$minerf = ${@summary[$i]}{'remote_failures'};
-		$minerf = 0 if ($minerf eq "");
-      	$msput .= "<tr><td>Remote Fails:</td><td>" . $minerf . "</td>";
-		$minenb = ${@summary[$i]}{'network_blocks'};
-		$minenb = 0 if ($minenb eq "");
-      	$msput .= "<td>Network Blocks:</td><td>" . $minenb . "</td></tr>";
-      	$mdia = ${@summary[$i]}{'diff_accepted'};
-		$minedia = sprintf("%d", $mdia);
-      	$msput .= "<tr><td>Diff Accepted:</td><td>" . $minedia . "</td>";
-      	$mdir = ${@summary[$i]}{'diff_rejected'};
-		$minedir = sprintf("%d", $mdir);
-      	$msput .= "<td>Diff Rejected:</td><td>" . $minedir . "</td></tr>";
-      	$mds = ${@summary[$i]}{'diff_stale'};
-		$mineds = sprintf("%d", $mds);
-      	$msput .= "<tr><td>Difficulty Stale:</td><td>" . $mineds . "</td>";
-		$minebs = ${@summary[$i]}{'best_share'};
-		$minebs = 0 if ($minebs eq "");
-      	$msput .= "<td>Best Share:</td><td>" . $minebs . "</td></tr>";
- 		$msput .= "<tr><td colspan=4><hr></td></tr>";
- 		$msput .= "<tr><td><a href='config.pl'>PoolManager Configuration</a></td><td>";
+			$msput .= '<td class=big colspan=2><A href=ssh://user@' . $iptxt . '>SSH to Host</a></td></tr>';
+	    $msput .= "<tr><td class='big' colspan=2><a href='/cgi-bin/confedit.pl' target='_blank'>Configuration Editor</a></td></tr>";
+			$msput .= "<form name='reboot' action='status.pl' method='POST'><input type='hidden' name='reboot' value='reboot'>";
+			$msput .= "<tr><td></td></tr><tr><td colspan=2><input type='submit' value='Reboot' onclick='this.disabled=true;this.form.submit();' > ";
+			$msput .= "<input type='password' placeholder='root password' name='ptext' required></td></tr></form>";
+			$msput .= "<tr><td colspan=4><hr></td></tr>";
+	  	$msput .= "<tr><td>Miner Version (API)</td><td colspan=3>$mname $mvers ($avers)</td></tr>";
+	 		$msput .= "<tr><td colspan=4>$mstrategy Mode</td></tr>";
+	    $msput .= "<tr><td>Run time:</td><td>" . $mrunt . "</td>";
+			if ($melapsed > 0) {  	  
+			  $msput .= "<td  colspan=2><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
+			} else { 
+			  $msput .= "<td  colspan=2><form name='mstart' action='status.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > ";
+			}
+			$msput .= "<input type='password' placeholder='root password' name='ptext' required></form></tr>";
+			$mtm = ${@summary[$i]}{'total_mh'};
+			$minetm = sprintf("%.2f", $mtm); 
+	    $msput .= "<tr><td>Total MH:</td><td>" . $minetm . "</td>";
+			$minefb = ${@summary[$i]}{'found_blocks'};
+			$minefb = 0 if ($minefb eq "");
+      $msput .= "<td>Found Blocks:</td><td>" . $minefb . "</td></tr>";
+			$minegw = ${@summary[$i]}{'getworks'};
+			$minegw = 0 if ($minegw eq "");
+      $msput .= "<tr><td>Getworks:</td><td>" . $minegw . "</td>";
+			$minedis = ${@summary[$i]}{'discarded'};
+      $minedis = 0 if ($minedis eq "");
+      $msput .= "<td>Discarded:</td><td>" . $minedis . "</td></tr>";
+			$minest = ${@summary[$i]}{'stale'};
+			$minest = 0 if ($minest eq "");
+      $msput .= "<tr><td>Stale:</td><td>" . $minest . "</td>";
+			$minegf = ${@summary[$i]}{'get_failures'};
+			$minegf = 0 if ($minegf eq "");
+      $msput .= "<td>Get Failures:</td><td>" . $minegf . "</td></tr>";
+			$minerf = ${@summary[$i]}{'remote_failures'};
+			$minerf = 0 if ($minerf eq "");
+      $msput .= "<tr><td>Remote Fails:</td><td>" . $minerf . "</td>";
+			$minenb = ${@summary[$i]}{'network_blocks'};
+			$minenb = 0 if ($minenb eq "");
+      $msput .= "<td>Network Blocks:</td><td>" . $minenb . "</td></tr>";
+      $mdia = ${@summary[$i]}{'diff_accepted'};
+			$minedia = sprintf("%d", $mdia);
+      $msput .= "<tr><td>Diff Accepted:</td><td>" . $minedia . "</td>";
+      $mdir = ${@summary[$i]}{'diff_rejected'};
+			$minedir = sprintf("%d", $mdir);
+      $msput .= "<td>Diff Rejected:</td><td>" . $minedir . "</td></tr>";
+      $mds = ${@summary[$i]}{'diff_stale'};
+			$mineds = sprintf("%d", $mds);
+      $msput .= "<tr><td>Difficulty Stale:</td><td>" . $mineds . "</td>";
+			$minebs = ${@summary[$i]}{'best_share'};
+			$minebs = 0 if ($minebs eq "");
+      $msput .= "<td>Best Share:</td><td>" . $minebs . "</td></tr>";
+ 			$msput .= "<tr><td colspan=4><hr></td></tr>";
+ 			$msput .= "<tr><td><a href='config.pl'>PoolManager Configuration</a></td><td>";
   	} else {		
-		if ($melapsed > 0) { 
-		  $mcontrol .= "<td>$mstrategy Mode</td>";
-		  $mcontrol .= "<td>Run time: " . $mrunt . "</td>";
-		  $mcontrol .= "<td><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
-		} else { 
-		  $mcontrol .= "<td class='error'>Stopped</td>";
-		  $mcontrol .= "<td><form name='mstart' action='status.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > ";
+			$mcontrol .= "<td>$mname $mvers</td>" if ($melapsed > 0);
+			my $currentm = $conf{settings}{current_mconf};
+			my $currname = $conf{miners}{$currentm}{mconfig};
+			if ($melapsed > 0) { 
+		  	$mcontrol .= "<td>$mstrategy Mode</td>";
+		  	$mcontrol .= "<td>Run time: " . $mrunt . "</td>";
+			  $mcontrol .= "<td>Profile: " . $currname . "</td>";
+			  $mcontrol .= "<td><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
+			} else { 
+		  	$mcontrol .= "<td class='error'>Stopped</td>";
+			  $mcontrol .= "<td><form name=currentm method=post>Profile: <select name=setmconf>";
+				for (keys %{$conf{miners}}) {
+  				my $mname = $conf{miners}{$_}{mconfig};
+  				if ($currentm eq $_) {
+    				$mcontrol .= "<option value=$_ selected>$mname</option>";
+	  			} else { 
+  	  			$mcontrol .= "<option value=$_>$mname</option>";
+  				}
+				}
+				$mcontrol .= "<input type='submit' value='Select'>";
+				$mcontrol .= "</select></form></td>";
+			  $mcontrol .= "<td><form name='mstart' action='status.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > ";
+			}
+			$mcontrol .= "<input type='password' placeholder='root password' name='ptext' required></td></form>";		
+			my $fcheck = `ps -eo command | grep -Ec /opt/ifmi/farmview\$`;
+			$mcontrol .=  "<td><A href=/farmview.html>Farm Overview</A></td>" if ($fcheck >0);
 		}
-		$mcontrol .= "<input type='password' placeholder='root password' name='ptext' required></td></form>";		
-		my $fcheck = `ps -eo command | grep -Ec /opt/ifmi/farmview\$`;
-		$mcontrol .=  "<td><A href=/farmview.html>Farm Overview</A></td>" if ($fcheck >0);
-	}
   }
-} 
-else {
+} else {
  	if ($showminer == 0) {
  		$getmlinv = `cat /proc/version`;
  		$mlinv = $1 if ($getmlinv =~ /version\s(.*?\s+\(.*?\))\s+\(/);
-     	$msput .= "<tr><td class='big'>Linux Version:</td><td>" . $mlinv . "</td></tr>";
+    $msput .= "<tr><td class='big'>Linux Version:</td><td>" . $mlinv . "</td></tr>";
 		$avers = " (1." . $avers . ")" if ($avers ne "");
  		$msput .= "<tr><td>Miner Version (API)</td><td>" . $mvers . $avers . "</td></tr>";
  	}
