@@ -133,6 +133,43 @@ sub quotaPool
         }
 }
 
+sub priPool 
+{
+ my $conf = &getConfig;
+ %conf = %{$conf};
+ my $prilist = $_[0];
+   &blog("setting pool priority list to $prilist ...");
+
+         my $cgport = 4028;
+         if (defined(${$conf}{'settings'}{'cgminer_port'}))
+         {
+                 $cgport = ${$conf}{'settings'}{'cgminer_port'};
+         }
+         my $sock = new IO::Socket::INET (
+                PeerAddr => '127.0.0.1',
+                PeerPort => $cgport,
+                Proto => 'tcp',
+                ReuseAddr => 1,
+                Timeout => 10,
+               );
+        if ($sock)
+        {
+        &blog("sending poolpriority command to cgminer api");
+        print $sock "poolpriority|$prilist"; 
+                my $res = "";
+                while(<$sock>)
+                {
+                        $res .= $_;
+                }
+                close($sock);
+          &blog("success!");
+        }
+        else
+        {
+                &blog("failed to get socket for cgminer api");
+        }
+}
+
 sub addPool 
 {
  my $conf = &getConfig;
@@ -852,13 +889,10 @@ sub getCGMinerConfig
     push(@mconfig, ({strategy=>$mstrategy, fonly=>$mfonly, scantime=>$mscant, queue=>$mqueue, expiry=>$mexpiry }) );
     return(@mconfig);
 
-
     } else {
       $url = "cgminer socket failed";
     }
-  
 }
-
 
 sub stopCGMiner
 {

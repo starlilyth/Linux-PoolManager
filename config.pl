@@ -59,7 +59,11 @@ if (! -f $conffile) {
       smtp_auth_user => '',
       smtp_auth_pass => '',
       smtp_min_wait => '300',
+    },
+    aliases => {
+      0 => { url => '', alias => '' }, 
     }
+
   };
   DumpFile($conffile, $nconf); 
 }

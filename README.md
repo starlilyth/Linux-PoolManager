@@ -24,8 +24,8 @@ This should work out of the box on BAMT, but will need the following Perl module
 * librrds-perl
 
 and additionally for email notifications..
-* libemail-simple
-* libemail-sender
+* libemail-simple-perl
+* libemail-sender-perl
 * libtry-tiny-perl
 
 ------
@@ -49,8 +49,7 @@ Once installed, simply visit the IP of your miner in a browser. PoolManager enab
 UPGRADING IS JUST AS EASY!
   Do all the steps as above.
 
-Install Notes:
-
+Install Notes: 
 PoolManager installation attempts to modify /etc/sudoers to allow the web service to stop/start the miner application, modify files, and boot the machine, all as a specified user. This works on BAMT and most other distros, but if it fails you will need to modify sudoers yourself with the following: 
 
     Defaults targetpw  

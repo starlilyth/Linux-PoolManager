@@ -9,8 +9,11 @@
 
 use CGI qw(:cgi-lib :standard);
 use feature qw(switch);
+use YAML qw( DumpFile );
 
 require '/opt/ifmi/pm-common.pl';
+our $conf = &getConfig;
+%conf = %{$conf};
 
 # Take care of business
 &ReadParse(%in);
@@ -78,18 +81,33 @@ if ($qval ne "") {
   $qval = ""; $qpool = "";
 }
 
-# my $qreset = $in{'qreset'};
-# if ($qreset eq "reset") {
-#   my @pools = &getCGMinerPools(1);
-#   for (my $i=0;$i<@pools;$i++) {
-#     &quotaPool($i, "1");
-#   }
-#   $qreset = "";
+my $npalias = $in{'npalias'};
+if ($npalias ne "") {
+	my $paurl = $in{'paurl'};
+ 	for (keys %{$conf{aliases}}) {
+		if ($paurl eq ${$conf}{aliases}{$_}{url}) {
+			${$conf}{aliases}{$_}{alias} = $npalias;
+		} else {
+		 	$newa = (keys %{$conf{aliases}}); $newa++; 
+		 	${$conf}{aliases}{$newa}{alias} = $npalias;
+		 	${$conf}{aliases}{$newa}{url} = $paurl;
+		}
+	}
+	my $conffile = "/opt/ifmi/poolmanager.conf";
+	DumpFile($conffile, $conf); 
+	$npalias = ""; $paurl = "";
+}	
+
+# my $prilist = $in{'prilist'};
+# if ($prilist ne "") {
+#   &priPool($prilist);
+#   &saveConfig();
+#   $prilist = "";
 # }
 
+
 # Now carry on
-our $conf = &getConfig;
-%conf = %{$conf};
+
 my $miner_name = `hostname`;
 chomp $miner_name;
 my $nicget = `/sbin/ifconfig`; 
@@ -584,33 +602,29 @@ $p1sum .= "<table id='pcontent'>";
 if ($ispriv eq "S") {
 	$p1sum .= "<TR class='header'><TD class='header'>Pool</TD>";
 	$p1sum .= "<TD class='header'>Pool URL</TD>";
-	if ($avers > 1.16) {
-	  $p1sum .= "<TD class='header'>Worker</TD>"; 
-	}
+	$p1sum .= "<TD class='header'>Alias</TD>";
+	$p1sum .= "<TD class='header'>Worker</TD>" if ($avers > 1.16); 
 	$p1sum .= "<TD class='header'>Status</TD>";
 	$p1sum .= "<TD class='header' colspan=2>Accept/Reject</TD>";
 	$p1sum .= "<TD class='header'>Active</TD>";
-	$p1sum .= "<TD class='header'>Priority</TD>" if ($mstrategy eq "Failover");
+	$p1sum .= "<TD class='header' colspan=2>Priority</TD>" if ($mstrategy eq "Failover");
 	$p1sum .= "<TD class='header' colspan=2>Quota (ratio or %)</TD>" if ($mstrategy eq "Load Balance"); 
 	$p1sum .= "</TR>";
-
 	my @poolmsg;
-	if (@pools) { 
+ 	my @currorder;
+	if (@pools) {
 	  for (my $i=0;$i<@pools;$i++) {
-		$pimg = "<img src='/IFMI/timeout24.png'>";
+			my $pimg = "<img src='/IFMI/timeout24.png'>";
 	    $pimg = "<form name='pselect' action='status.pl' method='POST'><input type='hidden' name='swpool' value='$i'><button type='submit'>Switch</button></form>" 
-	    	if ($mstrategy eq "Failover");
-
-	    my $pname = ${@pools[$i]}{'url'};
-		my $pactive = 0; 
-		for (my $g=0;$g<@gpus;$g++) {
-			if ($pname eq $gpus[$g]{'pool_url'}) {
-				$pactive++;
-			}
-		}	
-		if ($pactive >0) {
-			$pimg = "<img src='/IFMI/ok24.png'>";			
-		}
+	    				if ($mstrategy eq "Failover");
+    	my $pname = ${@pools[$i]}{'url'};
+			my $pactive = 0; 
+			for (my $g=0;$g<@gpus;$g++) {
+				if ($pname eq $gpus[$g]{'pool_url'}) {
+					$pactive++;
+				}
+			}	
+			$pimg = "<img src='/IFMI/ok24.png'>" if ($pactive >0);
 	    my $pnum = ${@pools[$i]}{'poolid'};
 	    my $pusr = ${@pools[$i]}{'user'};
 	    my $pstat = ${@pools[$i]}{'status'};
@@ -620,13 +634,12 @@ if ($ispriv eq "S") {
 	      push(@nodemsg, "Pool $i is dead"); 
 	      $pstatus = "<td class='error'>" . $pstat . "</td>";
 	      $pimg = "<img src='/IFMI/error24.png'>";
-		  if ($showpool == $i) {
-		  	push(@poolmsg, "Pool is dead"); 
-		  }	
+		  	push(@poolmsg, "Pool is dead") if ($showpool == $i);	
 	    } else {
 	      $pstatus = "<td>" . $pstat . "</td>";
 	    }
 	    my $ppri = ${@pools[$i]}{'priority'};
+#	    $currorder[$i] = "$ppri" . "$pnum"; 
 	    my $pacc = ${@pools[$i]}{'accepted'};
 	    my $prej = ${@pools[$i]}{'rejected'};
 	    my $prr = "";
@@ -635,41 +648,49 @@ if ($ispriv eq "S") {
 	    } else { 
 		   $prr = "0.0";
 	    }
-		if ($prr > ${$conf}{monitoring}{monitor_reject_hi}) {
+			if ($prr > ${$conf}{monitoring}{monitor_reject_hi}) {
 	      $problems++;
 	      push(@nodemsg, "Pool $i reject ratio too high"); 
 	  	  $prat = "<td class='error'>" . $prr . "%</td>";
-		  if ($showpool == $i) {
-	        push(@poolmsg, "Reject ratio is too high"); 
-		  }	
+	      push(@poolmsg, "Reject ratio is too high") if ($showpool == $i); 	
 	    } else { 
 	      $prat = "<td>" . $prr . "%</td>";
 	    }
 	    $pquo = ${@pools[$i]}{'quota'};
-	      if ($showpool == $i) { 
+	    my $poola = "";
+      for (keys %{$conf{aliases}}) {
+      	if ($pname eq ${$conf}{aliases}{$_}{url}) {
+      		$poola = ${$conf}{aliases}{$_}{alias};
+      	}
+      }
+	    if ($showpool == $i) { 
 	      $psgw = ${@pools[$i]}{'getworks'};
 	      $psw = ${@pools[$i]}{'works'}; 
 	      $psd = ${@pools[$i]}{'discarded'}; 
 	      $pss = ${@pools[$i]}{'stale'}; 
 	      $psgf = ${@pools[$i]}{'getfails'}; 
 	      $psrf = ${@pools[$i]}{'remotefailures'};
-		  if ($pactive >0) {
-			$current = "Active";
+		  	if ($pactive >0) {
+					$current = "Active";
 	      } else { 
-			$current = "Not Active  ";
+					$current = "Not Active  ";
 	      }
 	      $psput .= "<tr><form name='pdelete' action='status.pl' method='POST'><td class='big' colspan=4>$current";
-		  if ($pactive == 0) {
-	      $psput .= "<input type='hidden' name='delpool' value='$i'><input type='submit' value='Remove this pool'>";
+		  	if ($pactive == 0) {
+	      	$psput .= "<input type='hidden' name='delpool' value='$i'><input type='submit' value='Remove this pool'>";
 	      }
 	      $psput .= "</form></td></tr>";
 	      $psput .= "<tr><td>Mining URL:</td><td colspan=3>" . $pname . "</td></tr>";
-		  $puser = "unknown" if ($puser eq "");
+				$psput .= "<tr><td>Alias:</td><td>$poola</td><td colspan=2>";
+	      $psput .= "<form name='palias' action='status.pl' method='POST'>";
+				$psput .= "<input type='text' size='10' placeholder='pool alias' name='npalias'>";
+				$psput .= "<input type='hidden' name='paurl' value='$pname'>";
+				$psput .= "<input type='submit' value='Change'></form></td></tr>";
+
+			  $puser = "unknown" if ($puser eq "");
 	      $psput .= "<tr><td>Worker:</td><td colspan=3>" . $pusr . "</td></tr>";
 	      $psput .= "<td>Status:</td>" . $pstatus;
 	      $psput .= "<td>Shares A/R:</td><td>" . $pacc . " / " . $prej . "</td></tr>";
-
-
 	      $psput .= "<tr><td>Priority:</td><td>" . $ppri . "</td>";
 	      $psput .= "<td>Quota:</td><td>" . $ppri . "</td></tr>";
 	      $psput .= "<tr><td>Getworks:</td><td>" . $psgw . "</td>";
@@ -679,46 +700,55 @@ if ($ispriv eq "S") {
 	      $psput .= "<tr><td>Get Failures:</td><td>" . $psgf . "</td>";
 	      $psput .= "<td>Rem Fails:</td><td>" . $psrf . "</td></tr>";
 	      $pgimg = "<br><img src='/IFMI/graphs/pool$i.png'>";
-
 	    } else {
 	      my $purl = "?";
 	      $purl .= "pool=$i";
 	      $psum .= '<TR><TD class="bigger"><A href="' . $purl . '">' . $i . '</TD>';
 	      $psum .= "<td>" . $pname . "</td>";
+	      $psum .= "<td>" . $poola . "</td>";
 	      if (length($pusr) > 20) { 
 	        $pusr = substr($pusr, 0, 6) . " ... " . substr($pusr, -6, 6) if (index($pusr, '.') < 0);
 	      }
-	      if ($avers > 1.16) {
-	        $psum .= "<td>" . $pusr . "</td>";
-	      }
+	      $psum .= "<td>" . $pusr . "</td>" if ($avers > 1.16);
 	      $psum .= $pstatus;
 	      $psum .= "<td>" . $pacc . " / " . $prej . "</td>";
 	      $psum .= $prat;
 	      $psum .= "<td>" . $pimg . "</td>";
-	      $psum .= "<td>" . $ppri . "</td>" if ($mstrategy eq "Failover");
-		  if ($mstrategy eq "Load Balance") {
+			  if ($mstrategy eq "Load Balance") {
 	      	$psum .= "<td> " . $pquo . " </td>";
-	      	$psum .= "<td><form name='pquota' action='status.pl' method='text'>";
+	      	$psum .= "<td><form name='pquota' action='status.pl' method='POST'>";
 	      	$psum .= "<input type='text' size='3' name='qval' required>";
 	      	$psum .= "<input type='hidden' name='qpool' value='$i'>";
-	      	$psum .= "<input type='submit' value='Set'></form></td></tr>";
+	      	$psum .= "<input type='submit' value='Set'></form></td>";
 	      }
-	    }
+	     	$psum .= "<td>" . $ppri . "</td>" if ($mstrategy eq "Failover");
+      	$psum .= "</tr>";
+      }
 	  }
 	  $psum .= "<tr><form name='padd' action='status.pl' method='POST'>";
 	  $psum .= "<td colspan='2'><input type='text' size='45' placeholder='MiningURL:portnumber' name='npoolurl' required>";
 	  $psum .= "</td><td colspan='2'><input type='text' placeholder='username.worker' name='npooluser' required>";
-	  $psum .= "</td><td colspan='2'><input type='text' size='15' placeholder='worker password' name='npoolpw'>";
+	  $psum .= "</td><td colspan='3'><input type='text' size='15' placeholder='worker password' name='npoolpw'>";
 	  $psum .= "</td><td><input type='submit' value='Add'>"; 
 	  $psum .= "</td></form>";
 	  if ($mstrategy eq "Failover") {
-		  $psum .= "<TD class='header' colspan=2>";
+	    # @neworder = sort @currorder;
+	    # for (my $o=0;$o<@neworder;$o++) {
+	    #  	$pitem = chop $neworder[$o];
+	    #  	$prilist .= "$pitem,";
+	    # }
+	    # chop $prilist;
+		  $psum .= "<TD class='header' colspan=2>";	  
+	   	# $psum .= "<form name='ppris' action='status.pl' method='POST'>";	
+	    # $psum .= "<input type='hidden' name='prilist' value='$prilist'>";
+     	# $psum .= "<input type='submit' value='Set'></form>";
+	    $psum .= "</td>";	  			
 	  }
-	  	  $psum .= "";
 	  if ($mstrategy eq "Load Balance") {
-		  $psum .= "<TD class='header' colspan=2>Failover-Only:<br>$mfonly";
+		  $psum .= "<TD class='header' colspan=2>Failover-Only:<br>$mfonly</td>";
 	  }
-	$psum .= "</TD></tr>";
+		$psum .= "</tr>";
+
 	} else { 
 	  $psum .= "<TR><TD colspan='8'><big>Active Pool Information Unavailable</big></td></tr>";
 	}
@@ -884,7 +914,7 @@ given($x) {
         print "<tr><td colspan=4>PoolManager v$release New releases are available at ";
         print "<a href=https://github.com/starlilyth/Linux-PoolManager/releases target=_blank>GitHub</a>.<br>"; 
         print "<b>If you love PoolManager, please consider donating. </b>Thank you!<br> ";
-        print "BTC: <b>1JBovQ1D3P4YdBntbmsu6F1CuZJGw9gnV6</b> <br>LTC: <b>LdMJB36zEfTo7QLZyKDB55z9epgN78hhFb</b><br>";
+        print "BTC: <a href='bitcoin://1JBovQ1D3P4YdBntbmsu6F1CuZJGw9gnV6'><b>1JBovQ1D3P4YdBntbmsu6F1CuZJGw9gnV6</b></a> <br>LTC: <b>LdMJB36zEfTo7QLZyKDB55z9epgN78hhFb</b><br>";
         print "</table></td></tr></table>";
     	print "</div>";
 	}
