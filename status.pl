@@ -524,8 +524,9 @@ if (@summary) {
 		$msput .= "<tr><td></td></tr><tr><td colspan=2><input type='submit' value='Reboot' onclick='this.disabled=true;this.form.submit();' > ";
 		$msput .= "<input type='password' placeholder='root password' name='ptext' required></td></tr></form>";
 		$msput .= "<tr><td colspan=4><hr></td></tr>";
-  		$msput .= "<tr><td>Miner Version (API)</td><td colspan=3>$mname $mvers ($avers)</td></tr>";
-      	$msput .= "<tr><td>Run time:</td><td>" . $mrunt . "</td>";
+  	$msput .= "<tr><td>Miner Version (API)</td><td colspan=3>$mname $mvers ($avers)</td></tr>";
+ 		$msput .= "<tr><td colspan=4>$mstrategy Mode</td></tr>";
+    $msput .= "<tr><td>Run time:</td><td>" . $mrunt . "</td>";
 		if ($melapsed > 0) {  	  
 		  $msput .= "<td  colspan=2><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
 		} else { 
