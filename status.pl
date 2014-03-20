@@ -515,12 +515,19 @@ if (@summary) {
     $minehe = ${@summary[$i]}{'hardware_errors'};
     my $currentm = $conf{settings}{current_mconf};
  		my $currname = $conf{miners}{$currentm}{mconfig};
+ 		my $runningm	= $conf{settings}{running_mconf};
+ 		my $runname = $conf{miners}{$runningm}{mconfig};
 
   	if ($showminer == $i) {
 	  	$msput .= "<tr><td colspan=4 class=big>Miner</td></tr>";
 	  	$msput .= "<tr><td>Miner Version: </td><td>$mname $mvers</td>";
-	 		$msput .= "<td>$mstrategy Mode</td></tr>";
-	 		$msput .= "<tr><td>Profile:  </td><td>$currname</td>";
+	 		$msput .= "<td colspan=2>$mstrategy Mode</td></tr>";
+	 		
+	 		$msput .= "<tr><td>Running Profile:  </td><td>$runname</td>";
+	 		my $runpath = $conf{miners}{$runningm}{mpath};
+	 		$msput .= "<td>Run Path: </td><td>$runpath</td></tr>";
+
+	 		$msput .= "<tr><td>Loaded Profile:  </td><td>$currname</td>";
 			$msput .= "<td colspan=2><form name=currentm method=post><select name=setmconf>";
 			for (keys %{$conf{miners}}) {
   			my $mname = $conf{miners}{$_}{mconfig};
@@ -532,9 +539,11 @@ if (@summary) {
 				}
 			$msput .= "<input type='submit' value='Select'>";
 			$msput .= "</select></form></td></tr>";
+
 			my $currconf = $conf{miners}{$currentm}{savepath};
-			$msput .= "<tr><td colspan=2>Config file: $currconf</td>";
+			$msput .= "<tr><td>Loaded Config:  </td><td colspan=2>$currconf</td>";
 	    $msput .= "<td><a href='/cgi-bin/confedit.pl' target='_blank'>Edit Config</a></td></tr>";
+
 	    $msput .= "<tr><td>Run time:</td><td>" . $mrunt . "</td>";
 			if ($melapsed > 0) {  	  
 			  $msput .= "<td  colspan=2><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
@@ -542,6 +551,9 @@ if (@summary) {
 			  $msput .= "<td  colspan=2><form name='mstart' action='status.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > ";
 			}
 			$msput .= "<input type='password' placeholder='root password' name='ptext' required></form></tr>";
+
+			$msput .= "</table><table>";
+
 			$msput .= "<tr><td colspan=4>Stats</td><tr>";
 			$mtm = ${@summary[$i]}{'total_mh'};
 			$minetm = sprintf("%.2f", $mtm); 
@@ -579,7 +591,7 @@ if (@summary) {
 			$minebs = ${@summary[$i]}{'best_share'};
 			$minebs = 0 if ($minebs eq "");
       $msput .= "<td>Best Share:</td><td>" . $minebs . "</td></tr>";
-			$msput .= "<tr><td colspan=4><hr></td></tr></table><table>";
+			$msput .= "</table><table><tr><td colspan=4><hr></td></tr>";
 	  	$msput .= "<tr><td colspan=4 class=big>Node</td></tr>";
   		$getmlinv = `cat /proc/version`;
   		$mlinv = $1 if ($getmlinv =~ /version\s(.*?\s+\(.*?\))\s+\(/);
@@ -593,11 +605,13 @@ if (@summary) {
  			$msput .= "<tr><td class=big><a href='config.pl'>PoolManager Configuration</a></td><td>";
 
   	} else {		
-			$mcontrol .= "<td>$mname $mvers</td>" if ($melapsed > 0);
+			$mcontrol .= "<td>$mname $mvers" if ($melapsed > 0);
 			if ($melapsed > 0) { 
-		  	$mcontrol .= "<td>$mstrategy Mode</td>";
+		  	$mcontrol .= "<br><small>$mstrategy Mode</small></td>";
 		  	$mcontrol .= "<td>Run time: " . $mrunt . "</td>";
-			  $mcontrol .= "<td>Profile: " . $currname . "</td>";
+
+			  $mcontrol .= "<td>Profile: $runname</td>";
+#			  $mcontrol .= "<br><small>Loaded: $currname</small></td>" if ($currentm != $runningm);
 			  $mcontrol .= "<td><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
 			} else { 
 		  	$mcontrol .= "<td class='error'>Stopped</td>";
@@ -615,7 +629,7 @@ if (@summary) {
 			  $mcontrol .= "<td><form name='mstart' action='status.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > ";
 			}
 			$mcontrol .= "<input type='password' placeholder='root password' name='ptext' required></td></form>";		
-			my $fcheck = `ps -eo command | grep -Ec /opt/ifmi/farmview\$`;
+			my $fcheck = `ps -eo command | grep -Ec /opt/ifmi/farmview`;
 			$mcontrol .=  "<td><A href=/farmview.html>Farm Overview</A></td>" if ($fcheck >0);
 		}
   }

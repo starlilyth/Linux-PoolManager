@@ -28,7 +28,7 @@ if (! -f $conffile) {
   	},
   	miners => {
       0 => {
-    		mconfig => 'default',
+    		mconfig => 'Default',
         mpath => '/opt/miners/cgminer/cgminer',
     		mopts => '--api-listen --config /opt/ifmi/cgminer.conf',
   	   	savepath => '/opt/ifmi/cgminer.conf',
