@@ -8,7 +8,7 @@
 #    GNU General Public License for more details.
 #
 
-use YAML qw( LoadFile );
+use YAML qw( DumpFile LoadFile );
 use IO::Socket::INET;
 use Sys::Syslog qw( :DEFAULT setlogsock);
 setlogsock('unix');
@@ -17,12 +17,11 @@ use File::Copy;
 
 sub saveConfig 
 {
- my $savefile = $_[0];
  my $conf = &getConfig;
  %conf = %{$conf};
 
   my $currmconf = ${$conf}{settings}{current_mconf}; 
-  my $savefile = ${$conf}{miners}{$currmconf}{mpath}; 
+  my $savefile = ${$conf}{miners}{$currmconf}{savepath}; 
 
   if (-e $savefile) { 
    $bkpfile = $savefile . ".bkp";
@@ -962,7 +961,11 @@ sub startCGMiner
     	my $cmd = "/usr/bin/screen -d -m -S PM-miner $minerbin $mineropts"; 
     	
     	&blog("starting miner with cmd: $cmd");
-    	
+
+      ${$conf}{settings}{running_mconf} = $currmconf;
+      my $conffile = "/opt/ifmi/poolmanager.conf";
+      DumpFile($conffile, $conf); 
+
 		exec($cmd);
 		exit(0);
 	}
