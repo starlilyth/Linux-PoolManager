@@ -360,7 +360,7 @@ sub genhttp
 			    $sput .= "<td>" . $pname . "</td>";
 			    $sput .= "<td>" . $poid . "</td>";
 			    if (length($pusr) > 20) {
-			        $pusr = substr($pusr, 1, 6) . " ... " . substr($pusr, -6, 6) if (index($pusr, '.') < 0);
+			        $pusr = substr($pusr, 0, 6) . " ... " . substr($pusr, -6, 6) if (index($pusr, '.') < 0);
 			    }
 			    $sput .= "<td>" . $pusr . "</td>";
 			    $sput .= $pstatus;

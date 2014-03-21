@@ -541,9 +541,10 @@ if (@summary) {
 			$msput .= "</select></form></td></tr>";
 
 			my $currconf = $conf{miners}{$currentm}{savepath};
-			$msput .= "<tr><td>Loaded Config:  </td><td colspan=2>$currconf</td>";
-	    $msput .= "<td><a href='/cgi-bin/confedit.pl' target='_blank'>Edit Config</a></td></tr>";
-
+			$msput .= "<tr><td>Loaded Config:  </td><td colspan=3>";
+	    $msput .= "<a href='/cgi-bin/confedit.pl' target='_blank'>";
+			$msput .= "$currconf</a></td></tr>";
+	    
 	    $msput .= "<tr><td>Run time:</td><td>" . $mrunt . "</td>";
 			if ($melapsed > 0) {  	  
 			  $msput .= "<td  colspan=2><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";

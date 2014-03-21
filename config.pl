@@ -129,10 +129,10 @@ if (-o $conffile) {
         my $nmp = $in{'nmp'};
         $mconf->{miners}->{$newa}->{mpath} = $nmp;
         my $nmo = $in{'nmo'};
-        $nmo = "--api-listen --config /opt/ifmi/cgminer.conf" if ($nmo eq "");
+        $nmo = "--api-listen --config /opt/ifmi/$ncname.conf" if ($nmo eq "");
         $mconf->{miners}->{$newa}->{mopts} = $nmo;
         my $nsp = $in{'nsp'};
-        $nsp = "/opt/ifmi/cgminer.conf" if ($nsp eq "");
+        $nsp = "/opt/ifmi/$ncname.conf" if ($nsp eq "");
         $mconf->{miners}->{$newa}->{savepath} = $nsp;
         $mconf->{settings}->{current_mconf} = $newa;
       } else { 
@@ -315,7 +315,7 @@ print "<tr><td>Miner Options</td><td colspan=2>$miner_opts</td>";
 print "<td><input type='text' size='45' placeholder='--api-listen --config /etc/bamt/cgminer.conf' name='nmo'></td></tr>";
 my $savepath = $mconf->{miners}->{$currentm}->{savepath}; 
 print "<tr><td>Miner Config<br>Save Path</td>";
-print "<td colspan=2>$savepath<br><i><small>Changes to the miner config are saved here</small></i></td>";
+print "<td colspan=2><a href='/cgi-bin/confedit.pl' target='_blank'>$savepath</a><br><i><small>Changes to the miner config are saved here</small></i></td>";
 print "<td><input type='text' size='45' placeholder='/opt/ifmi/cgminer.conf' name='nsp'>";
 if ($savepath eq "/opt/ifmi/cgminer.conf") {
  print "<br><i><small>The default is probably not what you want.</small></i>";
