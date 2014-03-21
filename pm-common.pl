@@ -20,8 +20,8 @@ sub saveConfig
  my $conf = &getConfig;
  %conf = %{$conf};
 
-  my $currmconf = ${$conf}{settings}{current_mconf}; 
-  my $savefile = ${$conf}{miners}{$currmconf}{savepath}; 
+  my $runmconf = ${$conf}{settings}{running_mconf}; 
+  my $savefile = ${$conf}{miners}{$runmconf}{savepath}; 
 
   if (-e $savefile) { 
    $bkpfile = $savefile . ".bkp";
