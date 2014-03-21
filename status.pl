@@ -355,8 +355,8 @@ for (my $i=0;$i<@gpus;$i++)
     if ($poolurl =~ m/.+\@(.+)/) {
       $poolurl = $1;
     }	
-    if ($poolurl =~ m|://\S+?\.?(\w+?\.\w+?:\d+)|) {
-       $shorturl = $1;
+    if ($poolurl =~ m|://(\w+-?\w+\.)?(\w+-?\w+\.\w+:\d+)|) {
+       $shorturl = $2;
     }
  	$shorturl = "N/A" if ($shorturl eq ""); 
     if ($i == $showgpu) {
