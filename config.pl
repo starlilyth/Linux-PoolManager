@@ -65,7 +65,7 @@ if (! -f $conffile) {
       smtp_auth_pass => '',
       smtp_min_wait => '300',
     },
-    aliases => {
+    pools => {
       0 => { url => '', alias => '' }, 
     }
 

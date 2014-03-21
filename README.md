@@ -90,7 +90,7 @@ Q6: How do I disable the default page password? I dont want it anymore.
 
 A6: Edit /etc/apache2/sites-available/default-ssl and comment out "Require valid-user", near the top. Then do 'apachectl restart'. 
 
-Q7: Why doesnt PoolManager let me: save a pool as X priority/switch to a dead pool/save priority list on restart/have pool aliases?
+Q7: Why doesnt PoolManager let me: save a pool as X priority/switch to a dead pool/save priority list on restart?
 
 A7: PoolManager only mirrors what cgminer can do, via the API, these are things that cgminer doesnt do, and are non-trivial to implement yet. As development progresses in some other areas, some of this may be easier, and I will add it. 
 

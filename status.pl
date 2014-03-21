@@ -86,16 +86,16 @@ my $npalias = $in{'npalias'};
 if ($npalias ne "") {
 	my $paurl = $in{'paurl'};
 	my $acount = 0;
- 	for (keys %{$conf{aliases}}) {
-		if ($paurl eq ${$conf}{aliases}{$_}{url}) {
-			${$conf}{aliases}{$_}{alias} = $npalias;
+ 	for (keys %{$conf{pools}}) {
+		if ($paurl eq ${$conf}{pools}{$_}{url}) {
+			${$conf}{pools}{$_}{alias} = $npalias;
 			$acount++;
 		}
 	}
 	if ($acount == 0) {	
-	 	$newa = (keys %{$conf{aliases}}); $newa++; 
-	 	${$conf}{aliases}{$newa}{alias} = $npalias;
-	 	${$conf}{aliases}{$newa}{url} = $paurl;
+	 	$newa = (keys %{$conf{pools}}); $newa++; 
+	 	${$conf}{pools}{$newa}{alias} = $npalias;
+	 	${$conf}{pools}{$newa}{url} = $paurl;
 	}
 	DumpFile($conffile, $conf); 
 	$npalias = ""; $paurl = "";
@@ -707,9 +707,9 @@ if ($ispriv eq "S") {
 	    }
 	    $pquo = ${@pools[$i]}{'quota'};
 	    my $poola = "";
-      for (keys %{$conf{aliases}}) {
-      	if ($pname eq ${$conf}{aliases}{$_}{url}) {
-      		$poola = ${$conf}{aliases}{$_}{alias};
+      for (keys %{$conf{pools}}) {
+      	if ($pname eq ${$conf}{pools}{$_}{url}) {
+      		$poola = ${$conf}{pools}{$_}{alias};
       	}
       }
 	    if ($showpool == $i) { 
