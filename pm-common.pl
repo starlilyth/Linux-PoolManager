@@ -893,7 +893,8 @@ sub startCGMiner
     	$ENV{DISPLAY} = ":0";
     	$ENV{LD_LIBRARY_PATH} = "/opt/AMD-APP-SDK-v2.4-lnx32/lib/x86/:/opt/AMDAPP/lib/x86_64:";
       $ENV{GPU_USE_SYNC_OBJECTS} = "1";
-    	
+    	$ENV{GPU_MAX_ALLOC_PERCENT} = "100";
+
     	my $cmd = "/usr/bin/screen -d -m -S PM-miner $minerbin $mineropts"; 
     	
     	&blog("starting miner with cmd: $cmd");

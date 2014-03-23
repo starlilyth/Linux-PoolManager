@@ -38,6 +38,7 @@ if (! -f $conffile) {
       cgminer_port => '4028',
       IGNOREBAMT => '1',
       current_mconf => '0',
+      running_mconf => '0',
     },
   	display => {
   		miner_loc => 'Undisclosed Location',
@@ -66,7 +67,12 @@ if (! -f $conffile) {
       smtp_min_wait => '300',
     },
     pools => {
-      0 => { url => '', alias => '' }, 
+      0 => { 
+        url => '', 
+        alias => '', 
+        pool_reject_hi => '3',
+        notify_dead => '1',
+      }, 
     }
 
   };
