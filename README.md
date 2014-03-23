@@ -10,7 +10,8 @@ Originally extended from the BAMT miner web interface of gpumon/mgpumon.
 * Farm Overview, including miner versions, active pools, and last page refresh time.
 * Easy CSS theming, with several themes included. 
 * GUI Settings Page - no need to edit a settings file
-* NEW! PoolManager can now be configured to send an email when GPU alert conditions are met, including sick and dead status, hardware errors, and stopped/hung miner, along with all the previously available alert settings, and a new Fan High setting. 
+* Email alert notifications for GPUs and Pools, including hung or stopped miner. 
+* New! Strategy handling, Pool Aliases, Miner Profiles
 
 See the GitHub wiki page for screenshots.
 
