@@ -140,6 +140,21 @@ if (-o $conffile) {
         my $nsp = $in{'nsp'};
         $nsp = "/opt/ifmi/$ncname.conf" if ($nsp eq "");
         $mconf->{miners}->{$newa}->{savepath} = $nsp;
+        if (!-f $nsp) {
+          open my $cfgin, '>', $nsp;
+          print $cfgin "{\n"; 
+          print $cfgin '"pools" : [' . "\n";
+          print $cfgin "  {\n"; 
+          print $cfgin '    "url" : "stratum+tcp://mine.coinshift.com:3333",' . "\n";
+          print $cfgin '    "user" : "1ERyq9HBRBz6nTAkP1zNh8FLXACEbscgtP",' . "\n";
+          print $cfgin '    "pass" : "x"' . "\n";
+          print $cfgin "  }\n";
+          print $cfgin "],\n";
+          print $cfgin '"api-listen" : true,' . "\n" . '"api-allow" : "W:127.0.0.1",' . "\n";
+          print $cfgin '"scrypt" : true,' . "\n" . '"kernel-path" : "/usr/local/bin"' . "\n";
+          print $cfgin "}\n";
+          close $cfgin; 
+        }
         $mconf->{settings}->{current_mconf} = $newa;
       } else { 
         for (keys %{$mconf->{miners}}) {
