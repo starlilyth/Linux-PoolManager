@@ -133,29 +133,33 @@ if (-o $conffile) {
         my $newa = (keys %{$mconf->{miners}}); $newa++; 
         $mconf->{miners}->{$newa}->{mconfig} = $ncname;
         my $nmp = $in{'nmp'};
-        $mconf->{miners}->{$newa}->{mpath} = $nmp;
-        my $nmo = $in{'nmo'};
-        $nmo = "--api-listen --config /opt/ifmi/$ncname.conf" if ($nmo eq "");
-        $mconf->{miners}->{$newa}->{mopts} = $nmo;
-        my $nsp = $in{'nsp'};
-        $nsp = "/opt/ifmi/$ncname.conf" if ($nsp eq "");
-        $mconf->{miners}->{$newa}->{savepath} = $nsp;
-        if (!-f $nsp) {
-          open my $cfgin, '>', $nsp;
-          print $cfgin "{\n"; 
-          print $cfgin '"pools" : [' . "\n";
-          print $cfgin "  {\n"; 
-          print $cfgin '    "url" : "stratum+tcp://mine.coinshift.com:3333",' . "\n";
-          print $cfgin '    "user" : "1ERyq9HBRBz6nTAkP1zNh8FLXACEbscgtP",' . "\n";
-          print $cfgin '    "pass" : "x"' . "\n";
-          print $cfgin "  }\n";
-          print $cfgin "],\n";
-          print $cfgin '"api-listen" : true,' . "\n" . '"api-allow" : "W:127.0.0.1",' . "\n";
-          print $cfgin '"scrypt" : true,' . "\n" . '"kernel-path" : "/usr/local/bin"' . "\n";
-          print $cfgin "}\n";
-          close $cfgin; 
+        if ($nmp ne "") {
+          $mconf->{miners}->{$newa}->{mpath} = $nmp;
+          my $nmo = $in{'nmo'};
+          $nmo = "--api-listen --config /opt/ifmi/$ncname.conf" if ($nmo eq "");
+          $mconf->{miners}->{$newa}->{mopts} = $nmo;
+          my $nsp = $in{'nsp'};
+          $nsp = "/opt/ifmi/$ncname.conf" if ($nsp eq "");
+          $mconf->{miners}->{$newa}->{savepath} = $nsp;
+          if (!-f $nsp) {
+            open my $cfgin, '>', $nsp;
+            print $cfgin "{\n"; 
+            print $cfgin '"pools" : [' . "\n";
+            print $cfgin "  {\n"; 
+            print $cfgin '    "url" : "stratum+tcp://mine.coinshift.com:3333",' . "\n";
+            print $cfgin '    "user" : "1ERyq9HBRBz6nTAkP1zNh8FLXACEbscgtP",' . "\n";
+            print $cfgin '    "pass" : "x"' . "\n";
+            print $cfgin "  }\n";
+            print $cfgin "],\n";
+            print $cfgin '"api-listen" : true,' . "\n" . '"api-allow" : "W:127.0.0.1",' . "\n";
+            print $cfgin '"scrypt" : true,' . "\n" . '"kernel-path" : "/usr/local/bin"' . "\n";
+            print $cfgin "}\n";
+            close $cfgin; 
+          }
+          $mconf->{settings}->{current_mconf} = $newa;
+        } else {
+          $conferror = 2;
         }
-        $mconf->{settings}->{current_mconf} = $newa;
       } else { 
         for (keys %{$mconf->{miners}}) {
           if ($nmconfig eq $mconf->{miners}->{$_}->{mconfig}) {
@@ -170,7 +174,6 @@ if (-o $conffile) {
       }  
       $nmconfig = ""; $ncname = "";
     }
-
     my $mdel = $in{'deletem'};
     if ($mdel ne "") {
       if ($mdel != 0) {
@@ -178,7 +181,6 @@ if (-o $conffile) {
         $mconf->{settings}->{current_mconf} = 0;
       }
     }
-
     my $nap = $in{'nap'};
     if($nap ne "") {
       $nap = "4028" if (! ($nap =~ m/^\d+?$/));    
@@ -286,6 +288,12 @@ chomp $miner_name;
 print start_html( -title=>'PM - ' . $miner_name . ' - Settings',
 				  -style=>{-src=>'/IFMI/themes/' . $mconf->{display}->{status_css}} );
 
+
+print "<div id='showdata'><br>";
+print "<a href='status.pl'> << Back to Overview</a><br>";
+print "<a href='status.pl?miner='> << Back to Miner details page</a>";
+print "<br></div>";
+
 print "<div id='content'><table class=settingspage>";
 print "<tr><td colspan=2 align=center>";
 print "<table class=title><tr><td class=bigger>PoolManager Configuration for $miner_name</td><tr>";
@@ -301,9 +309,11 @@ if ($conferror == 1) {
   print "<tr><td class=error colspan=2>PoolManager cannot write to its config!";
   print "<br>Please ensure /opt/ifmi/poolmanager.conf is owned by the webserver user.</td><tr>";
 }
+if ($conferror == 2) {
+  print "<tr><td class=error colspan=2>No Miner Path specified!</td><tr>";
+}
 print "</table><br></td></tr>";
 print "<tr><td colspan=2 align=center>";
-
 
 print "<table class=settings><tr><td class=header>Miner Profile</td><td class=header>";
 my $currentm = $mconf->{settings}->{current_mconf};
@@ -551,8 +561,6 @@ if ($hashavg==1) {
   print "</table></form>";
 
 print "</td></tr>";
-
-print "<tr><td colspan=2><a href='status.pl'>Back to node page</a></td></tr>";
 
 print "</table></div>";
 print "</body></html>";
