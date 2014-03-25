@@ -83,6 +83,8 @@ if (! -f $conffile) {
 my $conferror = 0; my $mailerror = "";
 my $mconf = LoadFile( $conffile );
 if (-o $conffile) {
+  my $curver = $mconf->{display}->{pm_version};
+  $mconf->{display}->{pm_version} = $version if ($version != $curver);
   our %in;
   if (&ReadParse(%in)) {
     my $nht = $in{'temphi'};
@@ -147,7 +149,7 @@ if (-o $conffile) {
             print $cfgin '"pools" : [' . "\n";
             print $cfgin "  {\n"; 
             print $cfgin '    "url" : "stratum+tcp://mine.coinshift.com:3333",' . "\n";
-            print $cfgin '    "user" : "1ERyq9HBRBz6nTAkP1zNh8FLXACEbscgtP",' . "\n";
+            print $cfgin '    "user" : "1JBovQ1D3P4YdBntbmsu6F1CuZJGw9gnV6",' . "\n";
             print $cfgin '    "pass" : "x"' . "\n";
             print $cfgin "  }\n";
             print $cfgin "],\n";
@@ -299,7 +301,7 @@ print "<tr><td colspan=2 align=center>";
 print "<table class=title><tr><td class=bigger>PoolManager Configuration for $miner_name</td><tr>";
 if ($mailerror ne "") {
   if ($mailerror =~ m/success/i) {
-    print "<tr><td colspan=2 bgcolor='green'>Test Email Sent Successfully</td><tr>";
+    print "<tr><td colspan=2 bgcolor='green'><font color='white'>Test Email Sent Successfully</font></td><tr>";
   } elsif ($mailerror =~ m/^(.+)/) {
     my $errmsg = $1;
     print "<tr><td class=error colspan=2>$errmsg</td><tr>";
@@ -343,7 +345,7 @@ print "<tr><td>Miner Path</td><td colspan=2>$miner_path</td>";
 print "<td><input type='text' size='45' placeholder='/path/to/miner' name='nmp'></td></tr>";
 my $miner_opts = $mconf->{miners}->{$currentm}->{mopts};
 print "<tr><td>Miner Options</td><td colspan=2>$miner_opts</td>";
-print "<td><input type='text' size='45' placeholder='--api-listen --config /etc/bamt/cgminer.conf' name='nmo'></td></tr>";
+print "<td><input type='text' size='45' placeholder='--api-listen --config /opt/ifmi/cgminer.conf' name='nmo'></td></tr>";
 my $savepath = $mconf->{miners}->{$currentm}->{savepath}; 
 print "<tr><td>Miner Config<br>Save Path</td>";
 print "<td colspan=2><a href='/cgi-bin/confedit.pl' target='_blank'>$savepath</a><br><i><small>Changes to the miner config are saved here</small></i></td>";
