@@ -108,6 +108,13 @@ if ($ncmc ne "") {
 	$ncmc = "";
 }
 
+my $npn = $in{'pnotify'};
+if ($npn ne "") {
+	my $poolnum = $in{'poolnum'};
+	${$conf}{pools}{$poolnum}{pnotify} = $npn;
+	DumpFile($conffile, $conf); 
+	$npn = "";
+}
 # my $prilist = $in{'prilist'};
 # if ($prilist ne "") {
 #   &priPool($prilist);
@@ -706,10 +713,11 @@ if ($ispriv eq "S") {
 	      $prat = "<td>" . $prr . "%</td>";
 	    }
 	    $pquo = ${@pools[$i]}{'quota'};
-	    my $poola = "";
+	    my $poola = ""; my $poolnum = "";
       for (keys %{$conf{pools}}) {
       	if ($pname eq ${$conf}{pools}{$_}{url}) {
       		$poola = ${$conf}{pools}{$_}{alias};
+      		$poolnum = $_;
       	}
       }
 	    if ($showpool == $i) { 
@@ -738,8 +746,21 @@ if ($ispriv eq "S") {
 
 			  $puser = "unknown" if ($puser eq "");
 	      $psput .= "<tr><td>Worker:</td><td colspan=3>" . $pusr . "</td></tr>";
-	      $psput .= "<td>Status:</td>" . $pstatus;
-	      $psput .= "<td>Shares A/R:</td><td>" . $pacc . " / " . $prej . "</td></tr>";
+	      $psput .= "<td>Status:</td>" . $pstatus . "</td><td>";
+	      $psput .= "Notify when Dead?</td>";
+		  my $pnotify = $conf{pools}{$poolnum}{pnotify};
+		  $psput .= "<form name=pnotify method=post><input type=hidden name='poolnum' value=$poolnum>";
+		  if ($pnotify==1) {
+    	  	$psput .= "<td><input type='radio' name='pnotify' value=1 checked>Yes ";
+    	  	$psput .= "<input type='radio' name='pnotify' value=0>No ";
+  		  } else { 
+     	  	$psput .= "<td><input type='radio' name='pnotify' value=1>Yes ";
+    	  	$psput .= "<input type='radio' name='pnotify' value=0 checked>No "; 
+  		  }
+  		  $psput .= "<input type='submit' value='Save'></td></tr></form>";
+	      $psput .= "<tr><td>Shares A/R:</td><td>" . $pacc . " / " . $prej . "</td>";
+	      $psput .= "<td>Reject Ratio:</td>$prat</tr>";
+
 	      $psput .= "<tr><td>Priority:</td><td>" . $ppri . "</td>";
 	      $psput .= "<td>Quota:</td><td>" . $ppri . "</td></tr>";
 	      $psput .= "<tr><td>Getworks:</td><td>" . $psgw . "</td>";
