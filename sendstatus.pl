@@ -24,7 +24,7 @@ sub bcastStatus
  if ($ispriv eq "S") {
    my $ts = $mname . '|' . ${$conf}{display}{miner_loc};
    my $k; 
-   my @gpus = &getGPUData;
+   my @gpus = &getFreshGPUData;
    for ($k = 0;$k < @gpus;$k++)
    {
     $ts .= "|$k:" . encode_json $gpus[$k];
@@ -55,9 +55,9 @@ sub bcastStatus
    {
    	$socket->send($ts, 0);
   	 close $socket;
-  #   &blog("status sent");
+     &blog("status sent") if (defined(${$conf}{settings}{verbose}));
    } else {
-     &blog("sendstatus failed to get socket");
+     &blog("sendstatus failed to get socket") if (defined(${$conf}{settings}{verbose}));
    }
   }
 }
@@ -76,7 +76,7 @@ my $ispriv = &CGMinerIsPriv;
 
    my $ts = $mname . '|' . ${$conf}{display}{miner_loc};
 
-   my @gpus = &getGPUData('false');
+   my @gpus = &getFreshGPUData('false');
    my $k; 
    for ($k = 0;$k < @gpus;$k++)
    {
@@ -109,9 +109,9 @@ my $ispriv = &CGMinerIsPriv;
    {
     $socket->send($ts, 0);
     close $socket;
-  #   &blog("direct status sent");
+     &blog("direct status sent") if (defined(${$conf}{settings}{verbose}));
    } else {
-     &blog("sendstatus failed to get socket");
+     &blog("sendstatus failed to get socket") if (defined(${$conf}{settings}{verbose}));
    }
   }
 }

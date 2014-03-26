@@ -20,12 +20,10 @@ my %conf = %{$conf};
 
 #  broadcast node status
 if ($conf{farmview}{do_bcast_status} == 1) { 
-# &blog("broadcasting status");
  &bcastStatus;
 }
 # send status direct
 if ($conf{farmview}{do_direct_status} =~ m/\d+\.\d+\.\d+\.\d+/) {
-# &blog("sending status to " . $conf{farmview}{do_direct_status});
  &directStatus($conf{farmview}{do_direct_status});
 }
 

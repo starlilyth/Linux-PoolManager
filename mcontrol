@@ -29,19 +29,19 @@ if ($ARGV[0] eq "start") {
 	}
 	if (-d "/opt/bamt/" && $nobamt eq "0") { 
 		`/usr/sbin/mine start`;
-		&blog("starting mining with mine start");
+		&blog("starting mining with mine start") if (defined(${$conf}{settings}{verbose}));
 	} else { 
 		&startCGMiner();
-		&blog("starting mining with function call");
+		&blog("starting mining with function call") if (defined(${$conf}{settings}{verbose}));
 	}
 }
 
 if ($ARGV[0] eq "stop") { 
 	if (-d "/opt/bamt/" && $nobamt eq "0") { 
 		`/usr/sbin/mine stop`;
-		&blog("stopping mining with mine stop");
+		&blog("stopping mining with mine stop") if (defined(${$conf}{settings}{verbose}));
 	} else { 
 		&stopCGMiner();
-		&blog("stopping mining with function call");
+		&blog("stopping mining with function call") if (defined(${$conf}{settings}{verbose}));
 	}
 }
