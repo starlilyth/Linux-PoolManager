@@ -830,6 +830,123 @@ sub getCGMinerConfig
     }
 }
 
+sub minerQueue
+{
+  my $conf = &getConfig;
+  %conf = %{$conf};
+  my $nmqueue = $_[0];
+
+    &blog("changing mining queue parameters...");
+    my $cgport = 4028;
+    if (defined(${$conf}{'settings'}{'cgminer_port'}))
+    {
+       $cgport = ${$conf}{'settings'}{'cgminer_port'};
+    }
+    my $sock = new IO::Socket::INET (
+          PeerAddr => '127.0.0.1',
+          PeerPort => $cgport,
+          Proto => 'tcp',
+          ReuseAddr => 1,
+          Timeout => 10,
+         );
+    
+    if ($sock)
+    {
+      &blog("sending setconfig command to cgminer api");
+     
+      print $sock "setconfig|queue,$nmqueue\n";
+    
+      my $res = "";
+      
+      while(<$sock>) 
+      {
+        $res .= $_;
+      }
+      
+      close($sock);
+    } else {
+      &blog("failed to get socket for cgminer api");
+    } 
+}
+
+sub minerExpiry
+{
+  my $conf = &getConfig;
+  %conf = %{$conf};
+  my $nmexpiry = $_[0];
+
+    &blog("changing mining expiry parameters...");
+    my $cgport = 4028;
+    if (defined(${$conf}{'settings'}{'cgminer_port'}))
+    {
+       $cgport = ${$conf}{'settings'}{'cgminer_port'};
+    }
+    my $sock = new IO::Socket::INET (
+          PeerAddr => '127.0.0.1',
+          PeerPort => $cgport,
+          Proto => 'tcp',
+          ReuseAddr => 1,
+          Timeout => 10,
+         );
+    
+    if ($sock)
+    {
+      &blog("sending setconfig command to cgminer api");
+     
+      print $sock "setconfig|expiry,$nmexpiry\n";
+    
+      my $res = "";
+      
+      while(<$sock>) 
+      {
+        $res .= $_;
+      }
+      
+      close($sock);
+    } else {
+      &blog("failed to get socket for cgminer api");
+    } 
+}
+
+sub minerScantime
+{
+  my $conf = &getConfig;
+  %conf = %{$conf};
+  my $nmscant = $_[0];
+
+    &blog("changing mining scantime parameters...");
+    my $cgport = 4028;
+    if (defined(${$conf}{'settings'}{'cgminer_port'}))
+    {
+       $cgport = ${$conf}{'settings'}{'cgminer_port'};
+    }
+    my $sock = new IO::Socket::INET (
+          PeerAddr => '127.0.0.1',
+          PeerPort => $cgport,
+          Proto => 'tcp',
+          ReuseAddr => 1,
+          Timeout => 10,
+         );
+    
+    if ($sock)
+    {
+      &blog("sending setconfig command to cgminer api");
+     
+      print $sock "setconfig|scantime,$nmscant\n";
+    
+      my $res = "";
+      
+      while(<$sock>) 
+      {
+        $res .= $_;
+      }
+      
+      close($sock);
+    } else {
+      &blog("failed to get socket for cgminer api");
+    } 
+}
+
 sub stopCGMiner
 {
  		

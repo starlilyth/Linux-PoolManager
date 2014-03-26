@@ -220,7 +220,7 @@ sub doEmail {
 							$conf{monitoring}{alert}{$poolid}{phealth} = 1; 
 						}
 					} else { 
-						if (defined($conf{monitoring}{alert}{$poolid}{phealth})) {
+						if (($phealth eq "Alive") && (defined($conf{monitoring}{alert}{$poolid}{phealth}))) {
 							$msg .= "Pool $i ($shorturl) health is $phealth. ";
 							$msg .= "Alert has cleared.\n";
 							delete $conf{monitoring}{alert}{$poolid}{phealth};

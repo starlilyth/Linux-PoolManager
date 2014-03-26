@@ -81,6 +81,27 @@ if ($qval ne "") {
   $qval = ""; $qpool = "";
 }
 
+my $nmq = $in{'mqueue'};
+if ($nmq ne "") {
+	&minerQueue($nmq); 
+  &saveConfig();
+	$nmq = "";
+} 
+
+my $nme = $in{'mexpiry'};
+if ($nme ne "") {
+	&minerExpiry($nme); 
+  &saveConfig();
+	$nme = "";
+} 
+
+my $nmst = $in{'mscant'};
+if ($nmst ne "") {
+	&minerScantime($nmst); 
+  &saveConfig();
+	$nmst = "";
+} 
+
 my $conffile = "/opt/ifmi/poolmanager.conf";
 my $npalias = $in{'npalias'};
 if ($npalias ne "") {
@@ -551,7 +572,6 @@ if (@summary) {
 			$msput .= "<tr><td>Loaded Config:  </td><td colspan=3>";
 	    $msput .= "<a href='/cgi-bin/confedit.pl' target='_blank'>";
 			$msput .= "$currconf</a></td></tr>";
-	    
 	    $msput .= "<tr><td>Run time:</td><td>" . $mrunt . "</td>";
 			if ($melapsed > 0) {  	  
 			  $msput .= "<td  colspan=2><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
@@ -559,9 +579,21 @@ if (@summary) {
 			  $msput .= "<td  colspan=2><form name='mstart' action='status.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > ";
 			}
 			$msput .= "<input type='password' placeholder='root password' name='ptext' required></form></tr>";
-
 			$msput .= "</table><table>";
-
+			$msput .= "<tr><td colspan=4>Tuning</td><tr>";
+			$msput .= "<form name='mqueue' method='POST'>";
+	    $msput .= "<tr><td>Queue: </td><td>$mqueue</td>";
+			$msput .= "<td><input type='text' size='3' placeholder='1' name='mqueue'></td>";
+			$msput .= "<td><input type='submit' value='Change'></form></td></tr>";
+			$msput .= "<form name='mexpiry' method='POST'>";
+	    $msput .= "<td>Expiry: </td><td>$mexpiry</td>";
+			$msput .= "<td><input type='text' size='3' placeholder='120' name='mexpiry'></td>";
+			$msput .= "<td><input type='submit' value='Change'></form></td></tr>";
+			$msput .= "<form name='mscant' method='POST'>";			
+	    $msput .= "<tr><td>Scan Time: </td><td>$mscant</td>";
+			$msput .= "<td><input type='text' size='3' placeholder='30' name='mscant'></td>";
+			$msput .= "<td><input type='submit' value='Change'></form></td></tr>";
+			$msput .= "</table><table>";
 			$msput .= "<tr><td colspan=4>Stats</td><tr>";
 			$mtm = ${@summary[$i]}{'total_mh'};
 			$minetm = sprintf("%.2f", $mtm); 
@@ -748,9 +780,9 @@ if ($ispriv eq "S") {
 	      $psput .= "<tr><td>Worker:</td><td colspan=3>" . $pusr . "</td></tr>";
 	      $psput .= "<td>Status:</td>" . $pstatus . "</td><td>";
 	      $psput .= "Notify when Dead?</td>";
-		  my $pnotify = $conf{pools}{$poolnum}{pnotify};
-		  $psput .= "<form name=pnotify method=post><input type=hidden name='poolnum' value=$poolnum>";
-		  if ($pnotify==1) {
+		  	my $pnotify = $conf{pools}{$poolnum}{pnotify};
+		  	$psput .= "<form name=pnotify method=post><input type=hidden name='poolnum' value=$poolnum>";
+		  	if ($pnotify==1) {
     	  	$psput .= "<td><input type='radio' name='pnotify' value=1 checked>Yes ";
     	  	$psput .= "<input type='radio' name='pnotify' value=0>No ";
   		  } else { 
