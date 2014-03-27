@@ -7,6 +7,8 @@
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
 #
+use warnings;
+use strict;
 
 use YAML qw( DumpFile LoadFile );
 use IO::Socket::INET;
@@ -21,7 +23,7 @@ sub addPool {
   my $ppw = $_[2];
   $ppw = " " if ($ppw eq "");   
   my $pdata = "$purl,$puser,$ppw";
-  &sendAPIcommand(addpool,$pdata);
+  &sendAPIcommand("addpool",$pdata);
 }
 
 sub blog {
@@ -34,7 +36,7 @@ sub blog {
 }
 
 sub CGMinerIsPriv {  
-  my $data = &sendAPIcommand(privileged,);
+  my $data = &sendAPIcommand("privileged",);
   while ($data =~ m/STATUS=(\w),/g) {
     return $1;
   }
@@ -42,32 +44,38 @@ sub CGMinerIsPriv {
 
 sub delPool {
   my $delreq = $_[0];
-  &sendAPIcommand(removepool,$delreq); 
+  &sendAPIcommand("removepool",$delreq); 
 }
 
-sub getCGMinerConfig {    
-  my $res = &sendAPIcommand(config,);
+sub getCGMinerConfig {
+  my $res = &sendAPIcommand("config",);
+  my $mstrategy;
   if ($res =~ m/Strategy=(.+?),/g) {
     $mstrategy = $1;
   }
+  my $mfonly;
   if ($res =~ m/Failover-Only=(\w+),/g) {
     $mfonly = $1;
   }
+  my $mscant;
   if ($res =~ m/ScanTime=(\d+),/g) {
     $mscant = $1;
   }
+  my $mqueue;
   if ($res =~ m/Queue=(\d+),/g) {
     $mqueue = $1;
   }
+  my $mexpiry;
   if ($res =~ m/Expiry=(\d+),/g) {
     $mexpiry = $1;
   }
+  my @mconfig;
   push(@mconfig, ({strategy=>$mstrategy, fonly=>$mfonly, scantime=>$mscant, queue=>$mqueue, expiry=>$mexpiry }) );
   return(@mconfig);
 }
 
 sub getCGMinerGPUCount {
-  my $data = &sendAPIcommand(gpucount,);
+  my $data = &sendAPIcommand("gpucount",);
   while ($data =~ m/Count=(\d+)/g) {
     return $1; 
   }
@@ -75,49 +83,63 @@ sub getCGMinerGPUCount {
 
 sub getCGMinerPools {  
   my @pools;
-  my $data = &sendAPIcommand(pools,);
-  my $poid = ""; $pdata = ""; 
+  my $data = &sendAPIcommand("pools",);
+  my $poid; my $pdata; 
   while ($data =~ m/POOL=(\d+),(.+?)\|/g) {
-    $poid = $1; $pdata = $2; 
+    $poid = $1; $pdata = $2;
+    my $purl; 
     if ($pdata =~ m/URL=(.+?),/) {
       $purl = $1; 
     }
+    my $pstat;
     if ($pdata =~ m/Status=(.+?),/) {
       $pstat = $1; 
     }
+    my $ppri;
     if ($pdata =~ m/Priority=(\d+),/) {
       $ppri = $1; 
     }
+    my $pquo;
     if ($pdata =~ m/Quota=(\d+),/) {
       $pquo = $1; 
     }
+    my $plp;
     if ($pdata =~ m/Long Poll=(.+?),/) {
       $plp = $1; 
     }
+    my $pgw;
     if ($pdata =~ m/Getworks=(\d+),/) {
       $pgw = $1; 
     }
+    my $pacc;
     if ($pdata =~ m/Accepted=(\d+),/) {
       $pacc = $1; 
     }
+    my $prej;
     if ($pdata =~ m/Rejected=(\d+),/) {
       $prej = $1; 
     }        
+    my $pworks;
     if ($pdata =~ m/Works=(\d+),/) {
       $pworks = $1; 
     }  
+    my $pdisc;
     if ($pdata =~ m/Discarded=(\d+),/) {
       $pdisc = $1; 
     }  
+    my $pstale;
     if ($pdata =~ m/Stale=(\d+),/) {
       $pstale = $1; 
     }  
+    my $pgfails;
     if ($pdata =~ m/Get Failures=(\d+),/) {
       $pgfails = $1; 
     }  
+    my $prfails;
     if ($pdata =~ m/Remote Failures=(\d+),/) {
       $prfails = $1; 
     }  
+    my $puser;
     if ($pdata =~ m/User=(.+?),/) {
       $puser = $1; 
     }  
@@ -130,7 +152,7 @@ sub getCGMinerPools {
 
 sub getCGMinerStats {
   my ($gpu, $data, @pools) = @_;
-  my $res = &sendAPIcommand(gpu,$gpu);
+  my $res = &sendAPIcommand("gpu",$gpu);
   if ($res =~ m/MHS\s\ds=(\d+\.\d+),/) {
     $data->{'hashrate'} = $1 * 1000;
   }
@@ -159,7 +181,7 @@ sub getCGMinerStats {
     $data->{'intensity'} =$1;
   }   
   if ($res =~ m/Last\sShare\sPool=(\d+),/) {
-    foreach $p (@pools) {
+    foreach my $p (@pools) {
       if (${$p}{poolid} == $1) {
         $data->{'pool_url'} =${$p}{url};
       }
@@ -200,73 +222,96 @@ sub getCGMinerStats {
 
 sub getCGMinerSummary {    
   my @summary; 
-  my $res = &sendAPIcommand(summary,);
+  my $res = &sendAPIcommand("summary",);
+  my $melapsed;
   if ($res =~ m/Elapsed=(\d+),/g) {
     $melapsed = $1;
   }
+  my $mhashav;
   if ($res =~ m/MHS\sav=(\d+\.\d+),/g) {
     $mhashav = $1;
   }
+  my $mhashrate;
   if ($res =~ m/MHS\s\ds=(\d+\.\d+),/g) {
     $mhashrate = $1;
   }
+  my $mkhashav;
   if ($res =~ m/KHS\sav=(\d+),/g) {
     $mkhashav = $1;
   }
+  my $mkhashrate;
   if ($res =~ m/KHS\s\ds=(\d+),/g) {
     $mkhashrate =$1;
   }
+  my $mfoundbl;
   if ($res =~ m/Found\sBlocks=(\d+),/g) {
     $mfoundbl =$1;
   }
+  my $mgetworks;
   if ($res =~ m/Getworks=(\d+),/g) {
     $mgetworks =$1;
   }
+  my $maccept;
   if ($res =~ m/Accepted=(\d+),/g) {
     $maccept = $1
   }
+  my $mreject;
   if ($res =~ m/Rejected=(\d+),/g) {
     $mreject = $1
   }
+  my $mhwerrors;
   if ($res =~ m/Hardware\sErrors=(\d+),/g) {
     $mhwerrors = $1
   }
+  my $mutility;
   if ($res =~ m/Utility=(.+?),/g) {
     $mutility = $1
   }
+  my $mdiscarded;
   if ($res =~ m/Discarded=(\d+),/g) {
     $mdiscarded = $1
   }
+  my $mstale;
   if ($res =~ m/Stale=(\d+),/g) {
     $mstale = $1
   }
+  my $mgetfails;
   if ($res =~ m/Get\sFailures=(\d+),/g) {
     $mgetfails = $1
   }
+  my $mlocalwork;
   if ($res =~ m/Local\sWork=(\d+),/g) {
     $mlocalwork = $1
   }
+  my $mremfails;
   if ($res =~ m/Remote\sFailures=(\d+),/g) {
     $mremfails = $1
   }
+  my $mnetblocks;
   if ($res =~ m/Network\sBlocks=(\d+),/g) {
     $mnetblocks = $1
   }
+  my $mtotalmh;
   if ($res =~ m/Total\sMH=(\d+\.\d+),/g) {
     $mtotalmh = $1
   }
+  my $mworkutil;
   if ($res =~ m/Work\sUtility=(\d+\.\d+),/g) {
     $mworkutil = $1
   }
+  my $mdiffacc;
   if ($res =~ m/Difficulty\sAccepted=(\d+\.\d+),/g) {
     $mdiffacc = $1
   }
+  my $mdiffrej;
   if ($res =~ m/Difficulty\sRejected=(\d+\.\d+),/g) {
     $mdiffrej = $1
   }
+  my $mdiffstale;
   if ($res =~ m/Difficulty\sStale=(\d+\.\d+),/g) {
     $mdiffstale = $1
   }
+  my $mbestshare;
   if ($res =~ m/Best\sShare=(\d+),/g) {
     $mbestshare = $1
   }
@@ -290,7 +335,7 @@ sub getConfig {
 }
 
 sub getCGMinerVersion {
-  my $data = &sendAPIcommand(version,);
+  my $data = &sendAPIcommand("version",);
   while ($data =~ m/VERSION,(\w+?=\d+\.\d+\.\d+,API=\d+\.\d+)/g) {
     return $1; 
   }
@@ -300,7 +345,7 @@ sub getFreshGPUData {
   my @gpus;
   my @cgpools = getCGMinerPools();  
   my $gpucount = &getCGMinerGPUCount;
-  my $gidata = "";
+  my $gidata; my $gdesc; my $gdisp; 
   for (my $i=0;$i<$gpucount;$i++) {
     my $gpu = $i; 
     my $res = `DISPLAY=:0.0 /usr/local/bin/atitweak -s`;
@@ -322,31 +367,31 @@ sub getFreshGPUData {
 sub minerExpiry { 
   my $nmexpiry = $_[0];
   my $ecomm = "expiry,$nmexpiry";
-  &sendAPIcommand(setconfig,$ecomm);
+  &sendAPIcommand("setconfig",$ecomm);
 }
 
 sub minerQueue {
   my $nmqueue = $_[0];
   my $qcomm = "queue,$nmqueue";
-  &sendAPIcommand(setconfig,$qcomm);
+  &sendAPIcommand("setconfig",$qcomm);
 }
 
 sub minerScantime {
   my $nmscant = $_[0];
   my $scomm = "scantime,$nmscant";
-  &sendAPIcommand(setconfig,$scomm);
+  &sendAPIcommand("setconfig",$scomm);
 }
 
 sub priPool {
  my $prilist = $_[0];
-  &sendAPIcommand(poolpriority,$prilist); 
+  &sendAPIcommand("poolpriority",$prilist); 
 }
 
 sub quotaPool {
  my $preq = $_[0];
  my $pqta = $_[1];
  my $qdata = "$preq,$pqta";
-  &sendAPIcommand(poolquota,$qdata); 
+  &sendAPIcommand("poolquota",$qdata); 
 }
 
 sub saveConfig {
@@ -355,10 +400,10 @@ sub saveConfig {
   my $runmconf = ${$conf}{settings}{running_mconf}; 
   my $savefile = ${$conf}{miners}{$runmconf}{savepath}; 
   if (-f $savefile) { 
-   $bkpfile = $savefile . ".bkp";
+   my $bkpfile = $savefile . ".bkp";
    copy $savefile, $bkpfile; 
   }
-  &sendAPIcommand(save,$savefile);
+  &sendAPIcommand("save",$savefile);
 }
 
 sub sendAPIcommand {
@@ -391,38 +436,38 @@ sub sendAPIcommand {
 
 sub setGPUDisable {
  my $gpuid = $_[0];
- &sendAPIcommand(gpudisable,$gpuid);
+ &sendAPIcommand("gpudisable",$gpuid);
 }
 
 sub setGPUEnable {
  my $gpuid = $_[0];
- &sendAPIcommand(gpuenable,$gpuid);
+ &sendAPIcommand("gpuenable",$gpuid);
 }
 
 sub setGPUEngine {
  my $gpuid = $_[0];
  my $geng = $_[1];
  my $gef = "$gpuid,$geng";
- &sendAPIcommand(gpuengine,$gef);
+ &sendAPIcommand("gpuengine",$gef);
 }
 
 sub setGPUIntensity {
  my $gpuid = $_[0];
  my $gint = $_[1];
  my $gif = "$gpuid,$gint";
- &sendAPIcommand(gpuintensity,$gif);
+ &sendAPIcommand("gpuintensity",$gif);
 }
 
 sub setGPUMem {
  my $gpuid = $_[0];
  my $gmem = $_[1];
  my $gmf = "$gpuid,$gmem";
- &sendAPIcommand(gpumem,$gmf);
+ &sendAPIcommand("gpumem",$gmf);
 }
 
 sub setGPURestart {
  my $gpuid = $_[0];
- &sendAPIcommand(gpurestart,$gpuid);
+ &sendAPIcommand("gpurestart",$gpuid);
 }
 
 sub startCGMiner {
@@ -453,17 +498,17 @@ sub startCGMiner {
 }
 
 sub stopCGMiner {
-  &sendAPIcommand(quit,);
+  &sendAPIcommand("quit",);
 }
 
 sub switchPool {
   my $preq = $_[0];
-  &sendAPIcommand(switchpool,$preq);
+  &sendAPIcommand("switchpool",$preq);
 }
 
 sub zeroStats {
   my $zopts = "all,false";
-  &sendAPIcommand(zero,$zopts); 
+  &sendAPIcommand("zero",$zopts); 
 }
 
 1;
