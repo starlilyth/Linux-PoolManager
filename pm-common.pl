@@ -9,7 +9,6 @@
 #
 use warnings;
 use strict;
-
 use YAML qw( DumpFile LoadFile );
 use IO::Socket::INET;
 use Sys::Syslog qw( :DEFAULT setlogsock);
@@ -420,8 +419,13 @@ sub sendAPIcommand {
     Timeout => 10,
   );
   if ($sock) {
-    &blog("sending $command $cflags to cgminer api") if (defined(${$conf}{settings}{verbose}));
-    print $sock "$command|$cflags\n";
+    if (defined $cflags) {
+      &blog("sending \"$command $cflags\" to cgminer api") if (defined(${$conf}{settings}{verbose}));
+      print $sock "$command|$cflags\n";
+    } else {
+      &blog("sending \"$command\" to cgminer api") if (defined(${$conf}{settings}{verbose}));
+      print $sock "$command|\n"; 
+    }
     my $res = "";
     while(<$sock>) {
       $res .= $_;
