@@ -102,6 +102,20 @@ if ($nmst ne "") {
 	$nmst = "";
 } 
 
+my $gdig = $in{'gdig'};
+if ($gdig ne "") {
+ &setGPUDisable($gdig);
+ &saveConfig();
+ $gdig = "";
+}
+
+my $geng = $in{'geng'};
+if ($geng ne "") {
+ &setGPUEnable($geng);
+ &saveConfig();
+ $geng = "";
+}
+
 my $conffile = "/opt/ifmi/poolmanager.conf";
 my $npalias = $in{'npalias'};
 if ($npalias ne "") {
@@ -237,45 +251,46 @@ $g1put .= "<TD class='header'>Memory</TD>";
 $g1put .= "<TD class='header'>Power</TD></tr>";
 
 my $gsput = "";
-
-for (my $i=0;$i<@gpus;$i++)
-{
-    my $gput = "";
-#    my $gsput = ""; 
-
-	if ($i == $showgpu)
-	{
- 		my $gpudesc = ""; 
-    	my $gpudesc = $gpus[$i]{'desc'}; 
-    	if ($gpudesc ne "") {
-  	  		$gsput .= "<tr><td>GPU model:</td><td colspan=3>$gpudesc</td></tr>";
-  		} else { 
-  	  		$gsput .= "<tr><td>GPU model:</td><td colspan=3>Unknown</td></tr>";
-  		}
-  	}
-
-    my $ghealth = $gpus[$i]{'status'}; 
-    if ($ghealth ne "Alive") 
-	{
-		$problems++;
-		push(@nodemsg, "GPU $i is $ghealth");
-		
-		if ($i == $showgpu)
-		{
-			push(@gpumsg, "$ghealth");
-			$gsput .= "<tr><td>Status:</td><td class='error'>$ghealth</td>";	
-	        $gsput .= '<td>Enabled:</td><td>' . $gpus[$i]{'enabled'} . "</td></tr>";
+for (my $i=0;$i<@gpus;$i++) {
+  my $gput = "";
+	if ($i == $showgpu) {
+		my $gpudesc = ""; 
+  	my $gpudesc = $gpus[$i]{'desc'}; 
+  	if ($gpudesc ne "") {
+	  		$gsput .= "<tr><td>GPU model:</td><td colspan=3>$gpudesc</td></tr>";
+		} else { 
+	  		$gsput .= "<tr><td>GPU model:</td><td colspan=3>Unknown</td></tr>";
 		}
 	}
-	else
-	{
-		if ($i == $showgpu)
-		{
-			$gsput .= "<tr><td>Status:</td><td>$ghealth</td>";	
-	        $gsput .= "<td>Enabled:</td><td>" . $gpus[$i]{'enabled'} . "</td></tr>";
+
+  my $ghealth = $gpus[$i]{'status'}; 
+  if ($ghealth ne "Alive") {
+		$problems++;
+		push(@nodemsg, "GPU $i is $ghealth");
+		if ($i == $showgpu) {
+			push(@gpumsg, "$ghealth");
+			$gsput .= "<tr><td>Status:</td><td class='error'>$ghealth</td>";
 		}
-		
+	}	else {
+		if ($i == $showgpu) {
+			$gsput .= "<tr><td>Status:</td><td>$ghealth</td>";	
+		}		
  	}	
+
+	if ($i == $showgpu) {
+		if ($gpus[$i]{'enabled'} eq "Y") {  	  
+	    $gsput .= "<td>Enabled</td>";
+		  $gsput .= "<td><form name='gdisable' method='POST'>";
+		  $gsput .= "<input type='hidden' name='gdig' value='$i'>";
+		  $gsput .= "<input type='submit' value='Disable'> ";
+		} else { 
+	    $gsput .= "<td>Disabled</td>"; 
+		  $gsput .= "<td><form name='genable' method='POST'>";
+		  $gsput .= "<input type='hidden' name='geng' value='$i'>";
+		  $gsput .= "<input type='submit' value='Enable'> ";
+		}
+    $gsput .= "</form></td></tr>";
+	}
 
 	if ($gpus[$i]{'current_temp_0_c'} > $conf{monitoring}{monitor_temp_hi})
 	{
@@ -651,7 +666,6 @@ if (@summary) {
 		  	$mcontrol .= "<td>Run time: " . $mrunt . "</td>";
 
 			  $mcontrol .= "<td>Profile: $runname</td>";
-#			  $mcontrol .= "<br><small>Loaded: $currname</small></td>" if ($currentm != $runningm);
 			  $mcontrol .= "<td><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
 			} else { 
 		  	$mcontrol .= "<td class='error'>Stopped</td>";

@@ -201,7 +201,6 @@ sub getCGMinerStats {
 sub getCGMinerSummary {    
   my @summary; 
   my $res = &sendAPIcommand(summary,);
-
   if ($res =~ m/Elapsed=(\d+),/g) {
     $melapsed = $1;
   }
@@ -388,6 +387,42 @@ sub sendAPIcommand {
   } else {
     &blog("failed to get socket for cgminer api") if (defined(${$conf}{settings}{verbose}));
   }   
+}
+
+sub setGPUDisable {
+ my $gpuid = $_[0];
+ &sendAPIcommand(gpudisable,$gpuid);
+}
+
+sub setGPUEnable {
+ my $gpuid = $_[0];
+ &sendAPIcommand(gpuenable,$gpuid);
+}
+
+sub setGPUEngine {
+ my $gpuid = $_[0];
+ my $geng = $_[1];
+ my $gef = "$gpuid,$geng";
+ &sendAPIcommand(gpuengine,$gef);
+}
+
+sub setGPUIntensity {
+ my $gpuid = $_[0];
+ my $gint = $_[1];
+ my $gif = "$gpuid,$gint";
+ &sendAPIcommand(gpuintensity,$gif);
+}
+
+sub setGPUMem {
+ my $gpuid = $_[0];
+ my $gmem = $_[1];
+ my $gmf = "$gpuid,$gmem";
+ &sendAPIcommand(gpumem,$gmf);
+}
+
+sub setGPURestart {
+ my $gpuid = $_[0];
+ &sendAPIcommand(gpurestart,$gpuid);
 }
 
 sub startCGMiner {
