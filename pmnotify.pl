@@ -213,7 +213,7 @@ sub doEmail {
 							delete $conf{monitoring}{alert}{$poolid}{rejhi}; 
 						}
 					}
-					my $pnotify = $conf{pools}{$poolnum}{pnotify};
+					my $pnotify = $conf{pools}{$poolid}{pnotify};
 					if (($phealth ne "Alive") && ($pnotify == 1)) {
 						if (!(defined($conf{monitoring}{alert}{$poolid}{phealth}))) {						
 							$msg .= "Pool $i ($shorturl) health is $phealth.";
