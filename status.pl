@@ -7,16 +7,18 @@
 #    GNU General Public License for more details.
 #
 
+use warnings;
+use strict;
 use CGI qw(:cgi-lib :standard);
 use feature qw(switch);
 use YAML qw( DumpFile );
 
 require '/opt/ifmi/pm-common.pl';
-our $conf = &getConfig;
-%conf = %{$conf};
+my $conf = &getConfig;
+my %conf = %{$conf};
 
 # Take care of business
-&ReadParse(%in);
+&ReadParse(our %in);
 
 my $zreq = $in{'zero'};
 if ($zreq ne "") {
@@ -38,7 +40,7 @@ if ($apooln ne "") {
   my @pools = &getCGMinerPools(1);
   if (@pools) {
     for (my $i=0;$i<@pools;$i++) {
-      $pname = ${@pools[$i]}{'url'};
+      my $pname = ${$pools[$i]}{'url'};
       $pmatch++ if ($pname eq $apooln);
     }
   }
@@ -57,20 +59,20 @@ if ($dpool ne "") {
 
 my $mstop = $in{'mstop'};
 if ($mstop eq "stop") { 
-  $status = `echo $in{'ptext'} | sudo -S /opt/ifmi/mcontrol stop`;
+  my $status = `echo $in{'ptext'} | sudo -S /opt/ifmi/mcontrol stop`;
   $mstop = ""; 
 }
 
 my $mstart = $in{'mstart'};
 if ($mstart eq "start") { 
   my $sup = $in{'ptext'};
-  $status = `echo $in{'ptext'} | sudo -S /opt/ifmi/mcontrol start`;
+  my $status = `echo $in{'ptext'} | sudo -S /opt/ifmi/mcontrol start`;
   $mstart = ""; 
 }
 
 my $reboot = $in{'reboot'};
 if ($reboot eq "reboot") { 
-  $status = `echo $in{'ptext'} | sudo -S /sbin/coldreboot`;
+  my $status = `echo $in{'ptext'} | sudo -S /sbin/coldreboot`;
 }  
 
 my $qval = $in{'qval'};
@@ -128,7 +130,7 @@ if ($npalias ne "") {
 		}
 	}
 	if ($acount == 0) {	
-	 	$newa = (keys %{$conf{pools}}); $newa++; 
+	 	my $newa = (keys %{$conf{pools}}); $newa++; 
 	 	${$conf}{pools}{$newa}{alias} = $npalias;
 	 	${$conf}{pools}{$newa}{url} = $paurl;
 	}
@@ -162,16 +164,17 @@ if ($npn ne "") {
 
 my $miner_name = `hostname`;
 chomp $miner_name;
+my $iptxt;
 my $nicget = `/sbin/ifconfig`; 
   while ($nicget =~ m/(\w\w\w\w?\d)\s.+\n\s+inet addr:(\d+\.\d+\.\d+\.\d+)\s/g) {
   $iptxt = $2; 
 }
 
-$q=CGI->new();
+my $q=CGI->new();
 
-$showgpu = -1;
-$showpool = -1;
-$showminer = -1;
+my $showgpu = -1;
+my $showpool = -1;
+my $showminer = -1;
 
 if (defined($q->param('gpu')))
 {
@@ -230,12 +233,13 @@ my $UHOH = "false";
 $UHOH = "true" if (!(@pools) && !(@summary) && !(@gpus)); 
 
 # do GPUs
-my $gput = "";
+my $gput; my $g1put; 
 my $problems = 0;
 my $okgpus = 0;
 my $problemgpus = 0;
 my @nodemsg;
 my @gpumsg;
+my $ggimg; 
 
 $g1put .= "<TABLE id='gpucontent'><TR class='header'><TD class='header'>GPU</TD>";
 $g1put .= "<TD class='header'>Status</TD>";
@@ -254,7 +258,6 @@ my $gsput = "";
 for (my $i=0;$i<@gpus;$i++) {
   my $gput = "";
 	if ($i == $showgpu) {
-		my $gpudesc = ""; 
   	my $gpudesc = $gpus[$i]{'desc'}; 
   	if ($gpudesc ne "") {
 	  		$gsput .= "<tr><td>GPU model:</td><td colspan=3>$gpudesc</td></tr>";
@@ -328,7 +331,7 @@ for (my $i=0;$i<@gpus;$i++) {
 	}		
 	$gput .= sprintf("%.1f", $gpus[$i]{'current_temp_0_c'}) . ' C</td>';
 	
-	$frpm = $gpus[$i]{'fan_rpm_c'}; $frpm = "0" if ($frpm eq "");
+	my $frpm = $gpus[$i]{'fan_rpm_c'}; $frpm = "0" if ($frpm eq "");
 	if ($frpm < ($conf{monitoring}{monitor_fan_lo}) && ($frpm > 0))
 	{
 		$problems++;
@@ -393,7 +396,7 @@ for (my $i=0;$i<@gpus;$i++) {
 	}	
 	$gput .= sprintf("%d", $ghashrate) . " Kh/s</TD>";
 
-
+		my $shorturl;
     my $poolurl = $gpus[$i]{'pool_url'};
     if ($poolurl =~ m/.+\@(.+)/) {
       $poolurl = $1;
@@ -401,7 +404,7 @@ for (my $i=0;$i<@gpus;$i++) {
     if ($poolurl =~ m|://(\w+-?\w+\.)?(\w+-?\w+\.\w+:\d+)|) {
        $shorturl = $2;
     }
- 	$shorturl = "N/A" if ($shorturl eq ""); 
+ 	$shorturl = "N/A" if (! defined $shorturl); 
     if ($i == $showgpu) {
         $gsput .= "<tr><td>Pool:</td><td colspan=3>" . $poolurl  . "</td>";
     }
@@ -448,10 +451,11 @@ for (my $i=0;$i<@gpus;$i++) {
 	}	
 	$gput .= "</TD>";
 
-	$gint = $gpus[$i]{'intensity'}; $gint = "0" if ($gint eq "");	
+	my $gint = $gpus[$i]{'intensity'}; $gint = "0" if ($gint eq "");	
 	$gput .= '<TD>' . $gint . '</td>';
 	
-    my $ghwe = $gpus[$i]{'hardware_errors'};	
+	my $gpuhwe;
+  my $ghwe = $gpus[$i]{'hardware_errors'};	
 	if ($ghwe > 0) { 
 	  $problems++;
 	  push(@nodemsg, "GPU $i has hardware errors");
@@ -465,17 +469,18 @@ for (my $i=0;$i<@gpus;$i++) {
 	}
     $gput .= $gpuhwe;
 	
-	$gccc = $gpus[$i]{'current_core_clock_c'}; $gccc = "0" if ($gccc eq "");	
+	my $gccc = $gpus[$i]{'current_core_clock_c'}; $gccc = "0" if ($gccc eq "");	
 	$gput .= '<TD>' . $gccc . ' Mhz</td>';
 
-	$gcmc = $gpus[$i]{'current_mem_clock_c'}; $gcmc = "0" if ($gcmc eq "");			
+	my $gcmc = $gpus[$i]{'current_mem_clock_c'}; $gcmc = "0" if ($gcmc eq "");			
 	$gput .= '<TD>' . $gcmc . ' Mhz</td>';
 
-	$gccv = $gpus[$i]{'current_core_voltage_c'}; $gccv = "0" if ($gccv eq "");				
+	my $gccv = $gpus[$i]{'current_core_voltage_c'}; $gccv = "0" if ($gccv eq "");				
 	$gput .= '<TD>' . $gccv . 'v</td>';
 
 	$gput .= "</TR>";
 
+	my $gpuload;
 	if ($gpus[$i]{'current_load_c'} < $conf{monitoring}{monitor_load_lo})
 	{
 		$problems++;
@@ -522,45 +527,47 @@ for (my $i=0;$i<@gpus;$i++) {
 }
 $g1put .= "</table>";
 
+my $mstrategy; my $mfonly; my $mscant; my $mqueue; my $mexpiry; 
 if (@mconfig) {
 	for (my $i=0;$i<@mconfig;$i++) {
-		$mstrategy = ${@mconfig[0]}{'strategy'};
-		$mfonly = ${@mconfig[0]}{'fonly'};
-		$mscant = ${@mconfig[0]}{'scantime'};
-		$mqueue = ${@mconfig[0]}{'queue'};
-		$mexpiry = ${@mconfig[0]}{'expiry'};
+		$mstrategy = ${$mconfig[0]}{'strategy'};
+		$mfonly = ${$mconfig[0]}{'fonly'};
+		$mscant = ${$mconfig[0]}{'scantime'};
+		$mqueue = ${$mconfig[0]}{'queue'};
+		$mexpiry = ${$mconfig[0]}{'expiry'};
 	}
 }
 
+my $mcontrol;
 $mcontrol .= "<table id='mcontrol'><tr>";
-my $surl = "?"; $surl .= "miner=$i";
+my $surl = "?"; $surl .= 'miner=$i';
 $mcontrol .= '<TD class="bigger"><A href="' . $surl . '">Miner</a></td>';
+my $mname; my $mvers; my $avers; 
 if ($version =~ m/(\w+?)=(\d+\.\d+\.\d+),API=(\d+\.\d+)/) {
 	$mname = $1;
-  	$mvers = $2; 
-  	$avers = $3; 
+  $mvers = $2; 
+  $avers = $3; 
 } else { 
 	$mvers = "Unknown";
 	$avers = "0"; 
 }
-
+my $getmlinv; my $mlinv; my $msput; my $minerate; my $mineacc; my $minerej; my $minewu; my $minehe; 
 if (@summary) {
   for (my $i=0;$i<@summary;$i++) {
-    $melapsed = ${@summary[$i]}{'elapsed'};
-    $mrunt = sprintf("%d days, %02d:%02d.%02d",(gmtime $melapsed)[7,2,1,0]);
-    $mratem = ${@summary[$i]}{'hashrate'};
-    $mratem = ${@summary[$i]}{'hashavg'} if ($mratem eq "");
-    $mratem = ${@summary[$i]}{'hashavg'} if ($conf{display}{usehashavg} >0 ); 
+    my $melapsed = ${$summary[$i]}{'elapsed'};
+    my $mrunt = sprintf("%d days, %02d:%02d.%02d",(gmtime $melapsed)[7,2,1,0]);
+    my $mratem = ${$summary[$i]}{'hashrate'};
+    $mratem = ${$summary[$i]}{'hashavg'} if ($mratem eq "");
+    $mratem = ${$summary[$i]}{'hashavg'} if ($conf{display}{usehashavg} >0 ); 
     $minerate = sprintf("%.2f", $mratem);
-    $mineacc = ${@summary[$i]}{'shares_accepted'};
-    $minerej = ${@summary[$i]}{'shares_invalid'};
-    $minewu = ${@summary[$i]}{'work_utility'};
-    $minehe = ${@summary[$i]}{'hardware_errors'};
+    $mineacc = ${$summary[$i]}{'shares_accepted'};
+    $minerej = ${$summary[$i]}{'shares_invalid'};
+    $minewu = ${$summary[$i]}{'work_utility'};
+    $minehe = ${$summary[$i]}{'hardware_errors'};
     my $currentm = $conf{settings}{current_mconf};
  		my $currname = $conf{miners}{$currentm}{mconfig};
  		my $runningm	= $conf{settings}{running_mconf};
  		my $runname = $conf{miners}{$runningm}{mconfig};
-
   	if ($showminer == $i) {
 	  	$msput .= "<tr><td colspan=4 class=big>Miner</td></tr>";
 	  	$msput .= "<tr><td>Miner Version: </td><td>$mname $mvers</td>";
@@ -610,40 +617,40 @@ if (@summary) {
 			$msput .= "<td><input type='submit' value='Change'></form></td></tr>";
 			$msput .= "</table><table>";
 			$msput .= "<tr><td colspan=4>Stats</td><tr>";
-			$mtm = ${@summary[$i]}{'total_mh'};
-			$minetm = sprintf("%.2f", $mtm); 
+			my $mtm = ${$summary[$i]}{'total_mh'};
+			my $minetm = sprintf("%.2f", $mtm); 
 	    $msput .= "<tr><td>Total MH:</td><td>" . $minetm . "</td>";
-			$minefb = ${@summary[$i]}{'found_blocks'};
+			my $minefb = ${$summary[$i]}{'found_blocks'};
 			$minefb = 0 if ($minefb eq "");
       $msput .= "<td>Found Blocks:</td><td>" . $minefb . "</td></tr>";
-			$minegw = ${@summary[$i]}{'getworks'};
+			my $minegw = ${$summary[$i]}{'getworks'};
 			$minegw = 0 if ($minegw eq "");
       $msput .= "<tr><td>Getworks:</td><td>" . $minegw . "</td>";
-			$minedis = ${@summary[$i]}{'discarded'};
+			my $minedis = ${$summary[$i]}{'discarded'};
       $minedis = 0 if ($minedis eq "");
       $msput .= "<td>Discarded:</td><td>" . $minedis . "</td></tr>";
-			$minest = ${@summary[$i]}{'stale'};
+			my $minest = ${$summary[$i]}{'stale'};
 			$minest = 0 if ($minest eq "");
       $msput .= "<tr><td>Stale:</td><td>" . $minest . "</td>";
-			$minegf = ${@summary[$i]}{'get_failures'};
+			my $minegf = ${$summary[$i]}{'get_failures'};
 			$minegf = 0 if ($minegf eq "");
       $msput .= "<td>Get Failures:</td><td>" . $minegf . "</td></tr>";
-			$minerf = ${@summary[$i]}{'remote_failures'};
+			my $minerf = ${$summary[$i]}{'remote_failures'};
 			$minerf = 0 if ($minerf eq "");
       $msput .= "<tr><td>Remote Fails:</td><td>" . $minerf . "</td>";
-			$minenb = ${@summary[$i]}{'network_blocks'};
+			my $minenb = ${$summary[$i]}{'network_blocks'};
 			$minenb = 0 if ($minenb eq "");
       $msput .= "<td>Network Blocks:</td><td>" . $minenb . "</td></tr>";
-      $mdia = ${@summary[$i]}{'diff_accepted'};
-			$minedia = sprintf("%d", $mdia);
+      my $mdia = ${$summary[$i]}{'diff_accepted'};
+			my $minedia = sprintf("%d", $mdia);
       $msput .= "<tr><td>Diff Accepted:</td><td>" . $minedia . "</td>";
-      $mdir = ${@summary[$i]}{'diff_rejected'};
-			$minedir = sprintf("%d", $mdir);
+      my $mdir = ${$summary[$i]}{'diff_rejected'};
+			my $minedir = sprintf("%d", $mdir);
       $msput .= "<td>Diff Rejected:</td><td>" . $minedir . "</td></tr>";
-      $mds = ${@summary[$i]}{'diff_stale'};
-			$mineds = sprintf("%d", $mds);
+      my $mds = ${$summary[$i]}{'diff_stale'};
+			my $mineds = sprintf("%d", $mds);
       $msput .= "<tr><td>Difficulty Stale:</td><td>" . $mineds . "</td>";
-			$minebs = ${@summary[$i]}{'best_share'};
+			my $minebs = ${$summary[$i]}{'best_share'};
 			$minebs = 0 if ($minebs eq "");
       $msput .= "<td>Best Share:</td><td>" . $minebs . "</td></tr>";
 			$msput .= "</table><table><tr><td colspan=4><hr></td></tr>";
@@ -698,7 +705,7 @@ if (@summary) {
 }
 
 $mcontrol .= "</tr></table><br>";
-
+my $p1sum; my $psum; my $psput; my @poolmsg; my $pgimg;
 $p1sum .= "<table id='pcontent'>";
 
 if ($ispriv eq "S") {
@@ -712,14 +719,13 @@ if ($ispriv eq "S") {
 	$p1sum .= "<TD class='header' colspan=2>Priority</TD>" if ($mstrategy eq "Failover");
 	$p1sum .= "<TD class='header' colspan=2>Quota (ratio or %)</TD>" if ($mstrategy eq "Load Balance"); 
 	$p1sum .= "</TR>";
-	my @poolmsg;
  	my @currorder;
 	if (@pools) {
 	  for (my $i=0;$i<@pools;$i++) {
 			my $pimg = "<img src='/IFMI/timeout24.png'>";
 	    $pimg = "<form name='pselect' action='status.pl' method='POST'><input type='hidden' name='swpool' value='$i'><button type='submit'>Switch</button></form>" 
 	    				if ($mstrategy eq "Failover");
-    	my $pname = ${@pools[$i]}{'url'};
+    	my $pname = ${$pools[$i]}{'url'};
 			my $pactive = 0; 
 			for (my $g=0;$g<@gpus;$g++) {
 				if ($pname eq $gpus[$g]{'pool_url'}) {
@@ -727,9 +733,9 @@ if ($ispriv eq "S") {
 				}
 			}	
 			$pimg = "<img src='/IFMI/ok24.png'>" if ($pactive >0);
-	    my $pnum = ${@pools[$i]}{'poolid'};
-	    my $pusr = ${@pools[$i]}{'user'};
-	    my $pstat = ${@pools[$i]}{'status'};
+	    my $pnum = ${$pools[$i]}{'poolid'};
+	    my $pusr = ${$pools[$i]}{'user'};
+	    my $pstat = ${$pools[$i]}{'status'};
 	    my $pstatus = "";
 	    if ($pstat eq "Dead") {
 	      $problems++;
@@ -740,16 +746,17 @@ if ($ispriv eq "S") {
 	    } else {
 	      $pstatus = "<td>" . $pstat . "</td>";
 	    }
-	    my $ppri = ${@pools[$i]}{'priority'};
+	    my $ppri = ${$pools[$i]}{'priority'};
 #	    $currorder[$i] = "$ppri" . "$pnum"; 
-	    my $pacc = ${@pools[$i]}{'accepted'};
-	    my $prej = ${@pools[$i]}{'rejected'};
+	    my $pacc = ${$pools[$i]}{'accepted'};
+	    my $prej = ${$pools[$i]}{'rejected'};
 	    my $prr = "";
 	    if ($prej ne "0") {
 	       $prr = sprintf("%.2f", $prej / ($pacc + $prej)*100);
 	    } else { 
 		   $prr = "0.0";
 	    }
+	    my $prat; 
 			if ($prr > ${$conf}{monitoring}{monitor_reject_hi}) {
 	      $problems++;
 	      push(@nodemsg, "Pool $i reject ratio too high"); 
@@ -758,7 +765,7 @@ if ($ispriv eq "S") {
 	    } else { 
 	      $prat = "<td>" . $prr . "%</td>";
 	    }
-	    $pquo = ${@pools[$i]}{'quota'};
+	    my $pquo = ${$pools[$i]}{'quota'};
 	    my $poola = ""; my $poolnum = "";
       for (keys %{$conf{pools}}) {
       	if ($pname eq ${$conf}{pools}{$_}{url}) {
@@ -767,12 +774,13 @@ if ($ispriv eq "S") {
       	}
       }
 	    if ($showpool == $i) { 
-	      $psgw = ${@pools[$i]}{'getworks'};
-	      $psw = ${@pools[$i]}{'works'}; 
-	      $psd = ${@pools[$i]}{'discarded'}; 
-	      $pss = ${@pools[$i]}{'stale'}; 
-	      $psgf = ${@pools[$i]}{'getfails'}; 
-	      $psrf = ${@pools[$i]}{'remotefailures'};
+	    	my $current; 
+	      my $psgw = ${$pools[$i]}{'getworks'};
+	      my $psw = ${$pools[$i]}{'works'}; 
+	      my $psd = ${$pools[$i]}{'discarded'}; 
+	      my $pss = ${$pools[$i]}{'stale'}; 
+	      my $psgf = ${$pools[$i]}{'getfails'}; 
+	      my $psrf = ${$pools[$i]}{'remotefailures'};
 		  	if ($pactive >0) {
 					$current = "Active";
 	      } else { 
@@ -790,7 +798,7 @@ if ($ispriv eq "S") {
 				$psput .= "<input type='hidden' name='paurl' value='$pname'>";
 				$psput .= "<input type='submit' value='Change'></form></td></tr>";
 
-			  $puser = "unknown" if ($puser eq "");
+			  my $pusr = "unknown" if (! defined $pusr);
 	      $psput .= "<tr><td>Worker:</td><td colspan=3>" . $pusr . "</td></tr>";
 	      $psput .= "<td>Status:</td>" . $pstatus . "</td><td>";
 	      $psput .= "Notify when Dead?</td>";
@@ -931,11 +939,11 @@ print "</td>";
 # EXTRA HEADER STATS
 print "<TD class='overview'>";
 my $uptime = `uptime`;
-$rigup = $1 if ($uptime =~ /up\s+(.*?),\s+\d+\s+users,/);
-$rigload = $1 if ($uptime =~ /average:\s+(.*?),/);
+my $rigup = $1 if ($uptime =~ /up\s+(.*?),\s+\d+\s+users,/);
+my $rigload = $1 if ($uptime =~ /average:\s+(.*?),/);
 my $memfree = `cat /proc/meminfo | grep MemFree`; 
-$rmem = $1 if ($memfree =~ /^MemFree:\s+(.*?)\s+kB$/);
-$rigmem = sprintf("%.3f", $rmem / 1000000);  
+my $rmem = $1 if ($memfree =~ /^MemFree:\s+(.*?)\s+kB$/);
+my $rigmem = sprintf("%.3f", $rmem / 1000000);  
 print "Uptime: $rigup<br>";
 print "CPU Load: $rigload<br>";
 print "Mem free: $rigmem GB<br>";
@@ -945,7 +953,7 @@ print "</TR></table></div>";
 
 print "<div id=content>";
 
-given($x) {
+given(my $x) {
 	when ($showgpu > -1) {
 		print "<div id='showdata'>";
 		print "<table><tr colspan=2><td><A HREF=?";	
@@ -977,8 +985,8 @@ given($x) {
         print "</td></tr>";
         print "<tr><td class='header'>";
         print "<table><tr><td class='bigger'>Pool $showpool<br>";
-        my $psacc = ${@pools[$showpool]}{'accepted'};
-        my $psrej = ${@pools[$showpool]}{'rejected'};
+        my $psacc = ${$pools[$showpool]}{'accepted'};
+        my $psrej = ${$pools[$showpool]}{'rejected'};
 		if ($psacc ne "0") { 
  	      print sprintf("%.2f%%", $psrej / ($psacc + $psrej)*100) . "</td></tr><tr><td>";
           print "reject ratio";

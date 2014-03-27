@@ -47,6 +47,7 @@ sub delPool {
 }
 
 sub getCGMinerConfig {
+  my @mconfig;
   my $res = &sendAPIcommand("config",);
   my $mstrategy;
   if ($res =~ m/Strategy=(.+?),/g) {
@@ -68,7 +69,6 @@ sub getCGMinerConfig {
   if ($res =~ m/Expiry=(\d+),/g) {
     $mexpiry = $1;
   }
-  my @mconfig;
   push(@mconfig, ({strategy=>$mstrategy, fonly=>$mfonly, scantime=>$mscant, queue=>$mqueue, expiry=>$mexpiry }) );
   return(@mconfig);
 }
