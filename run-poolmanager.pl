@@ -18,6 +18,21 @@ require '/opt/ifmi/pmnotify.pl';
 my $conf = &getConfig;
 my %conf = %{$conf};
 
+# Start profile on boot
+
+if ($conf{settings}{do_boot} == 1) {
+  my $uptime = `uptime`;
+  $uptime =~ /^\s+?(\d+:\d+):(\d+)\s+up\s+/;
+  my $rigtime = $1; my $rigmins = $2;
+  if (($rigtime eq "00:00") && ($rigmins < 05)) {
+    my $xcheck = `ps -eo command | grep -cE ^/usr/bin/X`;
+    my $mcheck = `ps -eo command | grep -cE [P]M-miner`;
+    if ($xcheck == 1 && $mcheck == 0) {
+      &startCGMiner;
+   }
+  } 
+}
+
 #  broadcast node status
 if ($conf{farmview}{do_bcast_status} == 1) { 
  &bcastStatus;
