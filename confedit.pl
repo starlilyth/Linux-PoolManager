@@ -25,14 +25,14 @@ our %in;
 &ReadParse(%in);
 my $confdata = $in{'configtext'};
 my $tempfile = "/tmp/confedit.tmp";
-if ($confdata ne "") {
+if (defined $confdata) {
   open my $fin, '>', $tempfile;
   print $fin $confdata;
   close $fin; 
   $confdata = ""; 
 }
 my $status = -1;
-my $ln = $in{'lname'}; if ($ln ne "") {
+my $ln = $in{'lname'}; if (defined $ln) {
   $status = (system("echo $in{'ptext'} | sudo -S -u $ln /bin/cp $tempfile $savepath"));
   $ln = ""; 
 }
