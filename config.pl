@@ -39,6 +39,7 @@ if (! -f $conffile) {
       IGNOREBAMT => '1',
       current_mconf => '0',
       running_mconf => '0',
+      do_boot => '1',
     },
   	display => {
   		miner_loc => 'Undisclosed Location',
@@ -84,58 +85,58 @@ my $conferror = 0; my $mailerror = "";
 my $mconf = LoadFile( $conffile );
 if (-o $conffile) {
   my $curver = $mconf->{display}->{pm_version};
-  $mconf->{display}->{pm_version} = $version if ($version != $curver);
+  $mconf->{display}->{pm_version} = $version if ($version ne $curver);
   our %in;
   if (&ReadParse(%in)) {
     my $nht = $in{'temphi'};
-    if($nht ne "") {
+    if(defined $nht) {
       $nht = "80" if (! ($nht =~ m/^\d+?$/));    
       $mconf->{monitoring}->{monitor_temp_hi} = $nht;
     }
     my $nlt = $in{'templo'};
-    if($nlt ne "") {
+    if(defined $nlt) {
       $nlt = "45" if (! ($nlt =~ m/^\d+?$/));
       $mconf->{monitoring}->{monitor_temp_lo} = $nlt;
     }
     my $nll = $in{'loadlo'};
-    if($nll ne "") {
+    if(defined $nll) {
       $nll = "10" if (! ($nll =~ m/^\d+?$/));
       $mconf->{monitoring}->{monitor_load_lo} = $nll; 
     }
     my $nhl = $in{'hashlo'};
-    if($nhl ne "") {
+    if(defined $nhl) {
       $nhl = "200" if (! ($nhl =~ m/^\d+?$/));
       $mconf->{monitoring}->{monitor_hash_lo} = $nhl;
     }
     my $nfl = $in{'fanlo'};
-    if($nfl ne "") {
+    if(defined $nfl) {
       $nfl = "1000" if (! ($nfl =~ m/^\d+?$/));
       $mconf->{monitoring}->{monitor_fan_lo} = $nfl;
     }
     my $nfh = $in{'fanhi'};
-    if($nfh ne "") {
+    if(defined $nfh) {
       $nfh = "4000" if (! ($nfh =~ m/^\d+?$/));
       $mconf->{monitoring}->{monitor_fan_hi} = $nfh;
     }
     my $nrh = $in{'rejhi'};
-    if($nrh ne "") {
+    if(defined $nrh) {
       $nrh = "3" if (! ($nrh =~ m/^(\d+)?\.?\d+?$/));
       $mconf->{monitoring}->{monitor_reject_hi} = $nrh;
     }
     my $doe = $in{'emaildo'};
-    $mconf->{monitoring}->{do_email} = $doe if($doe ne "");
+    $mconf->{monitoring}->{do_email} = $doe if(defined $doe);
 
     my $ncmc = $in{'setmconf'};
-    $mconf->{settings}->{current_mconf} = $ncmc if ($ncmc ne "");
+    $mconf->{settings}->{current_mconf} = $ncmc if (defined $ncmc);
 
     my $nmconfig = $in{'nmconfig'};
-    if ($nmconfig ne "") {
+    if (defined $nmconfig) {
       my $ncname = $in{'cnmcname'}; 
-      if (($ncname ne "") && ($ncname ne $nmconfig)) {
+      if ((defined $ncname) && ($ncname ne $nmconfig)) {
         my $newa = (keys %{$mconf->{miners}}); $newa++; 
         $mconf->{miners}->{$newa}->{mconfig} = $ncname;
         my $nmp = $in{'nmp'};
-        if ($nmp ne "") {
+        if (defined $nmp) {
           $mconf->{miners}->{$newa}->{mpath} = $nmp;
           my $nmo = $in{'nmo'};
           $nmo = "--api-listen --config /opt/ifmi/$ncname.conf" if ($nmo eq "");
@@ -166,91 +167,95 @@ if (-o $conffile) {
         for (keys %{$mconf->{miners}}) {
           if ($nmconfig eq $mconf->{miners}->{$_}->{mconfig}) {
             my $nmp = $in{'nmp'};
-            $mconf->{miners}->{$_}->{mpath} = $nmp if ($nmp ne "");
+            $mconf->{miners}->{$_}->{mpath} = $nmp if (defined $nmp);
             my $nmo = $in{'nmo'};
-            $mconf->{miners}->{$_}->{mopts} = $nmo if ($nmo ne "");
+            $mconf->{miners}->{$_}->{mopts} = $nmo if (defined $nmo);
             my $nsp = $in{'nsp'};
-            $mconf->{miners}->{$_}->{savepath} = $nsp if ($nsp ne "");
+            $mconf->{miners}->{$_}->{savepath} = $nsp if (defined $nsp);
           } 
         }
       }  
       $nmconfig = ""; $ncname = "";
     }
     my $mdel = $in{'deletem'};
-    if ($mdel ne "") {
+    if (defined $mdel) {
       if ($mdel != 0) {
         delete $mconf->{miners}->{$mdel};
         $mconf->{settings}->{current_mconf} = 0;
       }
     }
+
+    my $ndb = $in{'doboot'};
+    $mconf->{settings}->{do_boot} = $ndb if (defined $ndb);
+
     my $nap = $in{'nap'};
-    if($nap ne "") {
+    if(defined $nap) {
       $nap = "4028" if (! ($nap =~ m/^\d+?$/));    
       $mconf->{settings}->{cgminer_port} = $nap;
     }
     my $ibamt = $in{'ibamt'};
-    $mconf->{settings}->{IGNOREBAMT} = $ibamt if($ibamt ne "");
+    $mconf->{settings}->{IGNOREBAMT} = $ibamt if(defined $ibamt);
 
     my $nml = $in{'nml'};
-    $mconf->{display}->{miner_loc} = $nml if($nml ne "");
+    $mconf->{display}->{miner_loc} = $nml if(defined $nml);
     my $nscss = $in{'scss'};
-    $mconf->{display}->{status_css} = $nscss if($nscss ne "");
+    $mconf->{display}->{status_css} = $nscss if(defined $nscss);
     my $nfcss = $in{'fcss'};
-    if($nfcss ne "") {
+    if(defined $nfcss) {
       $mconf->{display}->{farmview_css} = $nfcss;
       `touch /tmp/rfv`;
     }
     my $ngcf = $in{'gcf'};
-    $mconf->{display}->{graphcolors} = $ngcf if($ngcf ne "");
+    $mconf->{display}->{graphcolors} = $ngcf if(defined $ngcf);
     my $nha = $in{'hashavg'};
-    $mconf->{display}->{usehashavg} = $nha if($nha ne "");
+    $mconf->{display}->{usehashavg} = $nha if(defined $nha);
     my $nbcast = $in{'bcast'};
     $mconf->{display}->{pm_version} = $version if ($mconf->{display}->{pm_version} eq "");
 
-    $mconf->{farmview}->{do_bcast_status} = $nbcast if($nbcast ne "");
+    $mconf->{farmview}->{do_bcast_status} = $nbcast if(defined $nbcast);
     my $nbp = $in{'nbp'};
-    if($nbp ne "") {
+    if(defined $nbp) {
       $nbp = "54545" if (! ($nbp =~ m/^\d+?$/));    
       $mconf->{farmview}->{status_port} = $nbp;
     }
     my $nfarmview = $in{'farmview'};
-    $mconf->{farmview}->{do_farmview} = $nfarmview if($nfarmview ne "");
+    $mconf->{farmview}->{do_farmview} = $nfarmview if(defined $nfarmview);
     my $nlp = $in{'nlp'};
-    if($nlp ne "") {
+    if(defined $nlp) {
       $nlp = "54545" if (! ($nlp =~ m/^\d+?$/));    
       $mconf->{farmview}->{listen_port} = $nlp;
       `touch /tmp/rfv`;
     }
     my $dds = $in{'dds'};
-    $mconf->{farmview}->{do_direct_status} = $dds if($dds ne "");
+    $mconf->{farmview}->{do_direct_status} = $dds if(defined $dds);
 
     my $nst = $in{'mailto'};
-    $mconf->{email}->{smtp_to} = $nst if ($nst ne "");
+    $mconf->{email}->{smtp_to} = $nst if (defined $nst);
     my $nsf = $in{'mailfrom'};
-    $mconf->{email}->{smtp_from} = $nsf if ($nsf ne "");
+    $mconf->{email}->{smtp_from} = $nsf if (defined $nsf);
     my $nsh = $in{'mailhost'};
-    $mconf->{email}->{smtp_host} = $nsh if ($nsh ne "");
+    $mconf->{email}->{smtp_host} = $nsh if (defined $nsh);
     my $nsmp = $in{'mailport'};
-    if ($nsmp ne "") {
+    if (defined $nsmp) {
       $nsmp = "25" if (! ($nsmp =~ m/^\d+?$/));
       $mconf->{email}->{smtp_port} = $nsmp;
     }
     my $nssl = $in{'mailssl'};
-    $mconf->{email}->{smtp_ssl} = $nssl if ($nssl ne "");
+    $mconf->{email}->{smtp_ssl} = $nssl if (defined $nssl);
     my $ntls = $in{'mailtls'};
-    $mconf->{email}->{smtp_tls} = $ntls if ($ntls ne "");
+    $mconf->{email}->{smtp_tls} = $ntls if (defined $ntls);
     my $nsau = $in{'authuser'};
-    $mconf->{email}->{smtp_auth_user} = $nsau if ($nsau ne "");
+    $mconf->{email}->{smtp_auth_user} = $nsau if (defined $nsau);
     my $nsap = $in{'authpass'};
-    $mconf->{email}->{smtp_auth_pass} = $nsap if ($nsap ne "");
+    $mconf->{email}->{smtp_auth_pass} = $nsap if (defined $nsap);
     my $nmw = $in{'mailwait'};
-    if ($nmw ne "") {
+    if (defined $nmw) {
       $nmw = "5" if (! ($nmw =~ m/^\d+?$/));
       $nmw = $nmw * 60; 
       $mconf->{email}->{smtp_min_wait} = $nmw;
     }
     my $se = $in{'sendemail'};
-    if ($se ne "") {
+    if (defined $se) {
       require '/opt/ifmi/pmnotify.pl';
       my $currsettings = "Email Settings:\n";
       $currsettings .= "- Email To: " . $mconf->{email}->{smtp_to} . "\n";
@@ -274,7 +279,7 @@ if (-o $conffile) {
     DumpFile($conffile, $mconf); 
 
     my $cgraphs = $in{'cgraphs'};
-    if ($cgraphs ne "") {
+    if (defined $cgraphs) {
       `/usr/bin/touch /tmp/cleargraphs.flag`;
       $cgraphs = "";
     }
@@ -321,7 +326,6 @@ print "<table class=settings><tr><td class=header>Miner Profile</td><td class=he
 my $currentm = $mconf->{settings}->{current_mconf};
 my $currname = $mconf->{miners}->{$currentm}->{mconfig};
 print "<form name=deletem method=post>$currname <input type='submit' value='Delete'>";
-#my $delminer = $mconf->{miners}->{$currentm};
 print "<input type='hidden' name='deletem' value='$currentm'></form>";
 print "</td><td class=header>";
 print "<form name=currentm method=post><select name=setmconf>";
@@ -360,6 +364,15 @@ print "<tr><td colspan=2 align=center>";
 print "<form name=miscsettings method=post>";
 print "<table class=settings><tr><td colspan=2 class=header>Misc. Miner Settings</td>";
 print "<td class=header><input type='submit' value='Save'></td><tr>";
+my $doboot = $mconf->{settings}->{do_boot};
+print "<tr><td>Start on Boot</td><td><i>Start the loaded profile at boot time?</i></td>";
+if ($doboot==1) {
+  print "<td><input type='radio' name='doboot' value=1 checked>Yes ";
+  print "<input type='radio' name='doboot' value=0>No </td></tr>";
+} else { 
+  print "<td><input type='radio' name='doboot' value=1>Yes ";
+  print "<input type='radio' name='doboot' value=0 checked>No </td></tr>"; 
+}
 my $minerport = $mconf->{settings}->{cgminer_port};
 print "<tr><td>API port</td><td><i>Defaults to 4028 if unset</i></td>";
 print "<td>$minerport <input type='text' size='4' placeholder='4028' name='nap'></td></tr>";
