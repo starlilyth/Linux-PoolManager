@@ -21,13 +21,13 @@ my %conf = %{$conf};
 &ReadParse(our %in);
 
 my $zreq = $in{'zero'};
-if ($zreq ne "") {
+if (defined $zreq) {
   &zeroStats;
   $zreq = "";
 }
 
 my $preq = $in{'swpool'};
-if ($preq ne "") {
+if (defined $preq) {
   &switchPool($preq);
   $preq = "";
 }
@@ -35,7 +35,7 @@ if ($preq ne "") {
 my $apooln = $in{'npoolurl'};
 my $apoolu = $in{'npooluser'};
 my $apoolp = $in{'npoolpw'};
-if ($apooln ne "") {
+if (defined $apooln) {
   my $pmatch = 0;
   my @pools = &getCGMinerPools(1);
   if (@pools) {
@@ -51,32 +51,32 @@ if ($apooln ne "") {
   } 
 }
 my $dpool = $in{'delpool'};
-if ($dpool ne "") {
+if (defined $dpool) {
   &delPool($dpool);
   &saveConfig();
   $dpool = "";
 }
 
 my $mstop = $in{'mstop'};
-if ($mstop eq "stop") { 
+if ((defined $mstop) && ($mstop eq "stop")) { 
   my $status = `echo $in{'ptext'} | sudo -S /opt/ifmi/mcontrol stop`;
   $mstop = ""; 
 }
 
 my $mstart = $in{'mstart'};
-if ($mstart eq "start") { 
+if ((defined $mstart) && ($mstart eq "start")) { 
   my $sup = $in{'ptext'};
   my $status = `echo $in{'ptext'} | sudo -S /opt/ifmi/mcontrol start`;
   $mstart = ""; 
 }
 
 my $reboot = $in{'reboot'};
-if ($reboot eq "reboot") { 
+if ((defined $reboot) && ($reboot eq "reboot")) { 
   my $status = `echo $in{'ptext'} | sudo -S /sbin/coldreboot`;
 }  
 
 my $qval = $in{'qval'};
-if ($qval ne "") {
+if (defined $qval) {
   my $qpool = $in{'qpool'};
   &quotaPool($qpool, $qval);
   &saveConfig();
@@ -84,35 +84,35 @@ if ($qval ne "") {
 }
 
 my $nmq = $in{'mqueue'};
-if ($nmq ne "") {
+if (defined $nmq) {
 	&minerQueue($nmq); 
   &saveConfig();
 	$nmq = "";
 } 
 
 my $nme = $in{'mexpiry'};
-if ($nme ne "") {
+if (defined $nme) {
 	&minerExpiry($nme); 
   &saveConfig();
 	$nme = "";
 } 
 
 my $nmst = $in{'mscant'};
-if ($nmst ne "") {
+if (defined $nmst) {
 	&minerScantime($nmst); 
   &saveConfig();
 	$nmst = "";
 } 
 
 my $gdig = $in{'gdig'};
-if ($gdig ne "") {
+if (defined $gdig) {
  &setGPUDisable($gdig);
  &saveConfig();
  $gdig = "";
 }
 
 my $geng = $in{'geng'};
-if ($geng ne "") {
+if (defined $geng) {
  &setGPUEnable($geng);
  &saveConfig();
  $geng = "";
@@ -120,7 +120,7 @@ if ($geng ne "") {
 
 my $conffile = "/opt/ifmi/poolmanager.conf";
 my $npalias = $in{'npalias'};
-if ($npalias ne "") {
+if (defined $npalias) {
 	my $paurl = $in{'paurl'};
 	my $acount = 0;
  	for (keys %{$conf{pools}}) {
@@ -139,14 +139,14 @@ if ($npalias ne "") {
 }	
 
 my $ncmc = $in{'setmconf'};
-if ($ncmc ne "") {
+if (defined $ncmc) {
 	${$conf}{settings}{current_mconf} = $ncmc;
 	DumpFile($conffile, $conf); 
 	$ncmc = "";
 }
 
 my $npn = $in{'pnotify'};
-if ($npn ne "") {
+if (defined $npn) {
 	my $poolnum = $in{'poolnum'};
 	${$conf}{pools}{$poolnum}{pnotify} = $npn;
 	DumpFile($conffile, $conf); 
@@ -186,7 +186,8 @@ if (defined($q->param('pool')))
 }
 if (defined($q->param('miner')))
 {
-	$showminer = $q->param('miner');
+#	$showminer = $q->param('miner');
+	$showminer = 0;
 }
 
 my $url = "?";
@@ -216,10 +217,9 @@ else
 {
 	$url .= "tok=1";
 	print start_html( -title=>'PM - ' . $miner_name . ' - Status', 
-					  -style=>{-src=>'/IFMI/themes/' . $conf{display}{status_css}},  
-					  -head=>$q->meta({-http_equiv=>'REFRESH',-content=>'30; url=' . $url })  
-					  );
-
+		-style=>{-src=>'/IFMI/themes/' . $conf{display}{status_css}},  
+		-head=>$q->meta({-http_equiv=>'REFRESH',-content=>'30; url=' . $url })  
+	  );
 }
 
 # pull info
@@ -254,9 +254,9 @@ $g1put .= "<TD class='header'>Core</TD>";
 $g1put .= "<TD class='header'>Memory</TD>";
 $g1put .= "<TD class='header'>Power</TD></tr>";
 
-my $gsput = "";
+my $gsput;
 for (my $i=0;$i<@gpus;$i++) {
-  my $gput = "";
+  my $gput;
 	if ($i == $showgpu) {
   	my $gpudesc = $gpus[$i]{'desc'}; 
   	if ($gpudesc ne "") {
@@ -433,12 +433,12 @@ for (my $i=0;$i<@gpus;$i++) {
 		{
 			if ($i == $showgpu)
 			{
-		        $gsput .= "<tr><td>Total MH:</td><td>" . $gpus[$i]{'total_mh'} . "</td>";
-				$gsput .= "<td>Shares A/R:</td><td>" .  $gpus[$i]{'shares_accepted'} . ' / ' . $gpus[$i]{'shares_invalid'} . ' (' . sprintf("%-2.2f%", $rr) . ")</td></tr>";
+		    $gsput .= "<tr><td>Total MH:</td><td>" . $gpus[$i]{'total_mh'} . "</td>";
+				$gsput .= "<td>Shares A/R:</td><td>" .  $gpus[$i]{'shares_accepted'} . ' / ' . $gpus[$i]{'shares_invalid'} . ' (' . sprintf("%2.2f%%", $rr) . ")</td></tr>";
 			}			
 			$gput .= '<td>';
 		}		
-		$gput .= sprintf("%-2.2f%", $rr);
+		$gput .= sprintf("%2.2f%%", $rr);
 	}
 	else
 	{
@@ -736,7 +736,7 @@ if ($ispriv eq "S") {
 	    my $pnum = ${$pools[$i]}{'poolid'};
 	    my $pusr = ${$pools[$i]}{'user'};
 	    my $pstat = ${$pools[$i]}{'status'};
-	    my $pstatus = "";
+	    my $pstatus;
 	    if ($pstat eq "Dead") {
 	      $problems++;
 	      push(@nodemsg, "Pool $i is dead"); 
@@ -750,7 +750,7 @@ if ($ispriv eq "S") {
 #	    $currorder[$i] = "$ppri" . "$pnum"; 
 	    my $pacc = ${$pools[$i]}{'accepted'};
 	    my $prej = ${$pools[$i]}{'rejected'};
-	    my $prr = "";
+	    my $prr;
 	    if ($prej ne "0") {
 	       $prr = sprintf("%.2f", $prej / ($pacc + $prej)*100);
 	    } else { 
@@ -766,7 +766,7 @@ if ($ispriv eq "S") {
 	      $prat = "<td>" . $prr . "%</td>";
 	    }
 	    my $pquo = ${$pools[$i]}{'quota'};
-	    my $poola = ""; my $poolnum = "";
+	    my $poola; my $poolnum;
       for (keys %{$conf{pools}}) {
       	if ($pname eq ${$conf}{pools}{$_}{url}) {
       		$poola = ${$conf}{pools}{$_}{alias};
@@ -798,7 +798,7 @@ if ($ispriv eq "S") {
 				$psput .= "<input type='hidden' name='paurl' value='$pname'>";
 				$psput .= "<input type='submit' value='Change'></form></td></tr>";
 
-			  my $pusr = "unknown" if (! defined $pusr);
+			  $pusr = "unknown" if (! defined $pusr);
 	      $psput .= "<tr><td>Worker:</td><td colspan=3>" . $pusr . "</td></tr>";
 	      $psput .= "<td>Status:</td>" . $pstatus . "</td><td>";
 	      $psput .= "Notify when Dead?</td>";
