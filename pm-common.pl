@@ -431,8 +431,8 @@ sub sendAPIcommand {
       $res .= $_;
     }
     close($sock);
-    return $res;  
     &blog("success!") if (defined(${$conf}{settings}{verbose}));
+    return $res;  
   } else {
     &blog("failed to get socket for cgminer api") if (defined(${$conf}{settings}{verbose}));
   }   
