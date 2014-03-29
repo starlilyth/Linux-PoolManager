@@ -183,11 +183,11 @@ sub doEmail {
 				for (my $i=0;$i<@pools;$i++) {
 					my $poolid = "Pool$i";
 					my $phealth = ${$pools[$i]}{'status'}; 
-		    	my $pname = ${$pools[$i]}{'url'};
-		    	my $shorturl = "";
-    			if ($pname =~ m|://(\w+-?\w+\.)?(\w+-?\w+\.\w+:\d+)|) {
-       			$shorturl = $2;
-    			}
+	    		my $pname = ${$pools[$i]}{'url'};
+	    		my $shorturl = "";
+  				if ($pname =~ m|://(\w+-?\w+\.)?(\w+-?\w+\.\w+:\d+)|) {
+     					$shorturl = $2;
+  				}
 					my $pactive = 0; 
 					for (my $g=0;$g<@gpus;$g++) {
 						if ($pname eq $gpus[$g]{'pool_url'}) {
@@ -195,15 +195,16 @@ sub doEmail {
 						}
 					}	
 					my $prr = "0"; 
-			    my $pacc = ${$pools[$i]}{'accepted'}; 
-			    my $prej = ${$pools[$i]}{'rejected'}; $prej = 0 if ($prej eq ""); 
-			    if ($prej > 0) {
-			      $prr = sprintf("%.2f", $prej / ($pacc + $prej)*100);
+				  my $pacc = ${$pools[$i]}{'accepted'}; 
+				  my $prej = ${$pools[$i]}{'rejected'}; 
+				  if (defined $prej) {
+				    $prr = sprintf("%.2f", $prej / ($pacc + $prej)*100);
 			    }
-					if (($pacc > 0) && ($prr > ${$conf}{monitoring}{monitor_reject_hi}) && ($pactive > 0)) {
+			    my $prhl = ${$conf}{pools}{pool_reject_hi}; 
+					if ((defined $prej) && (defined $prhl) && ($prr > $prhl)) {
 						if (!(defined($conf{monitoring}{alert}{$poolid}{rejhi}))) {
 							$msg .= "Pool $i ($shorturl) reject rate is: $prr%. ";
-							$msg .= "Alert level is: $conf{monitoring}{monitor_reject_hi}%\n";
+							$msg .= "Alert level is: $prhl%\n";
 							$conf{monitoring}{alert}{$poolid}{rejhi} = 1;
 						}
 					} else {
