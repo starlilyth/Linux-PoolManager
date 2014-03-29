@@ -28,6 +28,7 @@ and additionally for email notifications..
 * libemail-simple-perl
 * libemail-sender-perl
 * libtry-tiny-perl
+* libemail-sender-transport-smtp-tls-perl (for TLS)
 
 ------
 
