@@ -166,7 +166,7 @@ my $miner_name = `hostname`;
 chomp $miner_name;
 my $iptxt;
 my $nicget = `/sbin/ifconfig`; 
-  while ($nicget =~ m/(\w\w\w\w?\d:?.+?)\s.+\n\s+inet addr:(\d+\.\d+\.\d+\.\d+)\s/g) {
+  while ($nicget =~ m/(\w\w\w?\w?\d)\s.+\n\s+inet addr:(\d+\.\d+\.\d+\.\d+)\s/g) {
   $iptxt = $2; 
 }
 
