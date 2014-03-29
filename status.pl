@@ -72,7 +72,7 @@ if ((defined $mstart) && ($mstart eq "start")) {
 
 my $reboot = $in{'reboot'};
 if ((defined $reboot) && ($reboot eq "reboot")) { 
-  my $status = `echo $in{'ptext'} | sudo -S /sbin/coldreboot`;
+  my $status = `echo $in{'ptext'} | sudo -S /opt/ifmi/mcontrol boot`;
 }  
 
 my $qval = $in{'qval'};

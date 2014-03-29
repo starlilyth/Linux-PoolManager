@@ -45,3 +45,24 @@ if ($ARGV[0] eq "stop") {
 		&blog("stopping mining with function call") if (defined(${$conf}{settings}{verbose}));
 	}
 }
+
+if ($ARGV[0] eq "boot") {
+	my $bootcmd; 
+	if (-e "/sbin/coldreboot") {
+		$bootcmd = "/sbin/coldreboot"
+	} else {
+		$bootcmd = "/sbin/reboot"
+	}
+	`$bootcmd`;
+	&blog("booting miner with $bootcmd") if (defined(${$conf}{settings}{verbose}));
+}
+
+
+
+
+
+
+
+
+
+
