@@ -83,27 +83,6 @@ if (defined $qval) {
   $qval = ""; $qpool = "";
 }
 
-my $nmq = $in{'mqueue'};
-if (defined $nmq) {
-	&minerQueue($nmq); 
-  &saveConfig();
-	$nmq = "";
-} 
-
-my $nme = $in{'mexpiry'};
-if (defined $nme) {
-	&minerExpiry($nme); 
-  &saveConfig();
-	$nme = "";
-} 
-
-my $nmst = $in{'mscant'};
-if (defined $nmst) {
-	&minerScantime($nmst); 
-  &saveConfig();
-	$nmst = "";
-} 
-
 my $gdig = $in{'gdig'};
 if (defined $gdig) {
  &setGPUDisable($gdig);
@@ -152,6 +131,15 @@ if (defined $npn) {
 	DumpFile($conffile, $conf); 
 	$npn = "";
 }
+
+my $prl = $in{'pnotifyl'};
+if ((defined $prl) && ($prl ne "")) {
+	my $poolnum = $in{'poolnum'};
+	${$conf}{pools}{$poolnum}{pool_reject_hi} = $prl;
+	DumpFile($conffile, $conf); 
+	$prl = "";
+}
+
 # my $prilist = $in{'prilist'};
 # if (defined $prilist) {
 #   &priPool($prilist);
@@ -735,7 +723,14 @@ if ($ispriv eq "S") {
 		   $prr = "0.0";
 	    }
 	    my $prat; 
-	   	my $prhl = ${$conf}{pools}{pool_reject_hi}; 
+	   	my $poola; my $poolnum;
+      for (keys %{$conf{pools}}) {
+      	if ($pname eq ${$conf}{pools}{$_}{url}) {
+      		$poola = ${$conf}{pools}{$_}{alias};
+      		$poolnum = $_;
+      	}
+      }
+      my $prhl = ${$conf}{pools}{$poolnum}{pool_reject_hi}; 
 			if ((defined $prhl) && ($prr > $prhl)) {
 	      $problems++;
 	      push(@nodemsg, "Pool $i reject ratio too high"); 
@@ -745,13 +740,7 @@ if ($ispriv eq "S") {
 	      $prat = "<td>" . $prr . "%</td>";
 	    }
 	    my $pquo = ${$pools[$i]}{'quota'};
-	    my $poola; my $poolnum;
-      for (keys %{$conf{pools}}) {
-      	if ($pname eq ${$conf}{pools}{$_}{url}) {
-      		$poola = ${$conf}{pools}{$_}{alias};
-      		$poolnum = $_;
-      	}
-      }
+	    
 	    if ($showpool == $i) { 
 	    	my $current; 
 	      my $psgw = ${$pools[$i]}{'getworks'};
@@ -776,11 +765,10 @@ if ($ispriv eq "S") {
 				$psput .= "<input type='text' size='10' placeholder='pool alias' name='npalias'>";
 				$psput .= "<input type='hidden' name='paurl' value='$pname'>";
 				$psput .= "<input type='submit' value='Change'></form></td></tr>";
-
-			  $pusr = "unknown" if (! defined $pusr);
+			  $pusr = "unknown" if (!defined $pusr);
 	      $psput .= "<tr><td>Worker:</td><td colspan=3>" . $pusr . "</td></tr>";
-	      $psput .= "<td>Status:</td>" . $pstatus . "</td><td>";
-	      $psput .= "Notify when Dead?</td>";
+	      $psput .= "<tr><td>Status: $pstatus</td>";
+	      $psput .= "<td>Notify when Dead?</td>";
 		  	my $pnotify = $conf{pools}{$poolnum}{pnotify};
 		  	$psput .= "<form name=pnotify method=post><input type=hidden name='poolnum' value=$poolnum>";
 		  	if ((defined $pnotify) && ($pnotify==1)) {
@@ -791,8 +779,15 @@ if ($ispriv eq "S") {
     	  	$psput .= "<input type='radio' name='pnotify' value=0 checked>No "; 
   		  }
   		  $psput .= "<input type='submit' value='Save'></td></tr></form>";
-	      $psput .= "<tr><td>Shares A/R:</td><td>" . $pacc . " / " . $prej . "</td>";
+	      
+	      $psput .= "<tr><td>Shares A/R:</td><td>" . $pacc . "/" . $prej . "</td>";
 	      $psput .= "<td>Reject Ratio:</td>$prat</tr>";
+	      if (!defined $prhl) {$prhl = "not set"} else {$prhl = "$prhl%"}
+	      $psput .= "<tr><td colspan=2>Reject Ratio alert limit: </td>";
+				$psput .= "<form name='pnotifyl' method='POST'>";
+				$psput .= "<td>$prhl </td><td><input type='text' size='3' placeholder='3' name='pnotifyl'>";
+				$psput .= "<input type='hidden' name='poolnum' value='$poolnum'>";
+				$psput .= "<input type='submit' value='Change'></form></td></tr>";
 
 	      $psput .= "<tr><td>Priority:</td><td>" . $ppri . "</td>";
 	      $psput .= "<td>Quota:</td><td>" . $ppri . "</td></tr>";

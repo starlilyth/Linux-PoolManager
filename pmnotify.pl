@@ -177,11 +177,9 @@ sub doEmail {
 					}
 				}
 			}
-			DumpFile($conffile, $conf); 
 			my @pools = &getCGMinerPools(1);
 			if (@pools) { 
 				for (my $i=0;$i<@pools;$i++) {
-					my $poolid = "Pool$i";
 					my $phealth = ${$pools[$i]}{'status'}; 
 	    		my $pname = ${$pools[$i]}{'url'};
 	    		my $shorturl = "";
@@ -193,14 +191,22 @@ sub doEmail {
 						if ($pname eq $gpus[$g]{'pool_url'}) {
 							$pactive++;
 						}
-					}	
+					}						
+			   	my $poola; my $poolnum;
+		      for (keys %{$conf{pools}}) {
+		      	if ($pname eq ${$conf}{pools}{$_}{url}) {
+		      		$poola = ${$conf}{pools}{$_}{alias};
+		      		$poolnum = $_;
+		      	}
+		      }
+		      my $poolid = "pool$poolnum";
 					my $prr = "0"; 
 				  my $pacc = ${$pools[$i]}{'accepted'}; 
 				  my $prej = ${$pools[$i]}{'rejected'}; 
-				  if (defined $prej) {
+				  if (defined $prej && $prej > 0) {
 				    $prr = sprintf("%.2f", $prej / ($pacc + $prej)*100);
 			    }
-			    my $prhl = ${$conf}{pools}{pool_reject_hi}; 
+			    my $prhl = ${$conf}{pools}{$poolnum}{pool_reject_hi}; 
 					if ((defined $prej) && (defined $prhl) && ($prr > $prhl)) {
 						if (!(defined($conf{monitoring}{alert}{$poolid}{rejhi}))) {
 							$msg .= "Pool $i ($shorturl) reject rate is: $prr%. ";
@@ -214,7 +220,7 @@ sub doEmail {
 							delete $conf{monitoring}{alert}{$poolid}{rejhi}; 
 						}
 					}
-					my $pnotify = $conf{pools}{$poolid}{pnotify};
+					my $pnotify = $conf{pools}{$poolnum}{pnotify};
 					if (($phealth ne "Alive") && ($pnotify == 1)) {
 						if (!(defined($conf{monitoring}{alert}{$poolid}{phealth}))) {						
 							$msg .= "Pool $i ($shorturl) health is $phealth.";
@@ -229,6 +235,7 @@ sub doEmail {
 					}
 				}
 			}
+			DumpFile($conffile, $conf); 
 		}
 		if ($msg ne "") { 
 			my $email = "Alerts for $miner_name ($iptxt) - $now\n";		
