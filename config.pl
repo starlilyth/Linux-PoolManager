@@ -81,54 +81,54 @@ if (-o $conffile) {
   our %in;
   if (&ReadParse(%in)) {
     my $nht = $in{'temphi'};
-    if(defined $nht) {
+    if((defined $nht) && ($nht ne "")) {
       $nht = "80" if (! ($nht =~ m/^\d+?$/));    
       $mconf->{monitoring}->{monitor_temp_hi} = $nht;
     }
     my $nlt = $in{'templo'};
-    if(defined $nlt) {
+    if((defined $nlt) && ($nlt ne "")) {
       $nlt = "45" if (! ($nlt =~ m/^\d+?$/));
       $mconf->{monitoring}->{monitor_temp_lo} = $nlt;
     }
     my $nll = $in{'loadlo'};
-    if(defined $nll) {
+    if((defined $nll) && ($nll ne "")) {
       $nll = "10" if (! ($nll =~ m/^\d+?$/));
       $mconf->{monitoring}->{monitor_load_lo} = $nll; 
     }
     my $nhl = $in{'hashlo'};
-    if(defined $nhl) {
+    if((defined $nhl) && ($nhl ne "")) {
       $nhl = "200" if (! ($nhl =~ m/^\d+?$/));
       $mconf->{monitoring}->{monitor_hash_lo} = $nhl;
     }
     my $nfl = $in{'fanlo'};
-    if(defined $nfl) {
+    if((defined $nfl) && ($nfl ne "")) {
       $nfl = "1000" if (! ($nfl =~ m/^\d+?$/));
       $mconf->{monitoring}->{monitor_fan_lo} = $nfl;
     }
     my $nfh = $in{'fanhi'};
-    if(defined $nfh) {
+    if((defined $nfh) && ($nfh ne "")) {
       $nfh = "4000" if (! ($nfh =~ m/^\d+?$/));
       $mconf->{monitoring}->{monitor_fan_hi} = $nfh;
     }
     my $nrh = $in{'rejhi'};
-    if(defined $nrh) {
+    if((defined $nrh) && ($nrh ne "")) {
       $nrh = "3" if (! ($nrh =~ m/^(\d+)?\.?\d+?$/));
       $mconf->{monitoring}->{monitor_reject_hi} = $nrh;
     }
     my $doe = $in{'emaildo'};
-    $mconf->{monitoring}->{do_email} = $doe if(defined $doe);
+    $mconf->{monitoring}->{do_email} = $doe if((defined $doe) && ($doe ne ""));
 
     my $ncmc = $in{'setmconf'};
-    $mconf->{settings}->{current_mconf} = $ncmc if (defined $ncmc);
+    $mconf->{settings}->{current_mconf} = $ncmc if ((defined $ncmc) && ($ncmc ne ""));
 
     my $nmconfig = $in{'nmconfig'};
-    if (defined $nmconfig) {
+    if ((defined $nmconfig) && ($nmconfig ne "")) {
       my $ncname = $in{'cnmcname'}; 
-      if ((defined $ncname) && ($ncname ne $nmconfig)) {
+      if ((defined $ncname) && ($ncname ne "") && ($ncname ne $nmconfig)) {
         my $newa = (keys %{$mconf->{miners}}); $newa++; 
         $mconf->{miners}->{$newa}->{mconfig} = $ncname;
         my $nmp = $in{'nmp'};
-        if (defined $nmp) {
+        if ((defined $nmp) && ($nmp ne "")) {
           $mconf->{miners}->{$newa}->{mpath} = $nmp;
           my $nmo = $in{'nmo'};
           $nmo = "--api-listen --config /opt/ifmi/$ncname.conf" if (!defined $nmo);
@@ -159,18 +159,18 @@ if (-o $conffile) {
         for (keys %{$mconf->{miners}}) {
           if ($nmconfig eq $mconf->{miners}->{$_}->{mconfig}) {
             my $nmp = $in{'nmp'};
-            $mconf->{miners}->{$_}->{mpath} = $nmp if (defined $nmp);
+            $mconf->{miners}->{$_}->{mpath} = $nmp if ((defined $nmp) && ($nmp ne ""));
             my $nmo = $in{'nmo'};
-            $mconf->{miners}->{$_}->{mopts} = $nmo if (defined $nmo);
+            $mconf->{miners}->{$_}->{mopts} = $nmo if ((defined $nmo) && ($nmo ne ""));
             my $nsp = $in{'nsp'};
-            $mconf->{miners}->{$_}->{savepath} = $nsp if (defined $nsp);
+            $mconf->{miners}->{$_}->{savepath} = $nsp if ((defined $nsp) && ($nsp ne ""));
           } 
         }
       }  
       $nmconfig = ""; $ncname = "";
     }
     my $mdel = $in{'deletem'};
-    if (defined $mdel) {
+    if ((defined $mdel) && ($mdel ne "")) {
       if ($mdel != 0) {
         delete $mconf->{miners}->{$mdel};
         $mconf->{settings}->{current_mconf} = 0;
@@ -178,10 +178,10 @@ if (-o $conffile) {
     }
 
     my $ndb = $in{'doboot'};
-    $mconf->{settings}->{do_boot} = $ndb if (defined $ndb);
+    $mconf->{settings}->{do_boot} = $ndb if ((defined $ndb) && ($ndb ne ""));
 
     my $nap = $in{'nap'};
-    if(defined $nap) {
+    if((defined $nap) && ($nap ne "")) {
       $nap = "4028" if (! ($nap =~ m/^\d+?$/));    
       $mconf->{settings}->{cgminer_port} = $nap;
     }
@@ -189,7 +189,7 @@ if (-o $conffile) {
     $mconf->{settings}->{IGNOREBAMT} = $ibamt if(defined $ibamt);
 
     my $nml = $in{'nml'};
-    $mconf->{display}->{miner_loc} = $nml if(defined $nml);
+    $mconf->{display}->{miner_loc} = $nml if((defined $nml) && ($nml ne ""));
     my $nscss = $in{'scss'};
     $mconf->{display}->{status_css} = $nscss if(defined $nscss);
     my $nfcss = $in{'fcss'};
@@ -201,10 +201,11 @@ if (-o $conffile) {
     $mconf->{display}->{graphcolors} = $ngcf if(defined $ngcf);
     my $nha = $in{'hashavg'};
     $mconf->{display}->{usehashavg} = $nha if(defined $nha);
-    my $nbcast = $in{'bcast'};
+
     $mconf->{display}->{pm_version} = $version if ($mconf->{display}->{pm_version} eq "");
 
-    $mconf->{farmview}->{do_bcast_status} = $nbcast if(defined $nbcast);
+    my $nbcast = $in{'bcast'};
+    $mconf->{farmview}->{do_bcast_status} = $nbcast if((defined $nbcast) && ($nbcast ne ""));
     my $nbp = $in{'nbp'};
     if(defined $nbp) {
       $nbp = "54545" if (! ($nbp =~ m/^\d+?$/));    
@@ -213,22 +214,22 @@ if (-o $conffile) {
     my $nfarmview = $in{'farmview'};
     $mconf->{farmview}->{do_farmview} = $nfarmview if(defined $nfarmview);
     my $nlp = $in{'nlp'};
-    if(defined $nlp) {
+    if((defined $nlp) && ($nlp ne "")) {
       $nlp = "54545" if (! ($nlp =~ m/^\d+?$/));    
       $mconf->{farmview}->{listen_port} = $nlp;
       `touch /tmp/rfv`;
     }
     my $dds = $in{'dds'};
-    $mconf->{farmview}->{do_direct_status} = $dds if(defined $dds);
+    $mconf->{farmview}->{do_direct_status} = $dds if((defined $dds) && ($dds ne ""));
 
     my $nst = $in{'mailto'};
-    $mconf->{email}->{smtp_to} = $nst if (defined $nst);
+    $mconf->{email}->{smtp_to} = $nst if ((defined $nst) && ($nst ne ""));
     my $nsf = $in{'mailfrom'};
-    $mconf->{email}->{smtp_from} = $nsf if (defined $nsf);
+    $mconf->{email}->{smtp_from} = $nsf if ((defined $nsf) && ($nsf ne ""));
     my $nsh = $in{'mailhost'};
-    $mconf->{email}->{smtp_host} = $nsh if (defined $nsh);
+    $mconf->{email}->{smtp_host} = $nsh if ((defined $nsh) && ($nsh ne ""));
     my $nsmp = $in{'mailport'};
-    if (defined $nsmp) {
+    if ((defined $nsmp) && ($nsmp ne "")) {
       $nsmp = "25" if (! ($nsmp =~ m/^\d+?$/));
       $mconf->{email}->{smtp_port} = $nsmp;
     }
@@ -237,11 +238,11 @@ if (-o $conffile) {
     my $ntls = $in{'mailtls'};
     $mconf->{email}->{smtp_tls} = $ntls if (defined $ntls);
     my $nsau = $in{'authuser'};
-    $mconf->{email}->{smtp_auth_user} = $nsau if (defined $nsau);
+    $mconf->{email}->{smtp_auth_user} = $nsau if ((defined $nsau) && ($nsau ne ""));
     my $nsap = $in{'authpass'};
-    $mconf->{email}->{smtp_auth_pass} = $nsap if (defined $nsap);
+    $mconf->{email}->{smtp_auth_pass} = $nsap if ((defined $nsap) && ($nsap ne ""));
     my $nmw = $in{'mailwait'};
-    if (defined $nmw) {
+    if ((defined $nmw) && ($nmw ne "")) {
       $nmw = "5" if (! ($nmw =~ m/^\d+?$/));
       $nmw = $nmw * 60; 
       $mconf->{email}->{smtp_min_wait} = $nmw;
@@ -442,7 +443,7 @@ if ($emaildo==1) {
     print "<tr><td>Auth User</td><td>$authuser</td>";
     print "<td><input type='text' placeholder='mailuser' name='authuser'></td></tr>";
     my $authpass = $mconf->{email}->{smtp_auth_pass};
-    my $authshow = "*******" if ($authpass ne "");
+    my $authshow = "*******" if (defined $authpass);
     print "<tr><td>Auth Pass</td><td>$authshow</td>";
     print "<td><input type='password' placeholder='mailpassword' name='authpass' autocomplete='off'></td></tr>";
     my $mailtls = $mconf->{email}->{smtp_tls};
