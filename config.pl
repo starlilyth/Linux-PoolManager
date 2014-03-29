@@ -47,7 +47,7 @@ if (! -f $conffile) {
   		farmview_css => 'default.css',
   		graphcolors => 'pmgraph.colors',
   		usehashavg => '0',
-      pmversion => '$version',
+      pmversion => "$version",
   	},
   	farmview => {
   		do_bcast_status => '1',
@@ -66,14 +66,6 @@ if (! -f $conffile) {
       smtp_auth_user => '',
       smtp_auth_pass => '',
       smtp_min_wait => '300',
-    },
-    pools => {
-      0 => { 
-        url => '', 
-        alias => '', 
-        pool_reject_hi => '3',
-        notify_dead => '1',
-      }, 
     }
 
   };
@@ -139,10 +131,10 @@ if (-o $conffile) {
         if (defined $nmp) {
           $mconf->{miners}->{$newa}->{mpath} = $nmp;
           my $nmo = $in{'nmo'};
-          $nmo = "--api-listen --config /opt/ifmi/$ncname.conf" if ($nmo eq "");
+          $nmo = "--api-listen --config /opt/ifmi/$ncname.conf" if (!defined $nmo);
           $mconf->{miners}->{$newa}->{mopts} = $nmo;
           my $nsp = $in{'nsp'};
-          $nsp = "/opt/ifmi/$ncname.conf" if ($nsp eq "");
+          $nsp = "/opt/ifmi/$ncname.conf" if (!defined $nsp);
           $mconf->{miners}->{$newa}->{savepath} = $nsp;
           if (!-f $nsp) {
             open my $cfgin, '>', $nsp;
