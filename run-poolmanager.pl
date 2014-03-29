@@ -18,6 +18,13 @@ require '/opt/ifmi/pmnotify.pl';
 my $conf = &getConfig;
 my %conf = %{$conf};
 
+use Proc::PID::File;
+if (Proc::PID::File->running()) {
+  # one at a time, please
+  print "Another run-poolmanager is running.\n";
+  exit(0);
+}
+
 # Start profile on boot
 
 if ($conf{settings}{do_boot} == 1) {
