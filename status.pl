@@ -736,7 +736,7 @@ if ($ispriv eq "S") {
 	    }
 	    my $prat; 
 	   	my $prhl = ${$conf}{pools}{pool_reject_hi}; 
-			if (defined $prhl) && ($prr > $prhl)) {
+			if ((defined $prhl) && ($prr > $prhl)) {
 	      $problems++;
 	      push(@nodemsg, "Pool $i reject ratio too high"); 
 	  	  $prat = "<td class='error'>" . $prr . "%</td>";
