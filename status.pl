@@ -726,7 +726,6 @@ if ($ispriv eq "S") {
 	      $pstatus = "<td>" . $pstat . "</td>";
 	    }
 	    my $ppri = ${$pools[$i]}{'priority'};
-#	    $currorder[$i] = "$ppri" . "$pnum"; 
 	    my $pacc = ${$pools[$i]}{'accepted'};
 	    my $prej = ${$pools[$i]}{'rejected'};
 	    my $prr;
@@ -736,7 +735,8 @@ if ($ispriv eq "S") {
 		   $prr = "0.0";
 	    }
 	    my $prat; 
-			if ($prr > ${$conf}{monitoring}{monitor_reject_hi}) {
+	   	my $prhl = ${$conf}{pools}{pool_reject_hi}; 
+			if (defined $prhl) && ($prr > $prhl)) {
 	      $problems++;
 	      push(@nodemsg, "Pool $i reject ratio too high"); 
 	  	  $prat = "<td class='error'>" . $prr . "%</td>";
@@ -835,17 +835,7 @@ if ($ispriv eq "S") {
 	  $psum .= "</td><td><input type='submit' value='Add'>"; 
 	  $psum .= "</td></form>";
 	  if ($mstrategy eq "Failover") {
-	    # @neworder = sort @currorder;
-	    # for (my $o=0;$o<@neworder;$o++) {
-	    #  	$pitem = chop $neworder[$o];
-	    #  	$prilist .= "$pitem,";
-	    # }
-	    # chop $prilist;
-		  $psum .= "<TD class='header' colspan=2>";	  
-	   	# $psum .= "<form name='ppris' action='status.pl' method='POST'>";	
-	    # $psum .= "<input type='hidden' name='prilist' value='$prilist'>";
-     	# $psum .= "<input type='submit' value='Set'></form>";
-	    $psum .= "</td>";	  			
+		  $psum .= "<TD class='header' colspan=2></td>";	  			
 	  }
 	  if ($mstrategy eq "Load Balance") {
 		  $psum .= "<TD class='header' colspan=2>Failover-Only:<br>$mfonly</td>";
