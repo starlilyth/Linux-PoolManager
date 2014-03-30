@@ -16,6 +16,7 @@ use YAML qw( DumpFile );
 require '/opt/ifmi/pm-common.pl';
 my $conf = &getConfig;
 my %conf = %{$conf};
+my $conffile = "/opt/ifmi/poolmanager.conf";
 
 # Take care of business
 &ReadParse(our %in);
@@ -70,7 +71,12 @@ if (defined $mstart) {
 }
 my $restart = $in{'startnm'};
 if (defined $restart) {
-	&stopCGMiner(); sleep 3;
+	&stopCGMiner(); 
+	my $snmc = $in{'startnm'};
+	${$conf}{settings}{current_mconf} = $snmc;
+	DumpFile($conffile, $conf); 
+	$snmc = "";
+	sleep 3;
 	`sudo /opt/ifmi/mcontrol start`;
 }
 
@@ -101,7 +107,6 @@ if (defined $geng) {
  $geng = "";
 }
 
-my $conffile = "/opt/ifmi/poolmanager.conf";
 my $npalias = $in{'npalias'};
 if (defined $npalias) {
 	my $paurl = $in{'paurl'};
