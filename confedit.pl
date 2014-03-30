@@ -32,9 +32,8 @@ if (defined $confdata) {
   $confdata = ""; 
 }
 my $status = -1;
-my $ln = $in{'lname'}; if (defined $ln) {
-  $status = (system("echo $in{'ptext'} | sudo -S -u $ln /bin/cp $tempfile $savepath"));
-  $ln = ""; 
+if (defined $in{'ptext'}) {
+  $status = (system("echo $in{'ptext'} | sudo -S /bin/cp $tempfile $savepath"));
 }
 my $filedata = ""; my $datafile = "";
 if ($status > 0) {
@@ -56,8 +55,8 @@ print "<br><small><i>Change this filepath in the <a href='config.pl'>settings</a
 print "<tr><td><form name='configedit' action='confedit.pl' method='POST'>";
 print "<textarea name='configtext' style='width:800px;height:600px'>$filedata</textarea>";
 print "</td></tr><tr><td>";
-print " User: <input type='text' placeholder='username' name='lname' required>";
-print " Password: ";
+#print " User: <input type='text' placeholder='username' name='lname' required>";
+print "Root Password: ";
 print "<input type='password' placeholder='password' name='ptext' required> ";
 print " <input type='submit' value='Save'>";
 if ($status > 0) {

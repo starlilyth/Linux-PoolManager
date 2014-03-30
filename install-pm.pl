@@ -101,11 +101,12 @@ sub doInstall {
 	    	close $cin;
 		    $instlog .= "crontab modified.\n";
 	    }
+	    copy "/etc/sudoers.pre-ifmi", "/etc/sudoers" if (-f "/etc/sudoers.pre-ifmi");
 		copy "/etc/sudoers", "/etc/sudoers.pre-ifmi" if (!-f "/etc/sudoers.pre-ifmi");
 		if (! `grep -E /opt/ifmi/mcontrol /etc/sudoers`) {
 		    print "Modifying sudoers....\n";
 	      	open my $sin, '>>', "/etc/sudoers";
-	 		print $sin "Defaults targetpw\n$apacheuser ALL=(ALL) /opt/ifmi/mcontrol,/bin/cp\n";
+	 		print $sin "$apacheuser ALL=(root)NOPASSWD: /opt/ifmi/mcontrol\nDefaults:$apacheuser rootpw\n$apacheuser ALL=(root) /bin/cp\n";
 			close $sin;
 			`chmod 0440 /etc/sudoers`;
 			$instlog .= "sudoers modified.\n";
@@ -172,7 +173,7 @@ sub doInstall {
 		  	`/usr/sbin/a2enmod rewrite`;
 		  	$restart++;
 	  	}
- 		print "Would you like to set up password protection the default site?\n";
+ 		print "Would you like to set up password protection on the PoolManager page?\n";
 	 	print "(You can skip this if you have already done it) (y/n) ";
 		my $hreply = <>; chomp $hreply;
 		if ($hreply =~ m/y(es)?/i) {

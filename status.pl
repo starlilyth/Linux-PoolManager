@@ -58,21 +58,25 @@ if (defined $dpool) {
 }
 
 my $mstop = $in{'mstop'};
-if ((defined $mstop) && ($mstop eq "stop")) { 
-  my $status = `echo $in{'ptext'} | sudo -S /opt/ifmi/mcontrol stop`;
+if (defined $mstop) { 
+	&stopCGMiner();
   $mstop = ""; 
 }
 
 my $mstart = $in{'mstart'};
-if ((defined $mstart) && ($mstart eq "start")) { 
-  my $sup = $in{'ptext'};
-  my $status = `echo $in{'ptext'} | sudo -S /opt/ifmi/mcontrol start`;
+if (defined $mstart) { 
+  `sudo /opt/ifmi/mcontrol start`;
   $mstart = ""; 
+}
+my $restart = $in{'startnm'};
+if (defined $restart) {
+	&stopCGMiner(); sleep 3;
+	`sudo /opt/ifmi/mcontrol start`;
 }
 
 my $reboot = $in{'reboot'};
-if ((defined $reboot) && ($reboot eq "reboot")) { 
-  my $status = `echo $in{'ptext'} | sudo -S /opt/ifmi/mcontrol boot`;
+if (defined $reboot) { 
+  `sudo /opt/ifmi/mcontrol boot`;
 }  
 
 my $qval = $in{'qval'};
@@ -585,8 +589,9 @@ if (@summary) {
 			  $msput .= "<td  colspan=2><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
 			} else { 
 			  $msput .= "<td  colspan=2><form name='mstart' action='status.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > ";
+				#$msput .= "<input type='password' placeholder='root password' name='ptext' required>";
 			}
-			$msput .= "<input type='password' placeholder='root password' name='ptext' required></form></tr>";
+			$msput .= "</form></tr>";
 			$msput .= "</table><table>";
 			if (defined $melapsed) {  	  
 				$msput .= "<tr><td colspan=4>Stats</td><tr>";
@@ -634,7 +639,8 @@ if (@summary) {
      	$msput .= "<tr><td colspan=2>Linux Version: " . $mlinv . "</td>";
 			$msput .= "<form name='reboot' action='status.pl' method='POST'><input type='hidden' name='reboot' value='reboot'>";
 			$msput .= "<td colspan=2><input type='submit' value='Reboot' onclick='this.disabled=true;this.form.submit();' > ";
-			$msput .= "<input type='password' placeholder='root password' name='ptext' required></td></tr></form>";
+			#$msput .= "<input type='password' placeholder='root password' name='ptext' required>";
+			$msput .= "</td></tr></form>";
   		$msput .= "<tr><td colspan=2>Host IP: $iptxt</td>";
 			$msput .= '<td class=big colspan=2><A href=ssh://user@' . $iptxt . '>SSH to Host</a></td></tr>';
 			$msput .= "<tr><td colspan=4><hr></td></tr>";
@@ -644,10 +650,21 @@ if (@summary) {
 			if (defined $melapsed) { 
 				$mcontrol .= "<td>$mname $mvers";
 		  	$mcontrol .= "<br><small>$mstrategy Mode</small></td>";
-		  	$mcontrol .= "<td>Run time: " . $mrunt . "</td>";
-
-			  $mcontrol .= "<td>Profile: $runname</td>";
+			  $mcontrol .= "<td>Profile: $runname<br>";
+		  	$mcontrol .= "<small>Run time: " . $mrunt . "</small></td>";
 			  $mcontrol .= "<td><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
+			  $mcontrol .= "<td><small>Switch Profile</small><br>";
+				$mcontrol .= "<form name=startnm method=post><select name=startnm>";
+				for (keys %{$conf{miners}}) {
+	  			my $mname = $conf{miners}{$_}{mconfig};
+	  				if ($currentm eq $_) {
+	    				$mcontrol .= "<option value=$_ selected>$mname</option>";
+		  			} else { 
+	  	  			$mcontrol .= "<option value=$_>$mname</option>";
+	  				}
+					}
+				$mcontrol .= "<input type='submit' value='Restart'>";
+				$mcontrol .= "</select></form></td>";
 			} else { 
 		  	$mcontrol .= "<td class='error'>Stopped</td>";
 			  $mcontrol .= "<td><form name=currentm method=post>Profile: <select name=setmconf>";
@@ -662,8 +679,10 @@ if (@summary) {
 				$mcontrol .= "<input type='submit' value='Select'>";
 				$mcontrol .= "</select></form></td>";
 			  $mcontrol .= "<td><form name='mstart' action='status.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > ";
+			
+				#$mcontrol .= "<input type='password' placeholder='root password' name='ptext' required>";
 			}
-			$mcontrol .= "<input type='password' placeholder='root password' name='ptext' required></td></form>";		
+			$mcontrol .= "</td></form>";		
 			my $fcheck = `ps -eo command | grep -Ec /opt/ifmi/farmview\$`;
 			$mcontrol .=  "<td><A href=/farmview.html>Farm Overview</A></td>" if ($fcheck >0);
 		}

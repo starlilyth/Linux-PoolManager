@@ -36,7 +36,6 @@ if (! -f $conffile) {
   	},
     settings => {
       cgminer_port => '4028',
-      IGNOREBAMT => '1',
       current_mconf => '0',
       running_mconf => '0',
       do_boot => '1',
@@ -185,8 +184,6 @@ if (-o $conffile) {
       $nap = "4028" if (! ($nap =~ m/^\d+?$/));    
       $mconf->{settings}->{cgminer_port} = $nap;
     }
-    my $ibamt = $in{'ibamt'};
-    $mconf->{settings}->{IGNOREBAMT} = $ibamt if(defined $ibamt);
 
     my $nml = $in{'nml'};
     $mconf->{display}->{miner_loc} = $nml if((defined $nml) && ($nml ne ""));
@@ -369,18 +366,6 @@ if ($doboot==1) {
 my $minerport = $mconf->{settings}->{cgminer_port};
 print "<tr><td>API port</td><td><i>Defaults to 4028 if unset</i></td>";
 print "<td>$minerport <input type='text' size='4' placeholder='4028' name='nap'></td></tr>";
-my $ibamt = $mconf->{settings}->{IGNOREBAMT};
-if (-d "/opt/bamt/") {
-  print "<tr><td>Ignore BAMT</td>";
-  print "<td><i>Start miner using the above, instead of 'mine start'?</i></td>";
-  if ($ibamt==1) {
-    print "<td><input type='radio' name='ibamt' value=1 checked>Yes ";
-    print "<input type='radio' name='ibamt' value=0>No </td></tr>";
-  } else { 
-    print "<td><input type='radio' name='ibamt' value=1>Yes ";
-    print "<input type='radio' name='ibamt' value=0 checked>No </td></tr>"; 
-  }
-}
 print "</table></form><br>";
 
 print "</td></tr><tr><td rowspan=2 align=center valign=top>";
