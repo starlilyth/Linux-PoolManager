@@ -149,14 +149,6 @@ if ((defined $prl) && ($prl ne "")) {
 	$prl = "";
 }
 
-# my $prilist = $in{'prilist'};
-# if (defined $prilist) {
-#   &priPool($prilist);
-#   &saveConfig();
-#   $prilist = "";
-# }
-
-
 # Now carry on
 
 my $miner_name = `hostname`;
@@ -183,7 +175,6 @@ if (defined($q->param('pool')))
 }
 if (defined($q->param('miner')))
 {
-#	$showminer = $q->param('miner');
 	$showminer = 0;
 }
 
@@ -499,7 +490,6 @@ if (@gpus) {
 			$gsput .= "<tr><td>Core clock:</td><td>" . $gccc . ' Mhz</td>'; 
 			$gsput .= "<td>Mem clock:</td><td>" . $gcmc . ' Mhz</td></tr>';
 			$gsput .= "<tr><td>Core power:</td><td>" . $gccv . "v</td></tr>";
-	#        $gsput .= "<tr><td>Run time:</td><td>" . $gpus[$i]{'elapsed'} . "</td></tr>";
 			$ggimg = "<br><img src='/IFMI/graphs/gpu$i.png'>";
 		}
 			
@@ -594,7 +584,6 @@ if (@summary) {
 			  $msput .= "<td  colspan=2><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
 			} else { 
 			  $msput .= "<td  colspan=2><form name='mstart' action='status.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > ";
-				#$msput .= "<input type='password' placeholder='root password' name='ptext' required>";
 			}
 			$msput .= "</form></tr>";
 			$msput .= "</table><table>";
@@ -644,7 +633,6 @@ if (@summary) {
      	$msput .= "<tr><td colspan=2>Linux Version: " . $mlinv . "</td>";
 			$msput .= "<form name='reboot' action='status.pl' method='POST'><input type='hidden' name='reboot' value='reboot'>";
 			$msput .= "<td colspan=2><input type='submit' value='Reboot' onclick='this.disabled=true;this.form.submit();' > ";
-			#$msput .= "<input type='password' placeholder='root password' name='ptext' required>";
 			$msput .= "</td></tr></form>";
   		$msput .= "<tr><td colspan=2>Host IP: $iptxt</td>";
 			$msput .= '<td class=big colspan=2><A href=ssh://user@' . $iptxt . '>SSH to Host</a></td></tr>';
@@ -684,9 +672,7 @@ if (@summary) {
 				$mcontrol .= "<input type='submit' value='Select'>";
 				$mcontrol .= "</select></form></td>";
 			  $mcontrol .= "<td><form name='mstart' action='status.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > ";
-			
-				#$mcontrol .= "<input type='password' placeholder='root password' name='ptext' required>";
-			}
+				}
 			$mcontrol .= "</td></form>";		
 			my $fcheck = `ps -eo command | grep -Ec /opt/ifmi/farmview\$`;
 			$mcontrol .=  "<td><A href=/farmview.html>Farm Overview</A></td>" if ($fcheck >0);
@@ -802,8 +788,7 @@ if ($ispriv eq "S") {
      	  	$psput .= "<td><input type='radio' name='pnotify' value=1>Yes ";
     	  	$psput .= "<input type='radio' name='pnotify' value=0 checked>No "; 
   		  }
-  		  $psput .= "<input type='submit' value='Save'></td></tr></form>";
-	      
+  		  $psput .= "<input type='submit' value='Save'></td></tr></form>";	      
 	      $psput .= "<tr><td>Shares A/R:</td><td>" . $pacc . "/" . $prej . "</td>";
 	      $psput .= "<td>Reject Ratio:</td>$prat</tr>";
 	      if (!defined $prhl) {$prhl = "not set"} else {$prhl = "$prhl%"}

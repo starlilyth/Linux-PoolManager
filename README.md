@@ -24,7 +24,7 @@ This should work out of the box on BAMT, but will need the following Perl module
 * libyaml-perl 
 * librrds-perl
 
-and additionally for email notifications..
+and for email notifications..
 * libemail-simple-perl
 * libemail-sender-perl
 * libtry-tiny-perl
@@ -48,16 +48,21 @@ Please make sure the following entries are in your cgminer.conf:
 
 Once installed, simply visit the IP of your miner in a browser. PoolManager enables and uses SSL (https), so be sure to open port 443 on any firewalls or routers if necessary. 
 
+THAT IS ALL! STOP INSTALLING HERE UNLESS THINGS ARE BROKEN. 
+
 UPGRADING IS JUST AS EASY!
-  Do all the steps as above.
+  Do all the steps as above. 
+  NOTE! If you are upgrading from version 1.1 or 1.2 PLEASE NOTE: The poolmanager.conf has changed significantly. The easiest way to fix any issues is to rename your old poolmanager.conf (do: mv /opt/ifmi/poolmanager.conf /opt/ifmi/poolmanager.conf.old), then visit the settings page and let PoolManager create a new one. 
 
-Install Notes: 
-PoolManager installation attempts to modify /etc/sudoers to allow the web service to stop/start the miner application, modify files, and boot the machine, all as a specified user. This works on BAMT and most other distros, but if it fails you will need to modify sudoers yourself with the following: 
+Sudoers Note: 
+PoolManager installation attempts to modify /etc/sudoers to allow the web service to stop/start the miner application, modify files, and boot the machine, all as a specified user. This works on BAMT and most other distros. YOU SHOULD NOT NEED TO EDIT SUDOERS 99% OF THE TIME. DONT DO IT UNLESS THINGS ARE BROKEN. 
+IF THE INSTALLER FAILS you will need to modify sudoers yourself with the following: 
 
-    Defaults targetpw  
-    apacheuser ALL=(ALL) /opt/ifmi/mcontrol,/bin/cp,/path/to/reboot
+apacheuser ALL=(root)NOPASSWD: /opt/ifmi/mcontrol
+Defaults:www-data rootpw
+apacheuser ALL=(root)/bin/cp
 
-Where apacheuser is the user that your web service runs as, and /path/to/reboot is the path to the reboot command. 
+Where apacheuser is the user that your web service runs as. 
 
 If you wish to remove PoolManager, you can run the remove-pm.sh script in the same directory you ran install-pm.sh
 
@@ -107,4 +112,4 @@ BTC: 1JBovQ1D3P4YdBntbmsu6F1CuZJGw9gnV6
 
 LTC: LdMJB36zEfTo7QLZyKDB55z9epgN78hhFb
 
-Donate your hashpower directly at http://wafflepool.com/
+Donate your hashpower directly at http://coinshift.com/
