@@ -130,24 +130,26 @@ if (-o $conffile) {
         if ((defined $nmp) && ($nmp ne "")) {
           $mconf->{miners}->{$newa}->{mpath} = $nmp;
           my $nmo = $in{'nmo'};
-          $nmo = "--api-listen --config /opt/ifmi/$ncname.conf" if (!defined $nmo);
+          $nmo = "--api-listen --config /opt/ifmi/$ncname.conf" if ($nmo eq "");
           $mconf->{miners}->{$newa}->{mopts} = $nmo;
           my $nsp = $in{'nsp'};
-          $nsp = "/opt/ifmi/$ncname.conf" if (!defined $nsp);
+          $nsp = "/opt/ifmi/$ncname.conf" if ($nsp eq "");
           $mconf->{miners}->{$newa}->{savepath} = $nsp;
           if (!-f $nsp) {
-            open my $cfgin, '>', $nsp;
-            print $cfgin "{\n"; 
-            print $cfgin '"pools" : [' . "\n";
-            print $cfgin "  {\n"; 
-            print $cfgin '    "url" : "stratum+tcp://mine.coinshift.com:3333",' . "\n";
-            print $cfgin '    "user" : "1JBovQ1D3P4YdBntbmsu6F1CuZJGw9gnV6",' . "\n";
-            print $cfgin '    "pass" : "x"' . "\n";
-            print $cfgin "  }\n";
-            print $cfgin "],\n";
-            print $cfgin '"api-listen" : true,' . "\n" . '"api-allow" : "W:127.0.0.1",' . "\n";
-            print $cfgin '"scrypt" : true,' . "\n" . '"kernel-path" : "/usr/local/bin"' . "\n";
-            print $cfgin "}\n";
+            my $cdata; 
+            $cdata .= "{\n"; 
+            $cdata .= '"pools" : [' . "\n";
+            $cdata .= "  {\n"; 
+            $cdata .= '    "url" : "stratum+tcp://mine.coinshift.com:3333",' . "\n";
+            $cdata .= '    "user" : "1JBovQ1D3P4YdBntbmsu6F1CuZJGw9gnV6",' . "\n";
+            $cdata .= '    "pass" : "x"' . "\n";
+            $cdata .= "  }\n";
+            $cdata .= "],\n";
+            $cdata .= '"api-listen" : true,' . "\n" . '"api-allow" : "W:127.0.0.1",' . "\n";
+            $cdata .= '"scrypt" : true,' . "\n" . '"kernel-path" : "/usr/local/bin"' . "\n";
+            $cdata .= "}\n";
+            open my $cfgin, '>>', $nsp;
+            print $cfgin $cdata;
             close $cfgin; 
           }
           $mconf->{settings}->{current_mconf} = $newa;
