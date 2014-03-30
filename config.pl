@@ -120,56 +120,66 @@ if (-o $conffile) {
     my $ncmc = $in{'setmconf'};
     $mconf->{settings}->{current_mconf} = $ncmc if ((defined $ncmc) && ($ncmc ne ""));
 
-    my $nmconfig = $in{'nmconfig'};
-    if ((defined $nmconfig) && ($nmconfig ne "")) {
-      my $ncname = $in{'cnmcname'}; 
-      if ((defined $ncname) && ($ncname ne "") && ($ncname ne $nmconfig)) {
-        my $newa = (keys %{$mconf->{miners}}); $newa++; 
-        $mconf->{miners}->{$newa}->{mconfig} = $ncname;
-        my $nmp = $in{'nmp'};
-        if ((defined $nmp) && ($nmp ne "")) {
-          $mconf->{miners}->{$newa}->{mpath} = $nmp;
-          my $nmo = $in{'nmo'};
-          $nmo = "--api-listen --config /opt/ifmi/$ncname.conf" if ($nmo eq "");
-          $mconf->{miners}->{$newa}->{mopts} = $nmo;
-          my $nsp = $in{'nsp'};
-          $nsp = "/opt/ifmi/$ncname.conf" if ($nsp eq "");
-          $mconf->{miners}->{$newa}->{savepath} = $nsp;
-          if (!-f $nsp) {
-            my $cdata; 
-            $cdata .= "{\n"; 
-            $cdata .= '"pools" : [' . "\n";
-            $cdata .= "  {\n"; 
-            $cdata .= '    "url" : "stratum+tcp://mine.coinshift.com:3333",' . "\n";
-            $cdata .= '    "user" : "1JBovQ1D3P4YdBntbmsu6F1CuZJGw9gnV6",' . "\n";
-            $cdata .= '    "pass" : "x"' . "\n";
-            $cdata .= "  }\n";
-            $cdata .= "],\n";
-            $cdata .= '"api-listen" : true,' . "\n" . '"api-allow" : "W:127.0.0.1",' . "\n";
-            $cdata .= '"scrypt" : true,' . "\n" . '"kernel-path" : "/usr/local/bin"' . "\n";
-            $cdata .= "}\n";
-            open my $cfgin, '>>', $nsp;
-            print $cfgin $cdata;
-            close $cfgin; 
+    my $msettings = $in{'msettings'};
+    if ((defined $msettings) && ($msettings ne "")) {
+      my $currname = $in{'currname'};
+      my $nmname = $in{'nmname'}; 
+      my $nmp = $in{'nmp'};
+      my $nmo = $in{'nmo'};
+      my $nsp = $in{'nsp'};
+      if ($nmname ne "") {
+        my $ncheck = 0; 
+        for (keys %{$mconf->{miners}}) {    
+          if ($nmname eq $mconf->{miners}->{$_}->{mconfig}) {
+            $mconf->{miners}->{$_}->{mpath} = $nmp if ($nmp ne "");            
+            $mconf->{miners}->{$_}->{mopts} = $nmo if ($nmo ne "");
+            $mconf->{miners}->{$_}->{savepath} = $nsp if ($nsp ne "");
+            $ncheck++;
+          } 
+        } 
+        if ($ncheck == 0) {
+          if ($nmp ne "") { 
+            my $newm = (keys %{$mconf->{miners}}); $newm++; 
+            $mconf->{miners}->{$newm}->{mconfig} = $nmname;
+            $mconf->{miners}->{$newm}->{mpath} = $nmp;
+            $nmo = "--api-listen --config /opt/ifmi/$nmname.conf" if ($nmo eq "");
+            $mconf->{miners}->{$newm}->{mopts} = $nmo;
+            $nsp = "/opt/ifmi/$nmname.conf" if ($nsp eq "");
+            $mconf->{miners}->{$newm}->{savepath} = $nsp;        
+            if (!-f $nsp) {
+              my $cdata; 
+              $cdata .= "{\n"; 
+              $cdata .= '"pools" : [' . "\n";
+              $cdata .= "  {\n"; 
+              $cdata .= '    "url" : "stratum+tcp://mine.coinshift.com:3333",' . "\n";
+              $cdata .= '    "user" : "1JBovQ1D3P4YdBntbmsu6F1CuZJGw9gnV6",' . "\n";
+              $cdata .= '    "pass" : "x"' . "\n";
+              $cdata .= "  }\n";
+              $cdata .= "],\n";
+              $cdata .= '"api-listen" : true,' . "\n" . '"api-allow" : "W:127.0.0.1",' . "\n";
+              $cdata .= '"scrypt" : true,' . "\n" . '"kernel-path" : "/usr/local/bin"' . "\n";
+              $cdata .= "}\n";
+              open my $cfgin, '>>', $nsp;
+              print $cfgin $cdata;
+              close $cfgin; 
+            }
+            $mconf->{settings}->{current_mconf} = $newm;
+          } else {
+            $conferror = 2;
           }
-          $mconf->{settings}->{current_mconf} = $newa;
-        } else {
-          $conferror = 2;
         }
-      } else { 
+      } else {   
         for (keys %{$mconf->{miners}}) {
-          if ($nmconfig eq $mconf->{miners}->{$_}->{mconfig}) {
-            my $nmp = $in{'nmp'};
-            $mconf->{miners}->{$_}->{mpath} = $nmp if ((defined $nmp) && ($nmp ne ""));
-            my $nmo = $in{'nmo'};
-            $mconf->{miners}->{$_}->{mopts} = $nmo if ((defined $nmo) && ($nmo ne ""));
-            my $nsp = $in{'nsp'};
-            $mconf->{miners}->{$_}->{savepath} = $nsp if ((defined $nsp) && ($nsp ne ""));
+          if ($currname eq $mconf->{miners}->{$_}->{mconfig}) {
+            $mconf->{miners}->{$_}->{mpath} = $nmp if ($nmp ne "");
+            $mconf->{miners}->{$_}->{mopts} = $nmo if ($nmo ne "");
+            $mconf->{miners}->{$_}->{savepath} = $nsp if ($nsp ne "");
           } 
         }
-      }  
-      $nmconfig = ""; $ncname = "";
+      }
+      $nmname = ""; $currname = ""; $msettings = "";
     }
+
     my $mdel = $in{'deletem'};
     if ((defined $mdel) && ($mdel ne "")) {
       if ($mdel != 0) {
@@ -332,10 +342,17 @@ for (keys %{$mconf->{miners}}) {
 print "<input type='submit' value='Select'>";
 print "</select></form>";
 
+
+
+
+
+
+
 print "<td class=header><form name=msettings method=post>";
 print "<input type='submit' value='Update'>";
-print "<input type='hidden' name='nmconfig' value='$currname'> ";
-print " <input type='text' placeholder='enter name for new profile' name='cnmcname'></td><tr>";
+print "<input type='hidden' name='msettings' value='msettings'> ";
+print "<input type='hidden' name='currname' value='$currname'> ";
+print " <input type='text' placeholder='enter name for new profile' name='nmname'></td><tr>";
 my $miner_path = $mconf->{miners}->{$currentm}->{mpath};
 print "<tr><td>Miner Path</td><td colspan=2>$miner_path</td>";
 print "<td><input type='text' size='45' placeholder='/path/to/miner' name='nmp'></td></tr>";
@@ -350,6 +367,14 @@ if ($savepath eq "/opt/ifmi/cgminer.conf") {
  print "<br><i><small>The default is probably not what you want.</small></i>";
 }
 print "</form></td></tr>";
+
+
+
+
+
+
+
+
 print "</table><br>";
 
 print "<tr><td colspan=2 align=center>";
