@@ -52,15 +52,16 @@ THAT IS ALL! STOP INSTALLING HERE UNLESS THINGS ARE BROKEN.
 
 UPGRADING IS JUST AS EASY!
   Do all the steps as above. 
+  
   NOTE! If you are upgrading from version 1.1 or 1.2 PLEASE NOTE: The poolmanager.conf has changed significantly. The easiest way to fix any issues is to rename your old poolmanager.conf (do: mv /opt/ifmi/poolmanager.conf /opt/ifmi/poolmanager.conf.old), then visit the settings page and let PoolManager create a new one. 
 
 Sudoers Note: 
 PoolManager installation attempts to modify /etc/sudoers to allow the web service to stop/start the miner application, modify files, and boot the machine, all as a specified user. This works on BAMT and most other distros. YOU SHOULD NOT NEED TO EDIT SUDOERS 99% OF THE TIME. DONT DO IT UNLESS THINGS ARE BROKEN. 
 IF THE INSTALLER FAILS you will need to modify sudoers yourself with the following: 
 
-apacheuser ALL=(root)NOPASSWD: /opt/ifmi/mcontrol
-Defaults:www-data rootpw
-apacheuser ALL=(root)/bin/cp
+    apacheuser ALL=(root)NOPASSWD: /opt/ifmi/mcontrol
+    Defaults:www-data rootpw
+    apacheuser ALL=(root)/bin/cp
 
 Where apacheuser is the user that your web service runs as. 
 
