@@ -12,7 +12,7 @@
  use YAML qw( DumpFile LoadFile );
  use CGI qw(:cgi-lib :standard);
 
-my $version = "1.2.0+";
+my $version = "1.3.0-pre";
 my $conffile = "/opt/ifmi/poolmanager.conf";
 if (! -f $conffile) { 
   my $nconf = {
@@ -75,8 +75,8 @@ if (! -f $conffile) {
 my $conferror = 0; my $mailerror = "";
 my $mconf = LoadFile( $conffile );
 if (-o $conffile) {
-  my $curver = $mconf->{display}->{pm_version};
-  $mconf->{display}->{pm_version} = $version if ($version ne $curver);
+  my $curver = $mconf->{display}->{pmversion};
+  $mconf->{display}->{pmversion} = $version if ($version ne $curver);
   our %in;
   if (&ReadParse(%in)) {
     my $nht = $in{'temphi'};
@@ -211,7 +211,7 @@ if (-o $conffile) {
     my $nha = $in{'hashavg'};
     $mconf->{display}->{usehashavg} = $nha if(defined $nha);
 
-    $mconf->{display}->{pm_version} = $version if ($mconf->{display}->{pm_version} eq "");
+    $mconf->{display}->{pmversion} = $version if ($mconf->{display}->{pmversion} eq "");
 
     my $nbcast = $in{'bcast'};
     $mconf->{farmview}->{do_bcast_status} = $nbcast if((defined $nbcast) && ($nbcast ne ""));
