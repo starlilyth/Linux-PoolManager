@@ -24,7 +24,6 @@ my $PICPATH = "/var/www/IFMI/graphs/";
 my $DBPATH = "/opt/ifmi/rrdtool/";
 my $ERR = RRDs::error;
 
-
 my $colorfile = "/var/www/IFMI/themes/" . ${$conf}{display}{'graphcolors'}; 
 my $gconf = LoadFile($colorfile) if (-f $colorfile);
 my $hashcolor = "#0033FF";
@@ -47,6 +46,20 @@ my $errorcolor = "#FF0000cc";
 $errorcolor = $gconf->{errorcolor} if (defined ($gconf->{errorcolor})); 
 my $fontfam = "Helvetica";
 $fontfam = $gconf->{fontfam} if (defined ($gconf->{fontfam}));
+my $gpucolor0 = "#FFFF00";
+$gpucolor0 = $gconf->{gpucolor0} if (defined ( $gconf->{gpucolor0})); 
+my $gpucolor1 = "#FF00CC";
+$gpucolor1 = $gconf->{gpucolor1} if (defined ( $gconf->{gpucolor1})); 
+my $gpucolor2 = "#FF6600";
+$gpucolor2 = $gconf->{gpucolor2} if (defined ( $gconf->{gpucolor2})); 
+my $gpucolor3 = "#FF0000";
+$gpucolor3 = $gconf->{gpucolor3} if (defined ( $gconf->{gpucolor3})); 
+my $gpucolor4 = "#99FF66";
+$gpucolor4 = $gconf->{gpucolor4} if (defined ( $gconf->{gpucolor4})); 
+my $gpucolor5 = "#66CCFF";
+$gpucolor5 = $gconf->{gpucolor5} if (defined ( $gconf->{gpucolor5})); 
+my $gpucolor6 = "#9933FF";
+$gpucolor6 = $gconf->{gpucolor6} if (defined ( $gconf->{gpucolor6})); 
 
 
 if (-f '/tmp/cleargraphs.flag') {
@@ -60,6 +73,8 @@ my $ispriv = &CGMinerIsPriv;
 if ($ispriv eq "S") {
 
   my $gpucount = &getCGMinerGPUCount;
+  my $temphi = ${$conf}{monitoring}{monitor_temp_hi};
+  my $templo = ${$conf}{monitoring}{monitor_temp_lo};
 
   for (my $i=0;$i<$gpucount;$i++)
   {
@@ -113,6 +128,8 @@ if ($ispriv eq "S") {
    "--font","DEFAULT:0:$fontfam",
    "--font","WATERMARK:4:$fontfam",
    "--slope-mode", "--interlaced",
+   "HRULE:$temphi#FF0000",
+   "HRULE:$templo#0000FF",
    "DEF:gdhash=$GDB:hash:LAST",
    "DEF:gdshacc=$GDB:shacc:LAST",
    "DEF:gdtemp=$GDB:temp:LAST",
@@ -135,47 +152,37 @@ if ($ispriv eq "S") {
    );
   die "graph failed: $ERR\n" if $ERR;
   }
-
-my $temphi = ${$conf}{monitoring}{monitor_temp_hi};
-my $templo = ${$conf}{monitoring}{monitor_temp_lo};
-my @gdata = (
-  $PICPATH . 'gsummary.png',
-  "--vertical-label=GPU Temps",
-  "--start=now-1d",
-  "--end=now",
-  "--width=700","--height=100",
-  "--color=BACK#00000000",
-  "--color=CANVAS#00000000",
-  "--color=FONT$fontcolor",
-  "--border=0",
-  "--font=DEFAULT:0:$fontfam",
-  "--font=WATERMARK:4:$fontfam",
-  "--slope-mode","--interlaced",
-  "HRULE:$temphi#FF0000",
-  "HRULE:$templo#0000FF"
-);
-my @gpucolor;
-$gpucolor[0] = "#FF0000";
-$gpucolor[1] = "#FF00CC";
-$gpucolor[2] = "#FF6600";
-$gpucolor[3] = "#FFFF00";
-$gpucolor[4] = "#99FF66";
-$gpucolor[5] = "#66CCFF";
-$gpucolor[6] = "#9933FF";
-
-for (my $g=0;$g<$gpucount;$g++) {
-   my $GDB = $DBPATH . "gpu" . $g . ".rrd";
-   push @gdata, 'DEF:gdtemp' . $g . '=' . $GDB . ':temp:LAST';
-   push @gdata, 'LINE3:gdtemp' . $g . $gpucolor[$g] . ':GPU' . $g;
-#   push @gdata, 'LINE3:gdtemp' . $g . '#FF7F24:GPU' . $g;
- }
-
-RRDs::graph(@gdata);
-die "graph failed: $ERR\n" if $ERR;
-
-# # $gdata .= '--title "24 Hour GPU Summary" ';
-# # $gdata .= '--vertical-label "Temp / Fan" ';
-
+  my @gdata = (
+    $PICPATH . 'gsummary.png',
+    "--vertical-label=GPU Temps",
+    "--start=now-1d",
+    "--end=now",
+    "--width=700","--height=100",
+    "--color=BACK#00000000",
+    "--color=CANVAS#00000000",
+    "--color=FONT$fontcolor",
+    "--border=0",
+    "--font=DEFAULT:0:$fontfam",
+    "--font=WATERMARK:1:$fontfam",
+    "--slope-mode","--interlaced",
+    "HRULE:$temphi#FF0000",
+    "HRULE:$templo#0000FF"
+  );
+  my @gpucolor;
+  $gpucolor[0] = $gpucolor0;
+  $gpucolor[1] = $gpucolor1;
+  $gpucolor[2] = $gpucolor2;
+  $gpucolor[3] = $gpucolor3;
+  $gpucolor[4] = $gpucolor4;
+  $gpucolor[5] = $gpucolor5;
+  $gpucolor[6] = $gpucolor6;
+  for (my $g=0;$g<$gpucount;$g++) {
+    my $GDB = $DBPATH . "gpu" . $g . ".rrd";
+    push @gdata, 'DEF:gdtemp' . $g . '=' . $GDB . ':temp:LAST';
+    push @gdata, 'LINE3:gdtemp' . $g . $gpucolor[$g] . ':GPU' . $g;
+  }
+  RRDs::graph(@gdata);
+  die "graph failed: $ERR\n" if $ERR;
 }
 
 # Summary
