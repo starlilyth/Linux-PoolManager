@@ -402,7 +402,7 @@ if (@gpus) {
 		$gput .= '<TD>' . $gsha . " / " . $gshi . '</TD>';		
 		if ($gsha > 0)
 		{
-			my $rr = $gpus[$i]{'shares_invalid'}/($gpus[$i]{'shares_accepted'} + $gpus[$i]{'shares_invalid'})*10 ;		
+			my $rr = $gpus[$i]{'shares_invalid'}/($gpus[$i]{'shares_accepted'} + $gpus[$i]{'shares_invalid'})*100 ;		
 			if ($rr > ${$conf}{monitoring}{monitor_reject_hi})
 			{
 				$problems++;
@@ -728,7 +728,7 @@ if ($ispriv eq "S") {
 	    my $prej = ${$pools[$i]}{'rejected'};
 	    my $prr;
 	    if ($prej ne "0") {
-	       $prr = sprintf("%.2f", $prej / ($pacc + $prej)*10);
+	       $prr = sprintf("%.2f", $prej / ($pacc + $prej)*100);
 	    } else { 
 		   $prr = "0.0";
 	    }
