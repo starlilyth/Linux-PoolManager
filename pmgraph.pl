@@ -113,6 +113,7 @@ if ($ispriv eq "S") {
   RRDs::update($GDB, "--template=hash:shacc:temp:fanspeed:hwe", "N:$ghash:$gshacc:$gtemp:$gfspeed:$ghwe");
   die "graph failed: $ERR\n" if $ERR;
 
+  my $temphig = $temphi * 100;
   RRDs::graph("-P", $PICPATH . "gpu$gnum.png",
    "--title","24 Hour Summary",
    "--vertical-label","Hashrate K/hs",
@@ -128,8 +129,7 @@ if ($ispriv eq "S") {
    "--font","DEFAULT:0:$fontfam",
    "--font","WATERMARK:4:$fontfam",
    "--slope-mode", "--interlaced",
-   "HRULE:$temphi#FF0000",
-   "HRULE:$templo#0000FF",
+   "HRULE:$temphig#FF0000",
    "DEF:gdhash=$GDB:hash:LAST",
    "DEF:gdshacc=$GDB:shacc:LAST",
    "DEF:gdtemp=$GDB:temp:LAST",
@@ -161,7 +161,7 @@ if ($ispriv eq "S") {
     "--color=BACK#00000000",
     "--color=CANVAS#00000000",
     "--color=FONT$fontcolor",
-    "--border=0",
+    "--border","0",
     "--font=DEFAULT:0:$fontfam",
     "--font=WATERMARK:1:$fontfam",
     "--slope-mode","--interlaced",
