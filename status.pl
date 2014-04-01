@@ -1032,7 +1032,8 @@ given(my $x) {
 		print "<tr><td>";	
 		my $img = "/var/www/IFMI/graphs/msummary.png";
 		if (-e $img) {
-			print '<img src="/IFMI/graphs/msummary.png">';
+			print '<img src="/IFMI/graphs/msummary.png"><br>';
+			print '<img src="/IFMI/graphs/gsummary.png">';
 		} else {
 			print "<font style='color: #999999; font-size: 10px;'>Summary graph not available yet.";
 		}

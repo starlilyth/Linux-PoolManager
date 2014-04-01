@@ -22,6 +22,8 @@ my $conf = &getConfig;
 my %conf = %{$conf};
 my $PICPATH = "/var/www/IFMI/graphs/";
 my $DBPATH = "/opt/ifmi/rrdtool/";
+my $ERR = RRDs::error;
+
 
 my $colorfile = "/var/www/IFMI/themes/" . ${$conf}{display}{'graphcolors'}; 
 my $gconf = LoadFile($colorfile) if (-f $colorfile);
@@ -58,6 +60,7 @@ my $ispriv = &CGMinerIsPriv;
 if ($ispriv eq "S") {
 
   my $gpucount = &getCGMinerGPUCount;
+
   for (my $i=0;$i<$gpucount;$i++)
   {
     my $gnum = $i; 
@@ -70,7 +73,8 @@ if ($ispriv eq "S") {
       "DS:fanspeed:GAUGE:600:0:100",
       "DS:hwe:COUNTER:600:U:U",
       "RRA:LAST:0.5:1:288", 
-      ) or die "Create error: ($RRDs::error)";
+      );
+      die "graph failed: $ERR\n" if $ERR;
     }
 
     my $ghash = "0"; my $ghwe = "0"; my $gshacc = "0"; my $gtemp = "0"; my $gfspeed = "0";
@@ -91,8 +95,8 @@ if ($ispriv eq "S") {
      $gfspeed = $1;
     }
 
-  RRDs::update($GDB, "--template=hash:shacc:temp:fanspeed:hwe", "N:$ghash:$gshacc:$gtemp:$gfspeed:$ghwe")
-  or die "Update error: ($RRDs::error)";
+  RRDs::update($GDB, "--template=hash:shacc:temp:fanspeed:hwe", "N:$ghash:$gshacc:$gtemp:$gfspeed:$ghwe");
+  die "graph failed: $ERR\n" if $ERR;
 
   RRDs::graph("-P", $PICPATH . "gpu$gnum.png",
    "--title","24 Hour Summary",
@@ -101,7 +105,7 @@ if ($ispriv eq "S") {
    "--right-axis",".1:0",
    "--start","now-1d",
    "--end", "now",
-   "--width","700","--height","300",
+   "--width","700","--height","200",
    "--color","BACK#00000000",
    "--color","CANVAS#00000000",
    "--color","FONT$fontcolor",
@@ -128,9 +132,50 @@ if ($ispriv eq "S") {
    "LINE3:gctemp$tempcolor: Temp C",
    "LINE3:gcfan$fancolor: Fan %",
    "TICK:gdhwe$errorcolor:-0.1: HW error",
-   ) or
-  die "graph failed ($RRDs::error)";
+   );
+  die "graph failed: $ERR\n" if $ERR;
   }
+
+my $temphi = ${$conf}{monitoring}{monitor_temp_hi};
+my $templo = ${$conf}{monitoring}{monitor_temp_lo};
+my @gdata = (
+  $PICPATH . 'gsummary.png',
+  "--vertical-label=GPU Temps",
+  "--start=now-1d",
+  "--end=now",
+  "--width=700","--height=100",
+  "--color=BACK#00000000",
+  "--color=CANVAS#00000000",
+  "--color=FONT$fontcolor",
+  "--border=0",
+  "--font=DEFAULT:0:$fontfam",
+  "--font=WATERMARK:4:$fontfam",
+  "--slope-mode","--interlaced",
+  "HRULE:$temphi#FF0000",
+  "HRULE:$templo#0000FF"
+);
+my @gpucolor;
+$gpucolor[0] = "#FF0000";
+$gpucolor[1] = "#FF00CC";
+$gpucolor[2] = "#FF6600";
+$gpucolor[3] = "#FFFF00";
+$gpucolor[4] = "#99FF66";
+$gpucolor[5] = "#66CCFF";
+$gpucolor[6] = "#9933FF";
+
+for (my $g=0;$g<$gpucount;$g++) {
+   my $GDB = $DBPATH . "gpu" . $g . ".rrd";
+   push @gdata, 'DEF:gdtemp' . $g . '=' . $GDB . ':temp:LAST';
+   push @gdata, 'LINE3:gdtemp' . $g . $gpucolor[$g] . ':GPU' . $g;
+#   push @gdata, 'LINE3:gdtemp' . $g . '#FF7F24:GPU' . $g;
+ }
+
+RRDs::graph(@gdata);
+die "graph failed: $ERR\n" if $ERR;
+
+# # $gdata .= '--title "24 Hour GPU Summary" ';
+# # $gdata .= '--vertical-label "Temp / Fan" ';
+
 }
 
 # Summary
@@ -145,7 +190,8 @@ if (! -f $SDB){
   "DS:mfb:COUNTER:600:U:U",
   "DS:mhwe:COUNTER:600:U:U",
   "RRA:LAST:0.5:1:288", 
-  ) or die "Create error: ($RRDs::error)";
+  );
+  die "graph failed: $ERR\n" if $ERR;
 } 
 
 my $sumres = &sendAPIcommand("summary","");
@@ -169,8 +215,8 @@ if ($sumres =~ m/Hardware\sErrors=(\d+),/g) {
 if ($sumres =~ m/Work\sUtility=(\d+\.\d+),/g) {
   $mworkutil = $1;
 }
-RRDs::update($SDB, "--template=mhash:mwu:mshacc:mshrej:mfb:mhwe", "N:$mhashav:$mworkutil:$maccept:$mreject:$mfoundbl:$mhwerrors")
-or die "Update error: ($RRDs::error)";
+RRDs::update($SDB, "--template=mhash:mwu:mshacc:mshrej:mfb:mhwe", "N:$mhashav:$mworkutil:$maccept:$mreject:$mfoundbl:$mhwerrors");
+die "graph failed: $ERR\n" if $ERR;
 
 my $mname = `hostname`;
 chomp $mname;
@@ -181,7 +227,7 @@ RRDs::graph("-P", $PICPATH . "msummary.png",
  "--right-axis",".01:0",
  "--start","now-1d",
  "--end","now",
- "--width","700","--height","200",
+ "--width","700","--height","150",
  "--color","BACK#00000000",
  "--color","CANVAS#00000000",
  "--color","FONT$fontcolor", 
@@ -216,8 +262,8 @@ RRDs::graph("-P", $PICPATH . "msummary.png",
  "GPRINT:mvshacc:%2.2lf  ",
  "AREA:mccshrej$rejcolor: Avg. Shares Rejected / Min",
  "GPRINT:mvshrej:%2.2lf  ",
- ) or
- die "graph failed ($RRDs::error)";
+ );
+die "graph failed: $ERR\n" if $ERR;
 
 # Pools
 
@@ -234,7 +280,8 @@ while ($pres =~ m/POOL=(\d+),(.+?)\|/g) {
     "DS:pstale:DERIVE:600:0:U",
     "DS:prfail:COUNTER:600:0:U",
     "RRA:LAST:0.5:1:288", 
-    ) or die "Create error: ($RRDs::error)";
+    );
+    die "graph failed: $ERR\n" if $ERR;
   } 
   my $pstat = "0"; my $plive = "0"; my $pacc = "0"; my $prej = "0"; my $pstale = "0"; my $prfails = "0";
   if ($pdata =~ m/Status=(.+?),/) {
@@ -255,15 +302,15 @@ while ($pres =~ m/POOL=(\d+),(.+?)\|/g) {
   if ($pdata =~ m/Remote Failures=(\d+),/) {
     $prfails = $1; 
   }  
-  RRDs::update($PDB, "--template=plive:pshacc:pshrej:pstale:prfail", "N:$plive:$pacc:$prej:$pstale:$prfails")
-  or die "Update error: ($RRDs::error)";
+  RRDs::update($PDB, "--template=plive:pshacc:pshrej:pstale:prfail", "N:$plive:$pacc:$prej:$pstale:$prfails");
+  die "graph failed: $ERR\n" if $ERR;
 
   RRDs::graph("-P", $PICPATH . "pool$poid.png",
    "--title","24 Hour Summary",
    "--vertical-label","Shares Acc / Rej",
    "--start","now-1d",
    "--end", "now",
-   "--width","700","--height","300",
+   "--width","700","--height","200",
    "--color","BACK#00000000",
    "--color","CANVAS#00000000",
    "--color","FONT$fontcolor",
@@ -291,8 +338,8 @@ while ($pres =~ m/POOL=(\d+),(.+?)\|/g) {
    "AREA:pcshrej$rejcolor: Shares Rejected / Min",
    "GPRINT:pvshrej:%2.2lf  ",
    "TICK:pdrfail$errorcolor:-0.1: Remote Failure",
-   ) or
-   die "graph failed ($RRDs::error)";
+   );
+  die "graph failed: $ERR\n" if $ERR;
 }
 
 
