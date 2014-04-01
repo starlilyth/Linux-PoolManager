@@ -105,7 +105,7 @@ sub doEmail {
 				my $gsha = $gpus[$i]{'shares_accepted'};
 				my $gshr = $gpus[$i]{'shares_invalid'}; $gshr = 0 if ($gshr eq "");
 				if ($gshr > 0) {
-			      $rr = sprintf("%.2f", $gshr / ($gsha + $gshr)*100);
+			      $rr = sprintf("%.2f", $gshr / ($gsha + $gshr)*10);
 				}
 				if (($gsha > 0) && ($rr > ${$conf}{monitoring}{monitor_reject_hi})) {
 					if (!(defined($conf{monitoring}{alert}{$gpuid}{rejhi}))) {
