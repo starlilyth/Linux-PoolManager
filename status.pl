@@ -740,7 +740,9 @@ if ($ispriv eq "S") {
       		$poolnum = $_;
       	}
       }
-      my $prhl = ${$conf}{pools}{$poolnum}{pool_reject_hi}; 
+      $poola = "n/a" if (!defined $poola); 
+      $poolnum = 0 if (!defined $poolnum); 
+      my $prhl = ${$conf}{pools}{$poolnum}{pool_reject_hi} if (defined ${$conf}{pools}{$poolnum}{pool_reject_hi}); 
 			if ((defined $prhl) && ($prr > $prhl)) {
 	      $problems++;
 	      push(@nodemsg, "Pool $i reject ratio too high"); 
