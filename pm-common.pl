@@ -347,15 +347,20 @@ sub getFreshGPUData {
   my $gidata; my $gdesc; my $gdisp; 
   for (my $i=0;$i<$gpucount;$i++) {
     my $gpu = $i; 
-    my $res = `DISPLAY=:0.0 /usr/local/bin/atitweak -s`;
-    while ($res =~ m/$i\.\s(.+\n)/g) {
-      $gidata = $1; 
-       if ($gidata =~ m/^(.+?)\s+\(/) {
-        $gdesc = $1;
-       }  
-       if ($gidata =~ m/:(\d+\.\d+)\)/) {
-        $gdisp = $1;
-       }
+    if (-e "/usr/local/bin/atitweak") {
+      my $res = `DISPLAY=:0.0 /usr/local/bin/atitweak -s`;
+      while ($res =~ m/$i\.\s(.+\n)/g) {
+        $gidata = $1; 
+         if ($gidata =~ m/^(.+?)\s+\(/) {
+          $gdesc = $1;
+         }  
+         if ($gidata =~ m/:(\d+\.\d+)\)/) {
+          $gdisp = $1;
+         }
+      }
+    } else {
+      $gdesc = "unknown";
+      $gdisp = "0.0";
     }
     $gpus[$gpu] = ({ desc => $gdesc, display => $gdisp });
     &getCGMinerStats($gpu, \%{$gpus[$gpu]}, @cgpools );   
