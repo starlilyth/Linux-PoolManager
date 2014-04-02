@@ -23,6 +23,8 @@ This should work out of the box on BAMT, but will need the following Perl module
 * libjson-perl
 * libyaml-perl 
 * librrds-perl
+* libproc-pid-file-perl (reported)
+
 
 and for email notifications..
 * libemail-simple-perl
