@@ -15,25 +15,28 @@ my $login = (getpwuid $>);
 die "Please run as root (do not use sudo)" if ($login ne 'root');
 die "please execute from the install directory.\n" if (!-f "./install-pm.pl") ;
 
-print "This will install the IFMI PoolManager for cgminer and clones on Linux.\n";
-print "Are you sure? (y/n) ";
-my $ireply = <>; chomp $ireply;
-if ($ireply =~ m/y(es)?/i) {
-	if (-d "/var/www/IFMI/") {
-		print "It looks like this has been installed before. Do over? (y/n) ";
-		my $oreply = <>; chomp $oreply; 
-		if ($oreply =~ m/y(es)?/i) {
-			&doInstall; 
+if ($ARGV[0] eq "-q") {
+	&doInstall; 
+} else { 
+	print "This will install the IFMI PoolManager for cgminer and clones on Linux.\n";
+	print "Are you sure? (y/n) ";
+	my $ireply = <>; chomp $ireply;
+	if ($ireply =~ m/y(es)?/i) {
+		if (-d "/var/www/IFMI/") {
+			print "It looks like this has been installed before. Do over? (y/n) ";
+			my $oreply = <>; chomp $oreply; 
+			if ($oreply =~ m/y(es)?/i) {
+				&doInstall; 
+			} else {
+				die "Installation exited!\n";
+			}
 		} else {
-			die "Installation exited!\n";
+			&doInstall; 
 		}
 	} else {
-		&doInstall; 
+		die "Installation exited!\n";
 	}
-} else {
-	die "Installation exited!\n";
 }
-
 sub doInstall {
 	use POSIX qw(strftime);
 	my $now = POSIX::strftime("%Y-%m-%d.%H.%M", localtime());	
