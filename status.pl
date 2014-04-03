@@ -645,9 +645,9 @@ if (@summary) {
 		  	$mcontrol .= "<br><small>$mstrategy Mode</small></td>";
 			  $mcontrol .= "<td>Profile: $runname<br>";
 		  	$mcontrol .= "<small>Run time: " . $mrunt . "</small></td>";
-			  $mcontrol .= "<td><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > ";
+			  $mcontrol .= "<td><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > </form>";
 			  $mcontrol .= "<td><small>Switch Profile</small><br>";
-				$mcontrol .= "<form name=startnm method=post><select name=startnm>";
+				$mcontrol .= "<form name='startnm' action='status.pl' method='post'><select name='startnm'>";
 				for (keys %{$conf{miners}}) {
 	  			my $mname = $conf{miners}{$_}{mconfig};
 	  				if ($currentm eq $_) {
@@ -671,9 +671,9 @@ if (@summary) {
 				}
 				$mcontrol .= "<input type='submit' value='Select'>";
 				$mcontrol .= "</select></form></td>";
-			  $mcontrol .= "<td><form name='mstart' action='status.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > ";
-				}
-			$mcontrol .= "</td></form>";		
+			  $mcontrol .= "<td><form name='mstart' action='status.pl' method='POST'><input type='hidden' name='mstart' value='start'><input type='submit' value='Start' onclick='this.disabled=true;this.form.submit();' > </form>";
+			}
+			$mcontrol .= "</td>";		
 			my $fcheck = `ps -eo command | grep -Ec /opt/ifmi/farmview\$`;
 			$mcontrol .=  "<td><A href=/farmview.html>Farm Overview</A></td>" if ($fcheck >0);
 		}
