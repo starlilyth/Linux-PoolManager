@@ -915,7 +915,7 @@ print "</td>";
 # EXTRA HEADER STATS
 print "<TD class='overview'>";
 my $uptime = `uptime`;
-my $rigup = $1 if ($uptime =~ /up\s+(.*?),\s+\d+\s+users,/);
+my $rigup = $1 if ($uptime =~ /up\s+(.*?),\s+\d+\s+users?,/);
 my $rigload = $1 if ($uptime =~ /average:\s+(.*?),/);
 my $memfree = `cat /proc/meminfo | grep MemFree`; 
 my $rmem = $1 if ($memfree =~ /^MemFree:\s+(.*?)\s+kB$/);
