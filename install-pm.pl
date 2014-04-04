@@ -65,7 +65,7 @@ sub doInstall {
   	if ($apacheuser ne "unknown") {
 	    if (-d $webdir && -d $cgidir) { 
 			print "Copying files...\n" if ($flag ne "-q");
-			perl chown requires UID and make_path is broken, so
+			#perl chown requires UID and make_path is broken, so
 			make_path $appdir . '/rrdtool';
 			`chown $apacheuser $appdir`;
 			make_path $webdir . '/IFMI/graphs' ;
