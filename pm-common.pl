@@ -26,6 +26,7 @@ sub addPool {
 }
 
 sub blog {
+
   my ($msg) = @_;
   my @parts = split(/\//, $0);
   my $task = $parts[@parts-1];  
@@ -407,6 +408,7 @@ sub saveConfig {
    my $bkpfile = $savefile . ".bkp";
    copy $savefile, $bkpfile; 
   }
+  &blog("saving $savefile...") if (defined(${$conf}{settings}{verbose}));
   &sendAPIcommand("save",$savefile);
 }
 
@@ -426,7 +428,7 @@ sub sendAPIcommand {
   if ($sock) {
     if (defined $cflags) {
       &blog("sending \"$command $cflags\" to cgminer api") if (defined(${$conf}{settings}{verbose}));
-      print $sock "$command|$cflags\n";
+      print $sock "$command|$cflags";
     } else {
       &blog("sending \"$command\" to cgminer api") if (defined(${$conf}{settings}{verbose}));
       print $sock "$command|\n"; 
