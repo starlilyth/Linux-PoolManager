@@ -1031,7 +1031,7 @@ given(my $x) {
 		print "<br></div>";
 		print "<div class=graphs>";	
 		print "<table>";
-		print "<tr><td>";	
+		print "<tr><td align=left>";	
 		my $img = "/var/www/IFMI/graphs/msummary.png";
 		if (-e $img) {
 			print '<img src="/IFMI/graphs/msummary.png"><br>';

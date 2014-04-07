@@ -152,6 +152,7 @@ if ($ispriv eq "S") {
    );
   die "graph failed: $ERR\n" if $ERR;
   }
+
   my @gdata = (
     $PICPATH . 'gsummary.png',
     "--vertical-label=GPU Temps",
@@ -179,7 +180,7 @@ if ($ispriv eq "S") {
   for (my $g=0;$g<$gpucount;$g++) {
     my $GDB = $DBPATH . "gpu" . $g . ".rrd";
     push @gdata, 'DEF:gdtemp' . $g . '=' . $GDB . ':temp:LAST';
-    push @gdata, 'LINE3:gdtemp' . $g . $gpucolor[$g] . ':GPU' . $g;
+    push @gdata, 'LINE2:gdtemp' . $g . $gpucolor[$g] . ':GPU' . $g;
   }
   RRDs::graph(@gdata);
   die "graph failed: $ERR\n" if $ERR;
@@ -265,9 +266,9 @@ RRDs::graph("-P", $PICPATH . "msummary.png",
  "AREA:mcwu$wucolor: WU",
  "TICK:mdfb$stfcolor:-0.1: Found Block",
  "TICK:mdhwe$errorcolor:-0.1: HW Error",
- "AREA:mcshacc$acccolor: Avg. Shares Accepted / Min",
+ "AREA:mcshacc$acccolor: Avg. Shares Acc. / Min",
  "GPRINT:mvshacc:%2.2lf  ",
- "AREA:mccshrej$rejcolor: Avg. Shares Rejected / Min",
+ "AREA:mccshrej$rejcolor: Avg. Shares Rej. / Min",
  "GPRINT:mvshrej:%2.2lf  ",
  );
 die "graph failed: $ERR\n" if $ERR;
