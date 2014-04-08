@@ -119,7 +119,6 @@ sub doInstall {
 		}
 		print "PoolManager attempts to set up some basic security for your web service.\n" if ($flag ne "-q");
 		print "It will enable SSL and redirect all web traffic over https.\n" if ($flag ne "-q");
-		print "It will also optionally set up a default site password.\n" if ($flag ne "-q");
 		if (!-f "/etc/ssl/certs/apache.crt") {
 			print "First, we need to create a self-signed cert to enable SSL.\n" if ($flag ne "-q");
 			print "The next set of questions is information for this cert.\n" if ($flag ne "-q");
@@ -179,6 +178,7 @@ sub doInstall {
   		`/usr/sbin/a2enmod rewrite`;
   		$restart++;
 		}
+		`service apache2 restart` if ($restart > 0);
 		print "Please read the README and edit your miner conf file as required.\nDone! Thank you for flying IFMI!\n" if ($flag ne "-q");
 	} else { 
 		print "Cant determine apache user, Bailing out!\n";
