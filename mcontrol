@@ -72,15 +72,16 @@ if ($ARGV[0] eq "installht") {
 	 `/usr/sbin/service apache2 graceful`;
 	}
   if (! `grep -E /usr/bin/htpasswd /etc/sudoers`) {
-    open my $sin, '<', "/etc/sudoers";
-    open my $sout, '>', "/etc/sudoers.out";    
+    my $fin = "/etc/sudoers";
+    open my $sin, '<', $fin;
+    open my $sout, '>', "$fin.out";    
     while (<$sin>) {
       s/\/opt\/ifmi\/mcontrol/\/opt\/ifmi\/mcontrol,\/usr\/bin\/htpasswd/;
       print $sout $_;
     }    
     close $sin; close $sout;
-    rename $sin, "$sin.back";
-    rename $sout, $sin; 
+    rename $fin, "$fin.back";
+    rename "$fin.out", $fin; 
     `chmod 0440 /etc/sudoers`;
   }	
 }
