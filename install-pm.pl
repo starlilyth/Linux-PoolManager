@@ -218,6 +218,7 @@ sub doInstall {
        			my $username = <STDIN>; chomp $username;
 	      		`htpasswd -c /var/htpasswd $username`;
 		    }
+		    `chown www-data /var/htpasswd`;
 		    print "Your htpassword file is '/var/htpasswd'\n" if ($flag ne "-q");
     		print "Please see 'man htpasswd' for more information on managing htaccess users.\n" if ($flag ne "-q");
     	} else {
