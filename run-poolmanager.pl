@@ -28,10 +28,10 @@ if (Proc::PID::File->running()) {
 # Start profile on boot
 
 if ($conf{settings}{do_boot} == 1) {
-  my $uptime = `uptime`;
-  $uptime =~ /^\s+?(\d+:\d+):(\d+)\s+up\s+/;
-  my $rigtime = $1; my $rigmins = $2;
-  if (($rigtime eq "00:00") && ($rigmins < 05)) {
+  my $uptime = `cat /proc/uptime`;
+  $uptime =~ /^(\d+)\.\d+\s+\d+\.\d+/;
+  my $rigup = $1;
+  if (($rigup < 300)) {
     my $xcheck = `ps -eo command | grep -cE ^/usr/bin/X`;
     my $mcheck = `ps -eo command | grep -cE [P]M-miner`;
     if ($xcheck == 1 && $mcheck == 0) {
