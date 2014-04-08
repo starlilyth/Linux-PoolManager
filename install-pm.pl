@@ -135,96 +135,50 @@ sub doInstall {
     		print "...cert appears to be installed, skipping...\n" if ($flag ne "-q");
 		}
 		my $restart = 0; 
-	   	copy "/etc/apache2/sites-available/default-ssl", "/etc/apache2/sites-available/default-ssl.pre-ifmi"
-			if (!-f "/etc/apache2/sites-available/default-ssl.pre-ifmi");
- 	    if (`grep ssl-cert-snakeoil.pem /etc/apache2/sites-available/default-ssl`) {
-	  		`sed -i "s/ssl-cert-snakeoil.pem/apache.crt/g" /etc/apache2/sites-available/default-ssl`;
-  			`sed -i "s/ssl-cert-snakeoil.key/apache.key/g" /etc/apache2/sites-available/default-ssl`;
-	  		$instlog .= "cert installed.\n";
-  			`/usr/sbin/a2ensite default-ssl`;
-	  		`/usr/sbin/a2enmod ssl`;
-	  		$restart++;
-  		}
+   	copy "/etc/apache2/sites-available/default-ssl", "/etc/apache2/sites-available/default-ssl.pre-ifmi"
+		if (!-f "/etc/apache2/sites-available/default-ssl.pre-ifmi");
+	    if (`grep ssl-cert-snakeoil.pem /etc/apache2/sites-available/default-ssl`) {
+  		`sed -i "s/ssl-cert-snakeoil.pem/apache.crt/g" /etc/apache2/sites-available/default-ssl`;
+			`sed -i "s/ssl-cert-snakeoil.key/apache.key/g" /etc/apache2/sites-available/default-ssl`;
+  		$instlog .= "cert installed.\n";
+			`/usr/sbin/a2ensite default-ssl`;
+  		`/usr/sbin/a2enmod ssl`;
+  		$restart++;
+		}
 		if (! `grep ServerName /etc/apache2/sites-available/default-ssl`) {
 			open my $din, '<', "/etc/apache2/sites-available/default-ssl";
-	 	    open my $dout, '>', "/etc/apache2/sites-available/default-ssl.out";
-	 	    while (<$din>) {
- 		    	print $dout $_;
- 	    		last if /ServerAdmin /;
- 	   		}
-	 	    print $dout "\n	ServerName IFMI:443\n";
-	 	    while (<$din>) {
- 		    	print $dout $_;
- 		    }
- 	    	close $dout;
-  			move "/etc/apache2/sites-available/default-ssl.out", "/etc/apache2/sites-available/default-ssl";
- 	    } 
- 	    if (! `grep RewriteEngine /etc/apache2/sites-available/default`) {
-	 	    copy "/etc/apache2/sites-available/default", "/etc/apache2/sites-available/default.pre-ifmi"
-	 	    	if (!-f "/etc/apache2/sites-available/default.pre-ifmi");
-	 	    open my $din, '<', "/etc/apache2/sites-available/default";
-	 	    open my $dout, '>', "/etc/apache2/sites-available/default.out";
-	 	    while (<$din>) {
- 		    	print $dout $_;
- 	    		last if /ServerAdmin /;
- 	   		}
-	 	    print $dout "\n	RewriteEngine On\n	RewriteCond %{HTTPS} !=on\n";
-	 	    print $dout "	RewriteRule ^/?(.*) https://%{SERVER_NAME}/\$1 [R,L]\n";
-	 	    while (<$din>) {
- 		    	print $dout $_;
- 		    }
- 	    	close $dout;
-			move "/etc/apache2/sites-available/default.out", "/etc/apache2/sites-available/default";
-	  		$instlog .= "rewrite enabled.\n";
-		  	`/usr/sbin/a2enmod rewrite`;
-		  	$restart++;
-	  	}
- 		print "Would you like to set up password protection on the PoolManager page?\n" if ($flag ne "-q");
-	 	print "(You can skip this if you have already done it) (y/n) " if ($flag ne "-q");
-	 	my $hreply = $flag;
-	 	if ($hreply ne "-q") {
-			$hreply = <STDIN>; chomp $hreply;
-		}
-			if ($hreply =~ m/y(es)?/i || $hreply eq "-q") {
-				if (! `grep AuthUserFile /etc/apache2/sites-available/default-ssl`) {
-			    print "Configuring Apache for basic authentication...\n" if ($flag ne "-q");
-		    	copy "/etc/apache2/sites-available/default-ssl", "/etc/apache2/sites-available/default-ssl.pre-ifmi"
-					if (!-f "/etc/apache2/sites-available/default-ssl.pre-ifmi");
-					open my $din, '<', "/etc/apache2/sites-available/default-ssl";
-		 	    open my $dout, '>', "/etc/apache2/sites-available/default-ssl.out";
-		 	    while (<$din>) {
-	 		    	print $dout $_;
-	 	    		last if /Directory \/>/;
-	 	   		}
-		 	    print $dout "\n	AuthType Basic\n 	AuthName \"Authentication Required\"\n";
-		 	    print $dout "	AuthUserFile /var/htpasswd\n";
-		 	    print $dout "# Comment out the line below to disable password protection\n";
-		 	    print $dout "	Require valid-user\n\n";
-		 	    while (<$din>) {
-	 		    	print $dout $_;
-	 		    }
-	 	    	close $dout;
-	    		move "/etc/apache2/sites-available/default-ssl.out", "/etc/apache2/sites-available/default-ssl";
-				$instlog .= "Apache configured for htaccess.\n";
-				$restart++;
-    		}
-    		if (-e "/var/htpasswd") {
-      			print "The htpasswd file already exists. Adding to it...\n";
- 	      		print "Provide a username (single word with no spaces): ";
-    	   		my $username = <STDIN>; chomp $username;
-      			`htpasswd /var/htpasswd $username`;
-	    	} else {
-    	 		print "Provide a username (single word with no spaces): ";
-       			my $username = <STDIN>; chomp $username;
-	      		`htpasswd -c /var/htpasswd $username`;
+ 	    open my $dout, '>', "/etc/apache2/sites-available/default-ssl.out";
+ 	    while (<$din>) {
+		    	print $dout $_;
+	    		last if /ServerAdmin /;
+	   		}
+ 	    print $dout "\n	ServerName IFMI:443\n";
+ 	    while (<$din>) {
+		    	print $dout $_;
 		    }
-		    `chown www-data /var/htpasswd`;
-		    print "Your htpassword file is '/var/htpasswd'\n" if ($flag ne "-q");
-    		print "Please see 'man htpasswd' for more information on managing htaccess users.\n" if ($flag ne "-q");
-    	} else {
-    		print "htaccess skipped\n";
-    	}
-	    `service apache2 restart` if ($restart > 0);
+	    	close $dout;
+			move "/etc/apache2/sites-available/default-ssl.out", "/etc/apache2/sites-available/default-ssl";
+	  } 
+    if (! `grep RewriteEngine /etc/apache2/sites-available/default`) {
+	    copy "/etc/apache2/sites-available/default", "/etc/apache2/sites-available/default.pre-ifmi"
+	    	if (!-f "/etc/apache2/sites-available/default.pre-ifmi");
+	    open my $din, '<', "/etc/apache2/sites-available/default";
+	    open my $dout, '>', "/etc/apache2/sites-available/default.out";
+	    while (<$din>) {
+	    	print $dout $_;
+    		last if /ServerAdmin /;
+   		}
+	    print $dout "\n	RewriteEngine On\n	RewriteCond %{HTTPS} !=on\n";
+	    print $dout "	RewriteRule ^/?(.*) https://%{SERVER_NAME}/\$1 [R,L]\n";
+	    while (<$din>) {
+	    	print $dout $_;
+	    }
+    	close $dout;
+			move "/etc/apache2/sites-available/default.out", "/etc/apache2/sites-available/default";
+			$instlog .= "rewrite enabled.\n";
+  		`/usr/sbin/a2enmod rewrite`;
+  		$restart++;
+		}
 		print "Please read the README and edit your miner conf file as required.\nDone! Thank you for flying IFMI!\n" if ($flag ne "-q");
 	} else { 
 		print "Cant determine apache user, Bailing out!\n";
