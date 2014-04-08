@@ -70,7 +70,19 @@ if ($ARGV[0] eq "installht") {
     close $dout;
     move "/etc/apache2/sites-available/default-ssl.out", "/etc/apache2/sites-available/default-ssl";
 	 `/usr/sbin/service apache2 graceful`;
-	}	
+	}
+  if (! `grep -E /usr/bin/htpasswd /etc/sudoers`) {
+    open my $sin, '<', "/etc/sudoers";
+    open my $sout, '>', "/etc/sudoers.out";    
+    while (<$sin>) {
+      s/\/opt\/ifmi\/mcontrol/\/opt\/ifmi\/mcontrol,\/usr\/bin\/htpasswd/;
+      print $sout $_;
+    }    
+    close $sin; close $sout;
+    rename $sin, "$sin.back";
+    rename $sout, $sin; 
+    `chmod 0440 /etc/sudoers`;
+  }	
 }
 
 
