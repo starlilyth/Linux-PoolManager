@@ -197,6 +197,28 @@ if (-o $conffile) {
       $mconf->{settings}->{cgminer_port} = $nap;
     }
 
+    my $iht = $in{'installht'};
+    `sudo /opt/ifmi/mcontrol installht` if ((defined $iht) && ($iht eq "installht")); 
+
+    my $uup = $in{'uup'};
+    if((defined $uup) && ($uup ne "")) {
+      my $uuser = $in{'huser'};
+      `sudo /usr/bin/htpasswd -b /var/htpasswd $uuser $uup`;
+      $uup = "";
+    }
+
+    my $nup = $in{'nup'};
+    if((defined $nup) && ($nup ne "")) {
+      my $nuser = $in{'nun'};
+      `sudo /usr/bin/htpasswd -b /var/htpasswd $nuser $nup`;
+      $nup = "";
+    }
+
+    my $dun = $in{'duser'};
+    if((defined $dun) && ($dun ne "")) {
+      `sudo /usr/bin/htpasswd -D /var/htpasswd $dun`;
+    }
+
     my $nml = $in{'nml'};
     $mconf->{display}->{miner_loc} = $nml if((defined $nml) && ($nml ne ""));
     my $nscss = $in{'scss'};
@@ -321,6 +343,7 @@ if ($conferror == 1) {
 if ($conferror == 2) {
   print "<tr><td class=error colspan=2>No Miner Path specified!</td><tr>";
 }
+
 print "</table><br></td></tr>";
 print "<tr><td colspan=2 align=center>";
 
@@ -342,12 +365,6 @@ for (keys %{$mconf->{miners}}) {
 print "<input type='submit' value='Select'>";
 print "</select></form>";
 
-
-
-
-
-
-
 print "<td class=header><form name=msettings method=post>";
 print "<input type='submit' value='Update'>";
 print "<input type='hidden' name='msettings' value='msettings'> ";
@@ -363,21 +380,60 @@ my $savepath = $mconf->{miners}->{$currentm}->{savepath};
 print "<tr><td>Miner Config<br>Save Path</td>";
 print "<td colspan=2><a href='/cgi-bin/confedit.pl' target='_blank'>$savepath</a><br><i><small>Changes to the miner config are saved here</small></i></td>";
 print "<td><input type='text' size='45' placeholder='/opt/ifmi/cgminer.conf' name='nsp'>";
-if ($savepath eq "/opt/ifmi/cgminer.conf") {
- print "<br><i><small>The default is probably not what you want.</small></i>";
-}
 print "</form></td></tr>";
-
-
-
-
-
-
-
-
 print "</table><br>";
 
-print "<tr><td colspan=2 align=center>";
+print "<tr><td align=center>";
+
+print "<table class=settings><tr><td colspan=3 class=header>Password Manager</td>";
+if (! `grep AuthUserFile /etc/apache2/sites-available/default-ssl`) {
+  print "<tr><td><i>htpasswd is not installed.</i></td>";
+  print "<td><form name=installht method=post>";
+  print "<input type='hidden' name='installht' value='installht'>";
+  print "<input type='submit' value='Install'></form></td></tr>";
+} else {
+  my $loggedin = $ENV{REMOTE_USER};
+  $loggedin = "not logged in" if ($loggedin eq "");
+  my @users;
+  my $ufile = "/var/htpasswd";
+  open (my $uin, $ufile);
+  while (my $line = <$uin>) {
+    push @users,$1 if ($line =~ m/^(\w+):.+/);
+  }    
+  close $uin;
+  print "<tr><td>Current User: $loggedin</td><td colspan=2>";
+  if (@users > 1) {
+    print "<form name=udel method=post>";
+    print "<select name=duser>";
+      foreach my $user (@users) {
+        if ("$user" ne "$loggedin") {
+          print "<option value=$user>$user</option>";
+        }
+      }
+    print "</select><input type='submit' value='Delete'></form>";
+  }
+  print "</td></tr>";  
+  print "<form name=pupdate method=post><tr>";
+  print "<td><select name=huser>";
+  foreach my $user (@users) {
+    if ("$user" eq "$loggedin") {
+        print "<option value=$user selected>$user</option>";
+      } else { 
+        print "<option value=$user>$user</option>";
+      }
+  }
+  print "</select></td>";
+  print "<td><input type='text' placeholder='pass' name='uup'></td>";
+  print "<td><input type='submit' value='Change'></form></td></tr>";
+  print "<tr><td><form name=nhuser method=post>";
+  print "<input type='text' placeholder='name' name='nun' required></td>";
+  print "<td><input type='text' placeholder='pass' name='nup' required></td>";
+  print "<td><input type='submit' value='New'></form></td></tr>";
+}  
+print "</table><br>";
+
+print "</td><td align=center>";
+
 print "<form name=miscsettings method=post>";
 print "<table class=settings><tr><td colspan=2 class=header>Misc. Miner Settings</td>";
 print "<td class=header><input type='submit' value='Save'></td><tr>";

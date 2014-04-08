@@ -112,7 +112,7 @@ sub doInstall {
 		if (! `grep -E /opt/ifmi/mcontrol /etc/sudoers`) {
 		    print "Modifying sudoers....\n" if ($flag ne "-q");
 	      	open my $sin, '>>', "/etc/sudoers";
-	 		print $sin "$apacheuser ALL=(root)NOPASSWD: /opt/ifmi/mcontrol\nDefaults:$apacheuser rootpw\n$apacheuser ALL=(root) /bin/cp\n";
+	 		print $sin "$apacheuser ALL=(root)NOPASSWD: /opt/ifmi/mcontrol,/usr/bin/htpasswd\nDefaults:$apacheuser rootpw\n$apacheuser ALL=(root) /bin/cp\n";
 			close $sin;
 			`chmod 0440 /etc/sudoers`;
 			$instlog .= "sudoers modified.\n";
