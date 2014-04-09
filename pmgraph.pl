@@ -46,21 +46,26 @@ my $errorcolor = "#FF0000cc";
 $errorcolor = $gconf->{errorcolor} if (defined ($gconf->{errorcolor})); 
 my $fontfam = "Helvetica";
 $fontfam = $gconf->{fontfam} if (defined ($gconf->{fontfam}));
-my $gpucolor0 = "#FFFF00";
+my $gpucolor0 = "#FF0000";
 $gpucolor0 = $gconf->{gpucolor0} if (defined ( $gconf->{gpucolor0})); 
-my $gpucolor1 = "#FF00CC";
+my $gpucolor1 = "#FF00FF";
 $gpucolor1 = $gconf->{gpucolor1} if (defined ( $gconf->{gpucolor1})); 
-my $gpucolor2 = "#FF6600";
+my $gpucolor2 = "#FF3300";
 $gpucolor2 = $gconf->{gpucolor2} if (defined ( $gconf->{gpucolor2})); 
-my $gpucolor3 = "#FF0000";
+my $gpucolor3 = "#FF6600";
 $gpucolor3 = $gconf->{gpucolor3} if (defined ( $gconf->{gpucolor3})); 
-my $gpucolor4 = "#99FF66";
+my $gpucolor4 = "#FF9900";
 $gpucolor4 = $gconf->{gpucolor4} if (defined ( $gconf->{gpucolor4})); 
-my $gpucolor5 = "#66CCFF";
+my $gpucolor5 = "#FFCC00";
 $gpucolor5 = $gconf->{gpucolor5} if (defined ( $gconf->{gpucolor5})); 
-my $gpucolor6 = "#9933FF";
+my $gpucolor6 = "#CC0000";
 $gpucolor6 = $gconf->{gpucolor6} if (defined ( $gconf->{gpucolor6})); 
-
+my $gpucolor7 = "#CC00FF";
+$gpucolor7 = $gconf->{gpucolor7} if (defined ( $gconf->{gpucolor7}));
+my $gpucolor8 = "#CC3300";
+$gpucolor8 = $gconf->{gpucolor8} if (defined ( $gconf->{gpucolor8}));
+my $gpucolor9 = "#CC6600";
+$gpucolor9 = $gconf->{gpucolor9} if (defined ( $gconf->{gpucolor9}));
 
 if (-f '/tmp/cleargraphs.flag') {
   system('/bin/rm /tmp/cleargraphs.flag');
@@ -177,6 +182,9 @@ if ($ispriv eq "S") {
   $gpucolor[4] = $gpucolor4;
   $gpucolor[5] = $gpucolor5;
   $gpucolor[6] = $gpucolor6;
+  $gpucolor[7] = $gpucolor7;
+  $gpucolor[8] = $gpucolor8;
+  $gpucolor[9] = $gpucolor9;
   for (my $g=0;$g<$gpucount;$g++) {
     my $GDB = $DBPATH . "gpu" . $g . ".rrd";
     push @gdata, 'DEF:gdtemp' . $g . '=' . $GDB . ':temp:LAST';
