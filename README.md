@@ -11,7 +11,8 @@ Originally extended from the BAMT miner web interface of gpumon/mgpumon.
 * Easy CSS theming, with several themes included. 
 * GUI Settings Page - no need to edit a settings file
 * Email alert notifications for GPUs and Pools, including hung or stopped miner. 
-* New! Strategy handling, Pool Aliases, Miner Profiles
+* Strategy handling, Pool Aliases, Miner Profiles
+* NEW! Password management from the GUI 
 
 See the GitHub wiki page for screenshots.
 
@@ -92,17 +93,13 @@ Q4: My graphs are messed up after updating.
 
 A4: Press 'Clear All Graphs' on the settings page. It will take about ten minutes for the graphs to clear and start redrawing. 
 
-Q5: How do I change the default page password? 
+Q5: How do I disable the default page password? I dont want it anymore.  
 
-A5: Your htpasswd file is in /var, so you can do: 'htpasswd /var/htpasswd username', where username is the name you want to manage. 
+A5: Edit /etc/apache2/sites-available/default-ssl and comment out "Require valid-user", near the top. Then do 'apachectl restart'. 
 
-Q6: How do I disable the default page password? I dont want it anymore.  
+Q6: Why doesnt PoolManager let me: save a pool as X priority/switch to a dead pool/save priority list on restart?
 
-A6: Edit /etc/apache2/sites-available/default-ssl and comment out "Require valid-user", near the top. Then do 'apachectl restart'. 
-
-Q7: Why doesnt PoolManager let me: save a pool as X priority/switch to a dead pool/save priority list on restart?
-
-A7: PoolManager only mirrors what cgminer can do, via the API, these are things that cgminer doesnt do, and are non-trivial to implement yet. As development progresses in some other areas, some of this may be easier, and I will add it. 
+A6: PoolManager only mirrors what cgminer can do, via the API, these are things that cgminer doesnt do, and are non-trivial to implement yet. As development progresses in some other areas, some of this may be easier, and I will add it. 
 
 -----
 
