@@ -224,7 +224,7 @@ if (-o $conffile) {
     my $nscss = $in{'scss'};
     $mconf->{display}->{status_css} = $nscss if(defined $nscss);
     my $nfcss = $in{'fcss'};
-    if(defined $nfcss) {
+    if((defined $nfcss) && ($nfcss ne "")) {
       $mconf->{display}->{farmview_css} = $nfcss;
       `touch /tmp/rfv`;
     }
@@ -232,6 +232,12 @@ if (-o $conffile) {
     $mconf->{display}->{graphcolors} = $ngcf if(defined $ngcf);
     my $nha = $in{'hashavg'};
     $mconf->{display}->{usehashavg} = $nha if(defined $nha);
+
+    my $cgraphs = $in{'cgraphs'};
+    if ((defined $cgraphs) &&($cgraphs ne "")) {
+      `sudo /opt/ifmi/mcontrol cleargraphs`;
+      $cgraphs = "";
+    }
 
     $mconf->{display}->{pmversion} = $version if ($mconf->{display}->{pmversion} eq "");
 
@@ -301,12 +307,6 @@ if (-o $conffile) {
   }
       
     DumpFile($conffile, $mconf); 
-
-    my $cgraphs = $in{'cgraphs'};
-    if (defined $cgraphs) {
-      `/usr/bin/touch /tmp/cleargraphs.flag`;
-      $cgraphs = "";
-    }
   }
 } else { 
   $conferror = 1; 
@@ -362,7 +362,7 @@ for (keys %{$mconf->{miners}}) {
     print "<option value=$_>$mname</option>";
   }
 }
-print "<input type='submit' value='Select'>";
+print "<input type='submit' value='Load'>";
 print "</select></form>";
 
 print "<td class=header><form name=msettings method=post>";
@@ -632,8 +632,8 @@ if ($hashavg==1) {
   print "<td><input type='radio' name='hashavg' value=0 checked>5 sec";
   print "<input type='radio' name='hashavg' value=1>Overall</td></tr></form>";
 }
-  print "<form><tr><td>Clear All Graphs</td>";
-  print "<td><i>wait for it..</i></td>";
+  print "<form name='cag' method=post><tr><td>Clear All Graphs</td>";
+  print "<td></td>";
   print "<td><input type='hidden' name='cgraphs' value='cgraphs'><button type='submit'>Clear</button></td></tr>";
   print "</table></form>";
 

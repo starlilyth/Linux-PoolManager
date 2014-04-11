@@ -67,12 +67,6 @@ $gpucolor8 = $gconf->{gpucolor8} if (defined ( $gconf->{gpucolor8}));
 my $gpucolor9 = "#CC6600";
 $gpucolor9 = $gconf->{gpucolor9} if (defined ( $gconf->{gpucolor9}));
 
-if (-f '/tmp/cleargraphs.flag') {
-  system('/bin/rm /tmp/cleargraphs.flag');
-  system('/bin/rm ' . $DBPATH . '*.rrd');
-  system('/bin/rm ' . $PICPATH . '*.png');
-}
-
 #GPUs 
 my $ispriv = &CGMinerIsPriv; 
 if ($ispriv eq "S") {

@@ -43,6 +43,11 @@ if ($ARGV[0] eq "boot") {
 	&blog("booting miner with $bootcmd") if (defined(${$conf}{settings}{verbose}));
 }
 
+if ($ARGV[0] eq "cleargraphs") {
+  system('/bin/rm /opt/ifmi/rrdtool/*.rrd');
+  system('/bin/rm /var/www/IFMI/graphs/*.png');
+  `/opt/ifmi/pmgraph.pl`;
+}
 
 if ($ARGV[0] eq "installht") {
 	if (-e "/var/htpasswd") {
