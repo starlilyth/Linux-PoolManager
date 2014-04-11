@@ -12,7 +12,7 @@
  use YAML qw( DumpFile LoadFile );
  use CGI qw(:cgi-lib :standard);
 
-my $version = "1.4.0";
+my $version = "1.4.0+";
 my $conffile = "/opt/ifmi/poolmanager.conf";
 if (! -f $conffile) { 
   my $nconf = {
@@ -30,7 +30,7 @@ if (! -f $conffile) {
       0 => {
     		mconfig => 'Default',
         mpath => '/opt/miners/cgminer/cgminer',
-    		mopts => '--api-listen --config /opt/ifmi/cgminer.conf',
+    		mopts => '--api-listen',
   	   	savepath => '/opt/ifmi/cgminer.conf',
       },
   	},
@@ -46,7 +46,7 @@ if (! -f $conffile) {
   		farmview_css => 'default.css',
   		graphcolors => 'pmgraph.colors',
   		usehashavg => '0',
-      pmversion => "$version",
+      pmversion => $version,
   	},
   	farmview => {
   		do_bcast_status => '1',
@@ -373,13 +373,14 @@ print " <input type='text' placeholder='enter name for new profile' name='nmname
 my $miner_path = $mconf->{miners}->{$currentm}->{mpath};
 print "<tr><td>Miner Path</td><td colspan=2>$miner_path</td>";
 print "<td><input type='text' size='45' placeholder='/path/to/miner' name='nmp'></td></tr>";
+my $savepath = $mconf->{miners}->{$currentm}->{savepath}; 
+print "<tr><td>Miner Config<br><i><small>Click to edit</small></i></td>";
+print "<td colspan=2><small>--config</small> ";
+print "<a href='/cgi-bin/confedit.pl' target='_blank'>$savepath</a></td>";
+print "<td><input type='text' size='45' placeholder='/opt/ifmi/cgminer.conf' name='nsp'>";
 my $miner_opts = $mconf->{miners}->{$currentm}->{mopts};
 print "<tr><td>Miner Options</td><td colspan=2>$miner_opts</td>";
-print "<td><input type='text' size='45' placeholder='--api-listen --config /opt/ifmi/cgminer.conf' name='nmo'></td></tr>";
-my $savepath = $mconf->{miners}->{$currentm}->{savepath}; 
-print "<tr><td>Miner Config<br>Save Path</td>";
-print "<td colspan=2><a href='/cgi-bin/confedit.pl' target='_blank'>$savepath</a><br><i><small>Changes to the miner config are saved here</small></i></td>";
-print "<td><input type='text' size='45' placeholder='/opt/ifmi/cgminer.conf' name='nsp'>";
+print "<td><input type='text' size='45' placeholder='--api-listen' name='nmo'></td></tr>";
 print "</form></td></tr>";
 print "</table><br>";
 

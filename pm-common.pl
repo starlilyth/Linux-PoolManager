@@ -490,6 +490,7 @@ sub startCGMiner {
     die "No miner path defined! Exiting."; 
   }
   my $mineropts =  ${$conf}{miners}{$currmconf}{mopts};   
+  my $savepath = ${$conf}{miners}{$currmconf}{savepath};
   my $pid = fork();   
   if (not defined $pid) {
     die "out of resources? forking failed for cgminer process";
@@ -498,7 +499,7 @@ sub startCGMiner {
     $ENV{LD_LIBRARY_PATH} = "/opt/AMD-APP-SDK-v2.4-lnx32/lib/x86/:/opt/AMDAPP/lib/x86_64:";
     $ENV{GPU_USE_SYNC_OBJECTS} = "1";
     $ENV{GPU_MAX_ALLOC_PERCENT} = "100";
-    my $cmd = "/usr/bin/screen -d -m -S PM-miner $minerbin $mineropts"; 
+    my $cmd = "/usr/bin/screen -d -m -S PM-miner $minerbin --config $savepath $mineropts"; 
     &blog("starting miner with cmd: $cmd") if (defined(${$conf}{settings}{verbose}));
     ${$conf}{settings}{running_mconf} = $currmconf;
     my $conffile = "/opt/ifmi/poolmanager.conf";
