@@ -142,7 +142,7 @@ if (-o $conffile) {
             my $newm = (keys %{$mconf->{miners}}); $newm++; 
             $mconf->{miners}->{$newm}->{mconfig} = $nmname;
             $mconf->{miners}->{$newm}->{mpath} = $nmp;
-            $nmo = "--api-listen --config /opt/ifmi/$nmname.conf" if ($nmo eq "");
+            $nmo = "--api-listen" if ($nmo eq "");
             $mconf->{miners}->{$newm}->{mopts} = $nmo;
             $nsp = "/opt/ifmi/$nmname.conf" if ($nsp eq "");
             $mconf->{miners}->{$newm}->{savepath} = $nsp;        
@@ -617,9 +617,9 @@ my @colorslist = glob("/var/www/IFMI/themes/*.colors");
     	$file =~ s/\/var\/www\/IFMI\/themes\///;
     	if ("$file" eq "$gcolors") {
           print "<option value=$file selected>$file</option>";
- 		}else { 
+ 		  }else { 
           print "<option value=$file>$file</option>";
- 		}
+ 		  }
     }
 print "</select></td></tr>";
 my $hashavg = $mconf->{display}->{usehashavg};
