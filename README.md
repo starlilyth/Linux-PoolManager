@@ -53,6 +53,8 @@ Once installed, simply visit the IP of your miner in a browser. PoolManager enab
 
 THAT IS ALL! STOP INSTALLING HERE UNLESS THINGS ARE BROKEN. 
 
+If you install htpasswd from the Settings page, the default login/password is poolmanager/live
+
 UPGRADING IS JUST AS EASY!
   Do all the steps as above. 
   

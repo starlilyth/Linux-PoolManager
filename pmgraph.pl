@@ -204,7 +204,7 @@ if (! -f $SDB){
   die "graph failed: $ERR\n" if $ERR;
 } 
 
-my $sumres = &sendAPIcommand("summary","");
+my $sumres = &sendAPIcommand("summary",);
 
 my $mhashav = "0";my $mfoundbl = "0";my $maccept = "0";my $mreject = "0";my $mhwerrors = "0";my $mworkutil = "0";
 if ($sumres =~ m/MHS\sav=(\d+\.\d+),/g) {
@@ -276,7 +276,7 @@ die "graph failed: $ERR\n" if $ERR;
 
 # Pools
 
-my $pres = &sendAPIcommand("pools","");
+my $pres = &sendAPIcommand("pools",);
 my $poid; my $pdata; 
 while ($pres =~ m/POOL=(\d+),(.+?)\|/g) {
   $poid = $1; $pdata = $2; 
