@@ -1,0 +1,199 @@
+/* DarkStatus.CSS for Linux-PoolManager
+
+Theme: darkstatus
+This is the night look for PoolManager. will also work for farmview
+
+   Updated: 2014-Mar-04 by Lily
+-------------------------------------*/
+
+/* all text on the page */
+body {
+  background-color: #202020;
+  color: #cccccc;
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
+  border: 0px;
+  margin: 0px;
+  padding: 0px;
+}
+
+a {
+ color: #cccccc;
+}
+
+/* overview - header area */
+#overview {
+  color: #cccccc;
+  position: relative;
+  display: block;
+  z-index: 1;
+
+  /* Safari 4-5, Chrome 1-9 */
+  background: -webkit-gradient(linear, top, bottom, from(#30C228), to(#31EA9C));
+  
+  /* Safari 5.1+, Chrome 10+ */
+  background: -webkit-linear-gradient(top, #30C228, #31EA9C);
+  
+  /* Firefox 3.6+ */
+  background: -moz-linear-gradient(top, #30C228, #31EA9C);
+  
+  /* IE 10 */
+  background: -ms-linear-gradient(top, #30C228, #31EA9C);
+  
+  /* Opera 11.10+ */
+  background: -o-linear-gradient(top, #30C228, #31EA9C);
+  
+  background-color: #222222;
+}
+
+#overview table {
+  padding: 5px 5px 1px 5px;
+} 
+
+#overview td {
+  color: #303030;
+  padding-right: 15px;
+  vertical-align: top;
+  text-wrap:none;
+  font-size: 16px;
+}
+
+#overview td.overviewhash {
+    font-size: 30px;
+}
+
+/* the main table area */
+#content {
+  padding: 20px;
+  vertical-align: top;
+  display: block;
+  text-align: center;
+}
+
+#content table {
+  border-collapse:collapse;
+}
+
+#content td {
+  	padding: 5px;
+	padding-left: 8px;
+	padding-right: 8px;
+	border: 1px solid #505050;
+}
+
+#content td.big {
+  font-size: 18px;
+  font-weight:normal;
+}
+#content td.bigger {
+  color: #cccccc; 
+  font-size: 25px;
+  font-weight:normal;
+  background-color: #035C2E;
+}
+#sumdata table {
+	border: 1px solid #505050;
+}
+#sumdata tr td {
+  border-bottom: 1px solid #505050;
+}
+#showdata td {
+	font-size: 14px;
+	text-align: left;
+	padding: 3px;
+	border: 0px solid #505050;
+}
+
+/* table headers */
+#content td.header {
+  color: #202020;
+  background-color: #30C228;
+  font-weight: bold;
+  font-size: 12px;
+  vertical-align: top;
+}
+
+/* errors */
+#content td.error {
+    color: #ffffff;
+    background-color: #ff0000;
+    font-weight: bold;
+}
+
+/* buttons and text boxes */
+input, button {
+  color: #cccccc;
+  background-color: #202020;
+  border-style: solid;
+  border-color: #404040;
+}
+
+.logo {
+    display:block;
+    height: 63px;
+    width: 155px;
+}
+.logo a {
+    background-image: url(/IFMI/IFMI-logo-small.png);
+    display:block;
+    height: 63px;
+    width: 155px;
+}
+.reset-btn {
+    cursor:pointer;
+    background: #30C228;
+    height: 10px;
+    width: 10px;
+    border: 0px;
+    border-radius: 5px;
+}
+
+/* FARMVIEW SPECIFIC CSS */
+
+/* waiting view when no data available */
+
+#waiting {
+    background-color: #F5F5D7;
+    margin: 30px;
+    padding: 30px;
+    position: absolute;
+    top: 120px;
+}
+
+/* the main table area */
+#content td.space {
+	border: 0px;
+}
+
+#content.farm table {
+    text-align: center;
+    border: 0 none;
+}
+#content td.locsum {
+    background-color: transparent;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: left;
+}
+#content td.node {
+    border: 0 none;
+    padding: 20px;
+}
+#content td.sumhdr {
+    background-color: #003399;
+    font-size: 14px;
+    font-weight: bold;
+}
+#content tr.sumdata {
+    font-size: 13px;
+}
+#content td.refreshtime {
+    background-color: #000066;
+    font-size: 16px;
+}
+#content.farm td.header {
+	padding: 2px 5px;
+}
+
+#content.farm td {
+	padding: 5px;
+}
