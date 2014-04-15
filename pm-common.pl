@@ -26,7 +26,6 @@ sub addPool {
 }
 
 sub blog {
-
   my ($msg) = @_;
   my @parts = split(/\//, $0);
   my $task = $parts[@parts-1];  
@@ -480,6 +479,50 @@ sub setGPURestart {
  my $gpuid = $_[0];
  &sendAPIcommand("gpurestart",$gpuid);
 }
+
+sub setPoolSuperPri {
+  my $spool = $_[0];
+  my $conf = &getConfig;
+  my %conf = %{$conf};
+  my $conffile = '/opt/ifmi/poolmanager.conf';
+  my $acount = 0;
+  for (keys %{$conf{pools}}) {
+    if ((${$conf}{pools}{$_}{spri} == 1) && ($spool ne ${$conf}{pools}{$_}{url})) {
+      ${$conf}{pools}{$_}{spri} = 0;
+    }
+    if ($spool eq ${$conf}{pools}{$_}{url}) {
+      ${$conf}{pools}{$_}{spri} = 1;
+      $acount++;
+    }
+  }
+  if ($acount == 0 && $spool ne "z") { 
+    my $newa = (keys %{$conf{pools}}); $newa++;
+    ${$conf}{pools}{$newa}{url} = $spool;
+    ${$conf}{pools}{$newa}{spri} = 1;
+  }
+  DumpFile($conffile, $conf); 
+  &resetPoolSuperPri;
+}
+
+sub resetPoolSuperPri {
+  my $conf = &getConfig;
+  my %conf = %{$conf};
+  my $pnum; my $spool; 
+  my @pools = &getCGMinerPools(1);
+  for (keys %{$conf{pools}}) {
+    if (${$conf}{pools}{$_}{spri} == 1) {
+      $spool = ${$conf}{pools}{$_}{url};
+    }
+  }
+  for (my $i=0;$i<@pools;$i++) {
+    my $pname = ${$pools[$i]}{'url'};
+    if ($spool eq $pname) {
+      $pnum = ${$pools[$i]}{'poolid'};
+      &sendAPIcommand("poolpriority",$pnum);
+    }
+  }
+}
+
 
 sub startCGMiner {
   my $conf = &getConfig;

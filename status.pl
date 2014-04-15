@@ -30,6 +30,7 @@ if (defined $zreq) {
 my $preq = $in{'swpool'};
 if (defined $preq) {
   &switchPool($preq);
+  &resetPoolSuperPri;
   $preq = "";
 }
 
@@ -107,6 +108,13 @@ if (defined $geng) {
  $geng = "";
 }
 
+my $ncmc = $in{'setmconf'};
+if (defined $ncmc) {
+	${$conf}{settings}{current_mconf} = $ncmc;
+	DumpFile($conffile, $conf); 
+	$ncmc = "";
+}
+
 my $npalias = $in{'npalias'};
 if (defined $npalias) {
 	my $paurl = $in{'paurl'};
@@ -126,27 +134,49 @@ if (defined $npalias) {
 	$npalias = ""; $paurl = "";
 }	
 
-my $ncmc = $in{'setmconf'};
-if (defined $ncmc) {
-	${$conf}{settings}{current_mconf} = $ncmc;
-	DumpFile($conffile, $conf); 
-	$ncmc = "";
-}
+
 
 my $npn = $in{'pnotify'};
 if (defined $npn) {
-	my $poolnum = $in{'poolnum'};
-	${$conf}{pools}{$poolnum}{pnotify} = $npn;
+	my $paurl = $in{'paurl'};
+	my $acount = 0;
+  for (keys %{$conf{pools}}) {
+		if ($paurl eq ${$conf}{pools}{$_}{url}) {
+			${$conf}{pools}{$_}{pnotify} = $npn;
+			$acount++;
+		}
+	}
+	if ($acount == 0) {	
+		my $newa = (keys %{$conf{pools}}); $newa++;
+		${$conf}{pools}{$newa}{pnotify} = $npn;
+		${$conf}{pools}{$newa}{url} = $paurl;
+	}
 	DumpFile($conffile, $conf); 
 	$npn = "";
 }
 
 my $prl = $in{'pnotifyl'};
 if ((defined $prl) && ($prl ne "")) {
-	my $poolnum = $in{'poolnum'};
-	${$conf}{pools}{$poolnum}{pool_reject_hi} = $prl;
+	my $paurl = $in{'paurl'};
+	my $acount = 0;
+  for (keys %{$conf{pools}}) {
+		if ($paurl eq ${$conf}{pools}{$_}{url}) {
+			${$conf}{pools}{$_}{pool_reject_hi} = $prl;
+			$acount++;
+		}
+	}
+	if ($acount == 0) {	
+		my $newa = (keys %{$conf{pools}}); $newa++;
+		${$conf}{pools}{$newa}{pool_reject_hi} = $prl;
+		${$conf}{pools}{$newa}{url} = $paurl;
+	}
 	DumpFile($conffile, $conf); 
 	$prl = "";
+}
+
+my $rpri = $in{'rpri'}; 
+	if (defined $rpri) {
+	&setPoolSuperPri($rpri);
 }
 
 # Now carry on
@@ -733,10 +763,11 @@ if ($ispriv eq "S") {
 		   $prr = "0.0";
 	    }
 	    my $prat; 
-	   	my $poola; my $poolnum;
+	   	my $poola; my $poolnum; my $spri; 
       for (keys %{$conf{pools}}) {
       	if ($pname eq ${$conf}{pools}{$_}{url}) {
       		$poola = ${$conf}{pools}{$_}{alias};
+      		$spri = ${$conf}{pools}{$_}{spri};
       		$poolnum = $_;
       	}
       }
@@ -782,7 +813,7 @@ if ($ispriv eq "S") {
 	      $psput .= "<tr><td>Status: $pstatus</td>";
 	      $psput .= "<td>Notify when Dead?</td>";
 		  	my $pnotify = $conf{pools}{$poolnum}{pnotify};
-		  	$psput .= "<form name=pnotify method=post><input type=hidden name='poolnum' value=$poolnum>";
+		  	$psput .= "<form name=pnotify method=post><input type=hidden name='paurl' value=$pname>";
 		  	if ((defined $pnotify) && ($pnotify==1)) {
     	  	$psput .= "<td><input type='radio' name='pnotify' value=1 checked>Yes ";
     	  	$psput .= "<input type='radio' name='pnotify' value=0>No ";
@@ -797,7 +828,7 @@ if ($ispriv eq "S") {
 	      $psput .= "<tr><td colspan=2>Reject Ratio alert limit: </td>";
 				$psput .= "<form name='pnotifyl' method='POST'>";
 				$psput .= "<td>$prhl </td><td><input type='text' size='3' placeholder='3' name='pnotifyl'>";
-				$psput .= "<input type='hidden' name='poolnum' value='$poolnum'>";
+				$psput .= "<input type='hidden' name='paurl' value='$pname'>";
 				$psput .= "<input type='submit' value='Change'></form></td></tr>";
 
 	      $psput .= "<tr><td>Priority:</td><td>" . $ppri . "</td>";
@@ -830,7 +861,13 @@ if ($ispriv eq "S") {
 	      	$psum .= "<input type='hidden' name='qpool' value='$i'>";
 	      	$psum .= "<input type='submit' value='Set'></form></td>";
 	      }
-	     	$psum .= "<td>" . $ppri . "</td>" if ($mstrategy eq "Failover");
+	      if ($mstrategy eq "Failover") {
+	      	if ((defined $spri) && ($spri == 1)) {
+			     	$psum .= "<td bgcolor='yellow'>" . $ppri . "</td>";
+			    } else {
+			     	$psum .= "<td>" . $ppri . "</td>";
+			    }
+	     	}
       	$psum .= "</tr>";
       }
 	  }
@@ -841,7 +878,18 @@ if ($ispriv eq "S") {
 	  $psum .= "</td><td><input type='submit' value='Add'>"; 
 	  $psum .= "</td></form>";
 	  if ($mstrategy eq "Failover") {
-		  $psum .= "<TD class='header' colspan=2></td>";	  			
+		  $psum .= "<TD class='header' colspan=2><form name='padd' method='POST'>";
+			$psum .= "<select name='rpri'>";
+			for (my $i=0;$i<@pools+1;$i++) {
+				if (@pools>$i) {
+					my $pname = ${$pools[$i]}{'url'};
+	  	  	$psum .= "<option value=$pname>pool $i</option>";	  	  	
+	  	  } else { 
+	  	  	$psum .= "<option value='z'>off</option>";
+	  	  }
+  	  }
+			$psum .= "<input type='submit' value='Set'></select>";
+		  $psum .= "</form><small>Super Priority</small></td>";	  			
 	  }
 	  if ($mstrategy eq "Load Balance") {
 		  $psum .= "<TD class='header' colspan=2>Failover-Only:<br>$mfonly</td>";
