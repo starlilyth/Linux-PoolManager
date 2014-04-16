@@ -136,8 +136,16 @@ if (-o $conffile) {
         my $ncheck = 0; 
         for (keys %{$mconf->{miners}}) {    
           if ($nmname eq $mconf->{miners}->{$_}->{mconfig}) {
-            $mconf->{miners}->{$_}->{mpath} = $nmp if ($nmp ne "");            
-            $mconf->{miners}->{$_}->{mopts} = $nmo if ($nmo ne "");
+            $mconf->{miners}->{$_}->{mpath} = $nmp if (($nmp ne ""));            
+            if ($nmo ne "") {
+              my $nmops;
+              my @opts = $nmo =~ /(?:--\w+)(?:-\w+)?(?:\s\d+)?|(?:-\w\s\d+)/g;
+              foreach (@opts) {
+                  $_ = "" if ($_ eq "--config");
+                  $nmops .= "$_ ";
+              }
+              $mconf->{miners}->{$_}->{mopts} = $nmops;
+            }
             $mconf->{miners}->{$_}->{savepath} = $nsp if ($nsp ne "");
             $ncheck++;
           } 
@@ -148,7 +156,13 @@ if (-o $conffile) {
             $mconf->{miners}->{$newm}->{mconfig} = $nmname;
             $mconf->{miners}->{$newm}->{mpath} = $nmp;
             $nmo = "--api-listen" if ($nmo eq "");
-            $mconf->{miners}->{$newm}->{mopts} = $nmo;
+              my $nmops;
+              my @opts = $nmo =~ /(?:--\w+)(?:-\w+)?(?:\s\d+)?|(?:-\w\s\d+)/g;
+              foreach (@opts) {
+                  $_ = "" if ($_ eq "--config");
+                  $nmops .= "$_ ";
+              }
+            $mconf->{miners}->{$newm}->{mopts} = $nmops;
             $nsp = "/opt/ifmi/$nmname.conf" if ($nsp eq "");
             $mconf->{miners}->{$newm}->{savepath} = $nsp;        
             if (!-f $nsp) {
@@ -177,7 +191,15 @@ if (-o $conffile) {
         for (keys %{$mconf->{miners}}) {
           if ($currname eq $mconf->{miners}->{$_}->{mconfig}) {
             $mconf->{miners}->{$_}->{mpath} = $nmp if ($nmp ne "");
-            $mconf->{miners}->{$_}->{mopts} = $nmo if ($nmo ne "");
+            if ($nmo ne "") {
+              my $nmops;
+              my @opts = $nmo =~ /(?:--\w+)(?:-\w+)?(?:\s\d+)?|(?:-\w\s\d+)/g;
+              foreach (@opts) {
+                  $_ = "" if ($_ eq "--config");
+                  $nmops .= "$_ ";
+              }
+              $mconf->{miners}->{$_}->{mopts} = $nmops;
+            }
             $mconf->{miners}->{$_}->{savepath} = $nsp if ($nsp ne "");
           } 
         }
@@ -346,7 +368,7 @@ if ($conferror == 1) {
   print "<br>Please ensure /opt/ifmi/poolmanager.conf is owned by the webserver user.</td><tr>";
 }
 if ($conferror == 2) {
-  print "<tr><td class=error colspan=2>No Miner Path specified!</td><tr>";
+  print "<tr><td class=error colspan=2>No Valid Miner Path specified!</td><tr>";
 }
 
 print "</table><br></td></tr>";
