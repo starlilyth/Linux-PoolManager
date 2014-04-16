@@ -888,8 +888,8 @@ if ($ispriv eq "S") {
 	  	  	$psum .= "<option value='z'>off</option>";
 	  	  }
   	  }
-			$psum .= "<input type='submit' value='Set'></select>";
-		  $psum .= "</form><small>Super Priority</small></td>";	  			
+			$psum .= "</select><br><small>Super Pri</small> <input type='submit' value='Set'>";
+		  $psum .= "</form></td>";	  			
 	  }
 	  if ($mstrategy eq "Load Balance") {
 		  $psum .= "<TD class='header' colspan=2>Failover-Only:<br>$mfonly</td>";
