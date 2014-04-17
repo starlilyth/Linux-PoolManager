@@ -548,7 +548,6 @@ sub startCGMiner {
     my $conffile = "/opt/ifmi/poolmanager.conf";
     DumpFile($conffile, $conf); 
     exec($cmd);
-    &resetPoolSuperPri;
     exit(0);
   } 
 }
