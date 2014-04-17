@@ -29,6 +29,7 @@ if ($ARGV[0] eq "start") {
 	}
 	&startCGMiner();
 	&blog("starting miner") if (defined(${$conf}{settings}{verbose}));
+  sleep 10;
   &resetPoolSuperPri;
  }
 
