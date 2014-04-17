@@ -134,8 +134,6 @@ if (defined $npalias) {
 	$npalias = ""; $paurl = "";
 }	
 
-
-
 my $npn = $in{'pnotify'};
 if (defined $npn) {
 	my $paurl = $in{'paurl'};
