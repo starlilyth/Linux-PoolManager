@@ -31,6 +31,10 @@ if ($ARGV[0] eq "start") {
 	&blog("starting miner") if (defined(${$conf}{settings}{verbose}));
  }
 
+if ($ARGV[0] eq "stop") { 
+  &stopCGMiner();
+  &blog("stopping miner") if (defined(${$conf}{settings}{verbose}));
+ }
 
 if ($ARGV[0] eq "boot") {
 	my $bootcmd; 
