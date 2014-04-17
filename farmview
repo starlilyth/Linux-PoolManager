@@ -61,8 +61,8 @@ my $last_minerid = "";
 my $last_minedip = "";
 
 my $listenport = 54545;
-if (defined($conf{settings}{listen_port})) {
-  $listenport = $conf{settings}{listen_port};
+if (defined($conf{farmview}{listen_port})) {
+  $listenport = $conf{farmview}{listen_port};
 }
 my $socket = IO::Socket::INET->new(Proto => 'udp', Type => SOCK_DGRAM, 
 LocalPort => $listenport, Blocking  => 0) 
