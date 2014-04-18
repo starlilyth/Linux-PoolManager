@@ -102,7 +102,7 @@ my $ispriv = &CGMinerIsPriv;
     $port = ${$conf}{farmview}{status_port};
    }
 
-   my $socket = IO::Socket::INET->new(Blocking => 1, ReuseAddr => 1, Type => 'SOCK_DGRAM', 
+   my $socket = IO::Socket::INET->new(Blocking => 1, ReuseAddr => 1, Type => SOCK_DGRAM, 
     Proto => 'udp', PeerPort => $port, LocalPort => 0, PeerAddr => $target);
    
    if ($socket)
