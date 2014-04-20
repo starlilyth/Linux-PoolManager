@@ -345,7 +345,7 @@ if (@gpus) {
 		}		
 		$gput .= sprintf("%.1f", $gpus[$i]{'current_temp_0_c'}) . ' C</td>';
 		
-		my $frpm = $gpus[$i]{'fan_rpm_c'}; $frpm = "0" if ($frpm eq "");
+		my $frpm = "0"; $frpm = $gpus[$i]{'fan_rpm_c'}; 
 		if ($frpm < ($conf{monitoring}{monitor_fan_lo}) && ($frpm > 0))
 		{
 			$problems++;

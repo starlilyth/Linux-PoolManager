@@ -507,10 +507,11 @@ sub setPoolSuperPri {
 sub resetPoolSuperPri {
   my $conf = &getConfig;
   my %conf = %{$conf};
-  my $pnum; my $spool; 
+  my $pnum; my $spool = "x"; 
   my @pools = &getCGMinerPools(1);
   for (keys %{$conf{pools}}) {
-    if (${$conf}{pools}{$_}{spri} == 1) {
+    my $spval = ${$conf}{pools}{$_}{spri};
+    if (defined $spval && $spval == 1) {
       $spool = ${$conf}{pools}{$_}{url};
     }
   }
