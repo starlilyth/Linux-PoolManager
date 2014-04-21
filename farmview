@@ -291,7 +291,9 @@ sub genhttp
 					$mwu = ${@summary[$i]}{'work_utility'};
 					$macc = ${@summary[$i]}{'shares_accepted'};
 					$mrej = ${@summary[$i]}{'shares_invalid'};
-					$mrat =  sprintf("%.3f%%", $mrej / ($macc + $mrej)*100);
+					if ($mrej != 0) {
+						$mrat =  sprintf("%.3f%%", $mrej / ($macc + $mrej)*100);
+					} else { $mrat = "0"; }
 					$mhwe = ${@summary[$i]}{'hardware_errors'};
 				}
 
