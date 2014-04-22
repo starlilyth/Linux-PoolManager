@@ -38,6 +38,20 @@ if ($ARGV[0] eq "stop") {
   &blog("stopping miner") if (defined(${$conf}{settings}{verbose}));
  }
 
+if ($ARGV[0] eq "restart") { 
+  &stopCGMiner();
+  &blog("stopping miner") if (defined(${$conf}{settings}{verbose}));
+  sleep 10;
+   my $mcheck = `ps -eo command | grep -Ec ^$minerpath`;
+        if ($mcheck > 0) {
+                die "another mining process is running."
+        }
+        &startCGMiner();
+        &blog("starting miner") if (defined(${$conf}{settings}{verbose}));
+  sleep 10;
+  &resetPoolSuperPri; 
+}
+
 if ($ARGV[0] eq "boot") {
 	my $bootcmd; 
 	if (-e "/sbin/coldreboot") {
