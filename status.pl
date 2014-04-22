@@ -415,7 +415,7 @@ if (@gpus) {
 	    if ((defined $poolurl) && ($poolurl =~ m/.+\@(.+)/)) {
 	      $poolurl = $1;
 	    }	
-	    if ((defined $poolurl) && ($poolurl =~ m|://(\w+-?\w+\.)?(\w+-?\w+\.\w+:\d+)|)) {
+	    if ((defined $poolurl) && ($poolurl =~ m|://(\w+-?\w+\.)+?(\w+-?\w+\.\w+:\d+)|)) {
 	       $shorturl = $2;
 	    }
 	 	$shorturl = "N/A" if (! defined $shorturl); 
