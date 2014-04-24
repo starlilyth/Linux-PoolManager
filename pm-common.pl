@@ -335,6 +335,7 @@ sub getConfig {
 
 sub getCGMinerVersion {
   my $data = &sendAPIcommand("version",);
+  # because kanno is a huge faggot who cant write a proper API
   while ($data =~ m/versions,(.+)/g) {
     return $1; 
   }
