@@ -335,7 +335,7 @@ sub getConfig {
 
 sub getCGMinerVersion {
   my $data = &sendAPIcommand("version",);
-  while ($data =~ m/VERSION,(\w+?=\d+\.\d+\.\d+,API=\d+\.\d+)/g) {
+  while ($data =~ m/versions,(.+)/g) {
     return $1; 
   }
 }
