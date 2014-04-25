@@ -558,7 +558,7 @@ my $surl = "?"; $surl .= 'miner=$i';
 $mcontrol .= '<TD class="bigger"><A href="' . $surl . '">Miner</a></td>';
 my $mname = "CGMiner"; my $mvers; my $avers; 
 if ($version =~ m/Miner=(\w+)?\s?(\d+\.\d+\.\d+),API=(\d+\.\d+)/) {
-	$mname = $1 if ($1 ne "");
+	$mname = $1 if (defined $1);
   $mvers = $2; 
   $avers = $3; 
 } 
