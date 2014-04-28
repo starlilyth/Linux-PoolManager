@@ -43,7 +43,8 @@ if (defined $apooln) {
   if (@pools) {
     for (my $i=0;$i<@pools;$i++) {
       my $pname = ${$pools[$i]}{'url'};
-      $pmatch++ if ($pname eq $apooln);
+      my $pusr = ${$pools[$i]}{'user'};
+      $pmatch++ if ($pname eq $apooln && $pusr eq $apoolu);
     }
   }
   if ($pmatch eq 0) {

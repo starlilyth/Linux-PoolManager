@@ -31,7 +31,7 @@ if ($conf{settings}{do_boot} == 1) {
   my $uptime = `cat /proc/uptime`;
   $uptime =~ /^(\d+)\.\d+\s+\d+\.\d+/;
   my $rigup = $1;
-  if (($rigup < 300)) {
+  if ($rigup < 300) {
     my $xcheck = `ps -eo command | grep -cE ^/usr/bin/X`;
     my $mcheck = `ps -eo command | grep -cE [P]M-miner`;
     if ($xcheck == 1 && $mcheck == 0) {
