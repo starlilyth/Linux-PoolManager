@@ -32,9 +32,10 @@ if ($conf{settings}{do_boot} == 1) {
   $uptime =~ /^(\d+)\.\d+\s+\d+\.\d+/;
   my $rigup = $1;
   if ($rigup < 300) {
+    my $filecheck = 0; $filecheck = 1 if (-e "/opt/ifmi/nomine");
     my $xcheck = `ps -eo command | grep -cE ^/usr/bin/X`;
     my $mcheck = `ps -eo command | grep -cE [P]M-miner`;
-    if ($xcheck == 1 && $mcheck == 0) {
+    if ($xcheck == 1 && $mcheck == 0 && $filecheck == 0) {
       &startCGMiner;
    }
   } 

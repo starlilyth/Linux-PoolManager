@@ -23,7 +23,10 @@ die "no arguments" if ($ARGV[0] eq "");
  my $minerpath = $conf{miners}{$currentm}{mpath};
 
 if ($ARGV[0] eq "start") { 
-	my $mcheck = `ps -eo command | grep -Ec ^$minerpath`;
+	 if (-e "/opt/ifmi/nomine") {
+    die "/opt/ifmi/nomine is present, mining disabled until this file is removed."
+  }
+  my $mcheck = `ps -eo command | grep -Ec ^$minerpath`;
 	if ($mcheck > 0) {
 		die "another mining process is running."
 	}
