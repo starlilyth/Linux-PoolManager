@@ -9,6 +9,7 @@
 use warnings;
 use strict;
 use File::Copy; 
+use YAML qw( DumpFile );
 
 my $login = (getpwuid $>);
 die "must run as root" if ($login ne 'root');
@@ -18,9 +19,43 @@ die "no arguments" if ($ARGV[0] eq "");
 
  my $conf = &getConfig;
  my %conf = %{$conf};
+my $conffile = "/opt/ifmi/poolmanager.conf";
 
  my $currentm = $conf{settings}{current_mconf};
  my $minerpath = $conf{miners}{$currentm}{mpath};
+
+if ($ARGV[0] eq "switch") { 
+  my $swopt = $ARGV[1]; 
+  if (!defined $swopt) {
+    print "\nCurrent Profile: " . $conf{miners}{$currentm}{mconfig} . "\n\n"; 
+    print "Available Profles: \n";
+      foreach my $mid (sort keys %{$conf{miners}}) {
+        my $mname = $conf{miners}{$mid}{mconfig};
+        my $mpath = $conf{miners}{$mid}{mpath};
+        my $mopts = $conf{miners}{$mid}{mopts};
+        my $mconf = $conf{miners}{$mid}{savepath};
+        print "$mid - $mname\n";
+        print "$mpath $mopts --config $mconf\n"
+      }
+    print "Usage: 'mcontrol switch X' where X is a profile number.\n";
+  } elsif (defined $swopt) {
+    if ($swopt ne $conf{settings}{current_mconf}) {
+      &stopCGMiner(); 
+      ${$conf}{settings}{current_mconf} = $swopt;
+      DumpFile($conffile, $conf); 
+      sleep 15;
+      my $mcheck = `ps -eo command | grep -Ec ^$minerpath`;
+      if ($mcheck > 0) {
+        &startCGMiner();
+        sleep 10;
+        &resetPoolSuperPri; 
+      }
+    } else {
+      print "That config is already running.\n";
+    }
+  }
+}
+
 
 if ($ARGV[0] eq "start") { 
 	 if (-e "/opt/ifmi/nomine") {
@@ -47,7 +82,7 @@ if ($ARGV[0] eq "restart") {
   sleep 10;
    my $mcheck = `ps -eo command | grep -Ec ^$minerpath`;
         if ($mcheck > 0) {
-                die "another mining process is running."
+          die "another mining process is running."
         }
         &startCGMiner();
         &blog("starting miner") if (defined(${$conf}{settings}{verbose}));
