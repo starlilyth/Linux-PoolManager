@@ -37,7 +37,9 @@ if ($conf{settings}{do_boot} == 1) {
     my $mcheck = `ps -eo command | grep -cE [P]M-miner`;
     if ($xcheck == 1 && $mcheck == 0 && $filecheck == 0) {
       &startCGMiner;
-   }
+      sleep 15;
+      &resetPoolSuperPri;
+    }
   } 
 }
 
