@@ -764,7 +764,7 @@ if ($ispriv eq "S") {
 	    my $prat; 
 	   	my $poola; my $poolnum; my $spri; 
       for (keys %{$conf{pools}}) {
-      	if ($pname eq ${$conf}{pools}{$_}{url}) {
+      	if (defined ${$conf}{pools}{$_}{url} && $pname eq ${$conf}{pools}{$_}{url}) {
       		$poola = ${$conf}{pools}{$_}{alias};
       		$spri = ${$conf}{pools}{$_}{spri};
       		$poolnum = $_;
