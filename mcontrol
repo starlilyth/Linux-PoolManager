@@ -39,7 +39,7 @@ if ($ARGV[0] eq "switch") {
         print "$mpath $mopts --config $mconf\n"
       }
     print "Usage: 'mcontrol switch X' where X is a profile number.\n";
-  } elsif (defined $swopt) {
+  } elsif (defined $swopt && $swopt =~ m/^\d+$/) {
     if ($swopt ne $conf{settings}{current_mconf}) {
       &stopCGMiner(); 
       ${$conf}{settings}{current_mconf} = $swopt;
