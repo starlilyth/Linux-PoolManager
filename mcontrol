@@ -23,6 +23,7 @@ my $conffile = "/opt/ifmi/poolmanager.conf";
 
  my $currentm = $conf{settings}{current_mconf};
  my $minerpath = $conf{miners}{$currentm}{mpath};
+ $minerpath = 0 if (!defined $minerpath);
 
 if ($ARGV[0] eq "switch") { 
   my $swopt = $ARGV[1]; 
