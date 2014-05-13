@@ -13,7 +13,11 @@ use YAML qw( DumpFile );
 
 my $login = (getpwuid $>);
 die "must run as root" if ($login ne 'root');
-die "no arguments" if ($ARGV[0] eq "");
+
+if (!defined $ARGV[0] || $ARGV[0] eq "") {
+  print "Usage: start, stop, restart, switch, installht, cleargraphs, boot (Restarts the machine)\n";
+  exit; 
+}
 
  require '/opt/ifmi/pm-common.pl';
 
