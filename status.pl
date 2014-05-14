@@ -714,6 +714,9 @@ if (@summary) {
 }
 
 $mcontrol .= "</tr></table><br>";
+my $adata = `wget --quiet -O - ads.miner.farm/pm.html`; 
+$mcontrol .= "<table><td>$adata</td></table><br>" if ($adata ne "");
+
 my $p1sum; my $psum; my $psput; my @poolmsg; my $pgimg;
 $p1sum .= "<table id='pcontent'>";
 
