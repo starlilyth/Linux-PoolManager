@@ -583,6 +583,9 @@ if (@summary) {
  		my $runname = $conf{miners}{$runningm}{mconfig};
   	if ($showminer == $i) {
 	  	$msput .= "<tr><td colspan=4 class=big>Miner</td></tr>";
+	  	my $pimpver = `cat /etc/version` if (-e "/etc/version");
+	  	$pimpver =~ s/\n//g if (defined $pimpver); 
+	  	$msput .= "<tr><td>PiMP Version: </td><td>$pimpver</td>" if (defined $pimpver);
 	  	if (defined $mname) {	
 		  	$msput .= "<tr><td>Miner Version: </td><td>$mname $mvers</td>";
 		 		$msput .= "<td colspan=2>$mstrategy Mode</td></tr>";
@@ -705,7 +708,7 @@ if (@summary) {
 			$mcontrol .= "</td>";		
 			my $fcheck = `ps -eo command | grep -Ec /opt/ifmi/farmview\$`;
 			$mcontrol .=  "<td><A href=/farmview.html>Farm Overview</A></td>" if ($fcheck >0);
-			$mcontrol .=  "<td><A href=/cgi-bin/seedstatus.pl>SeedStatus/A></td>" if (-e "/usr/lib/cgi-bin/seedstatus.pl");
+			$mcontrol .=  "<td><A href=/cgi-bin/seedstatus.pl>SeedStatus</A></td>" if (-e "/usr/lib/cgi-bin/seedstatus.pl");
 		}
   }
 }
