@@ -705,6 +705,7 @@ if (@summary) {
 			$mcontrol .= "</td>";		
 			my $fcheck = `ps -eo command | grep -Ec /opt/ifmi/farmview\$`;
 			$mcontrol .=  "<td><A href=/farmview.html>Farm Overview</A></td>" if ($fcheck >0);
+			$mcontrol .=  "<td><A href=/cgi-bin/seedstatus.pl>SeedStatus/A></td>" if (-e "/usr/lib/cgi-bin/seedstatus.pl");
 		}
   }
 }
