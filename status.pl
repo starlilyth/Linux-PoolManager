@@ -21,6 +21,12 @@ my $conffile = "/opt/ifmi/poolmanager.conf";
 # Take care of business
 &ReadParse(our %in);
 
+my $ackgpu = $in{'ackbad'}; 
+if (defined $ackgpu) {
+	`rm /opt/ifmi/gpucountbad`;
+	$ackgpu = "";
+}
+
 my $zreq = $in{'zero'};
 if (defined $zreq) {
   &zeroStats;
@@ -712,10 +718,18 @@ if (@summary) {
 		}
   }
 }
-
 $mcontrol .= "</tr></table><br>";
+
+
 my $adata = `wget --quiet -O - ads.miner.farm/pm.html`; 
 $mcontrol .= "<table><td>$adata</td></table><br>" if ($adata ne "");
+
+if (-e "/opt/ifmi/gpucountbad") {
+	$mcontrol .= "<table><td class=error>WARNING: Current GPU Count is less than GPU Count at last boot. If this is intentional please click Acknowledged to confirm.";
+	$mcontrol .= "<form name='badgpu' method='POST'><input type='hidden' name='ackbad' value='ackbad'><input type='submit' value='Acknowledged - I have removed a GPU'> </form>";
+	$mcontrol .= "If not, check your risers / power to verify all GPU's are functional.";
+	$mcontrol .= "</td></table><br>";
+}
 
 my $p1sum; my $psum; my $psput; my @poolmsg; my $pgimg;
 $p1sum .= "<table id='pcontent'>";
