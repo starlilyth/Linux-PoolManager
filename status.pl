@@ -725,7 +725,12 @@ my $adata = `wget --quiet -O - ads.miner.farm/pm.html`;
 $mcontrol .= "<table><td>$adata</td></table><br>" if ($adata ne "");
 
 if (-e "/opt/ifmi/gpucountbad") {
-	$mcontrol .= "<table><td class=error>WARNING: Current GPU Count is less than GPU Count at last boot. If this is intentional please click Acknowledged to confirm.";
+	my $badgpus = `cat /opt/pimp/gpudiff`; my $bgids;
+	while ($badgpus =~ m/\s(\d)\./g) {
+		$bgids .= $1; 
+	}
+	$mcontrol .= "<table><td class=error>WARNING: Current GPU Count is less than GPU Count at last boot. Missing GPU(s): $bgids\n";
+	$mcontrol .= "If this is intentional please click Acknowledged to confirm.";
 	$mcontrol .= "<form name='badgpu' method='POST'><input type='hidden' name='ackbad' value='ackbad'><input type='submit' value='Acknowledged - I have removed a GPU'> </form>";
 	$mcontrol .= "If not, check your risers / power to verify all GPU's are functional.";
 	$mcontrol .= "</td></table><br>";
