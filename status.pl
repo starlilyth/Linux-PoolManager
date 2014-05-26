@@ -727,7 +727,7 @@ $mcontrol .= "<table><td>$adata</td></table><br>" if ($adata ne "");
 if (-e "/opt/ifmi/gpucountbad") {
 	my $badgpus = `cat /opt/pimp/gpudiff`; my $bgids;
 	while ($badgpus =~ m/\s(\d)\./g) {
-		$bgids .= $1; 
+		$bgids .= "$1 "; 
 	}
 	$mcontrol .= "<table><td class=error>WARNING: Current GPU Count is less than GPU Count at last boot. Missing GPU(s): $bgids\n";
 	$mcontrol .= "If this is intentional please click Acknowledged to confirm.";
