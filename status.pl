@@ -721,7 +721,7 @@ if (@summary) {
 $mcontrol .= "</tr></table><br>";
 
 
-my $adata = `wget --quiet -O - ads.miner.farm/pm.html`; 
+my $adata = `cat /opt/ifmi/adata`; 
 $mcontrol .= "<table><td>$adata</td></table><br>" if ($adata ne "");
 
 if (-e "/opt/ifmi/gpucountbad") {

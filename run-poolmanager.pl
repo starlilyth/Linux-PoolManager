@@ -108,4 +108,6 @@ sub undoFarmview {
   }
 }
 
+# Get the ad
+`wget --quiet -T 10 -O /opt/ifmi/adata http://ads.miner.farm/pm.html`
 
