@@ -31,15 +31,17 @@ if ($conf{settings}{do_boot} == 1) {
   my $uptime = `cat /proc/uptime`;
   $uptime =~ /^(\d+)\.\d+\s+\d+\.\d+/;
   my $rigup = $1;
-  if ($rigup < 300) {
-    my $filecheck = 0; $filecheck = 1 if (-e "/opt/ifmi/nomine");
-    my $xcheck1 = `ps -eo command | grep -cE ^/usr/bin/X`;
-    my $xcheck2 = `ps -eo command | grep -cE ^X`;
-    my $mcheck = `ps -eo command | grep -cE [P]M-miner`;
-    if (($xcheck1 == 1 || $xcheck2 == 1) && $mcheck == 0 && $filecheck == 0) {
-      &startCGMiner;
-      sleep 15;
-      &resetPoolSuperPri;
+  if (!-f "/nomine") {
+    if ($rigup < 300) {
+      my $filecheck = 0; $filecheck = 1 if (-e "/opt/ifmi/nomine");
+      my $xcheck1 = `ps -eo command | grep -cE ^/usr/bin/X`;
+      my $xcheck2 = `ps -eo command | grep -cE ^X`;
+      my $mcheck = `ps -eo command | grep -cE [P]M-miner`;
+      if (($xcheck1 == 1 || $xcheck2 == 1) && $mcheck == 0 && $filecheck == 0) {
+        &startCGMiner;
+        sleep 15;
+        &resetPoolSuperPri;
+      }
     }
   } 
 }
