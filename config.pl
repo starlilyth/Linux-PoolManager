@@ -34,6 +34,12 @@ if (! -f $conffile) {
   	   	savepath => '/opt/ifmi/cgminer.conf',
       },
   	},
+    algos => {
+      0 => {
+        aname => 'scrypt',
+        aprof => '0',
+      },
+    },    
     settings => {
       cgminer_port => '4028',
       current_mconf => '0',
@@ -210,8 +216,18 @@ if (-o $conffile) {
     my $mdel = $in{'deletem'};
     if ((defined $mdel) && ($mdel ne "")) {
       if ($mdel != 0) {
-        delete $mconf->{miners}->{$mdel};
-        $mconf->{settings}->{current_mconf} = 0;
+        my $acount = 0;
+        for (keys %{$mconf->{algos}}) {    
+          if ($mdel eq $mconf->{algos}->{$_}->{aprof}) {
+            $acount++;
+          }
+        }
+        if ($acount == 0 ){
+          delete $mconf->{miners}->{$mdel};
+          $mconf->{settings}->{current_mconf} = 0;
+        } else { 
+          $conferror = 3; 
+        }
       }
     }
 
@@ -265,6 +281,43 @@ if (-o $conffile) {
       `sudo /opt/ifmi/mcontrol cleargraphs`;
       $cgraphs = "";
     }
+
+    my $nalgo = $in{'nalgo'};
+    if ((defined $nalgo) && ($nalgo ne "")) {
+      my $acount = 0;
+      for (keys %{$mconf->{algos}}) {    
+       if ($nalgo eq $mconf->{algos}->{$_}->{aname}) {
+         $acount++;
+       }
+     }
+      if ($acount == 0 ){
+        my $newa = (keys %{$mconf->{algos}}); $newa++; 
+        $mconf->{algos}->{$newa}->{aname} = $nalgo;
+      } 
+      $nalgo = "";
+    }
+    my $adel = $in{'daname'};
+    if ((defined $adel) && ($adel ne "")) {
+      delete $mconf->{algos}->{$adel};
+      $adel = "";
+    }
+    my $caname = $in{'caenable'};    
+    if ((defined $caname) && ($caname ne "")) {
+      my $aenable = $in{'aenable'}; 
+        if ($aenable == 1) {
+          $mconf->{algos}->{$caname}->{enabled} = 1;
+        } elsif ($aenable == 0) {
+          $mconf->{algos}->{$caname}->{enabled} = 0;
+        } 
+      $caname = ""; $aenable = ""; 
+    }
+
+    my $naprof = $in{'naprof'};    
+    if ((defined $naprof) && ($naprof ne "")) {
+      my $nanum = $in{'nanum'};
+      $mconf->{algos}->{$nanum}->{aprof} = $naprof; 
+      $naprof = ""; $nanum = ""; 
+    }   
 
     $mconf->{display}->{pmversion} = $version if ($mconf->{display}->{pmversion} eq "");
 
@@ -370,9 +423,11 @@ if ($conferror == 1) {
 if ($conferror == 2) {
   print "<tr><td class=error colspan=2>No Valid Miner Path specified!</td><tr>";
 }
-
+if ($conferror == 3) {
+  print "<tr><td class=error colspan=2>Profile in use</td><tr>";
+}
 print "</table><br></td></tr>";
-print "<tr><td colspan=2 align=center>";
+print "<tr><td align=center>";
 
 print "<table class=settings><tr><td class=header>Miner Profile</td><td class=header>";
 my $currentm = $mconf->{settings}->{current_mconf};
@@ -412,6 +467,83 @@ print "</form></td></tr>";
 print "</table><br>";
 
 print "<tr><td align=center>";
+
+print "<table class=settings><tr><td class=header>Algo Manager</td><td class=header>Enabled</td><td class=header>Delete</td></tr>";
+for (keys %{$mconf->{algos}}) {
+  my $anum = $_;
+  print "<form name=achange method=post>";
+  my $aname = $mconf->{algos}->{$anum}->{aname};
+  print "<tr><td>$aname ";
+  print " = ";
+  my $profname;
+  my $aprof = $mconf->{algos}->{$anum}->{aprof};
+  if (defined $aprof) {
+    if ($aprof eq "none") {
+      $profname = "not set";
+    } else {
+      $profname = $mconf->{miners}->{$aprof}->{mconfig};
+    }
+  } else { 
+    $profname = "not set";
+  }
+  print "$profname - Change to:";
+
+  print "<select name=naprof>";
+  for (keys %{$mconf->{miners}}) {
+    my $mname = $mconf->{miners}->{$_}->{mconfig};
+    if ($mname ne $profname) {
+      print "<option value=$_>$mname</option>";
+    }
+  }
+  print "<option value='none'>None</option>" if (defined $aprof);
+  print "</select>";
+  print "<input type='hidden' name='nanum' value=$anum>";
+  print "<input type='submit' value='Set'></form>";
+  print "</td><td>";
+
+  print "<form name=sling00 method=post>";
+  print "<input type='hidden' name='caenable' value=$anum>";
+  my $ischk = $mconf->{algos}->{$anum}->{enabled};
+  if ($ischk == 1) {
+    print "<input type='checkbox' name='aenable' value='0' checked>";
+  } else { 
+    print "<input type='checkbox' name='aenable' value='1'>";
+  }
+  print "<input type='submit' value='Set'></form>";
+
+  print "</td><td>";
+  print "<form name=adel method=post>";
+  print "<input type='hidden' name='daname' value=$_>";
+  print "<input type='submit' value='X'></form>";
+  print "</td></tr>";  
+}
+print "<tr><td colspan=3><form name=nalgo method=post>";
+print "<input type='text' placeholder='algo' name='nalgo' required> ";
+print " <input type='submit' value='Add'></form></td></tr>";
+
+
+print "</table><br>";
+
+print "</td></tr><tr><td align=center>";
+
+print "<form name=miscsettings method=post>";
+print "<table class=settings><tr><td colspan=2 class=header>Misc. Miner Settings</td>";
+print "<td class=header><input type='submit' value='Save'></td><tr>";
+my $doboot = $mconf->{settings}->{do_boot};
+print "<tr><td>Start on Boot</td><td><i>Start the loaded profile at boot time?</i></td>";
+if ($doboot==1) {
+  print "<td><input type='radio' name='doboot' value=1 checked>Yes ";
+  print "<input type='radio' name='doboot' value=0>No </td></tr>";
+} else { 
+  print "<td><input type='radio' name='doboot' value=1>Yes ";
+  print "<input type='radio' name='doboot' value=0 checked>No </td></tr>"; 
+}
+my $minerport = $mconf->{settings}->{cgminer_port};
+print "<tr><td>API port</td><td><i>Defaults to 4028 if unset</i></td>";
+print "<td>$minerport <input type='text' size='4' placeholder='4028' name='nap'></td></tr>";
+print "</table></form><br>";
+
+print "</td></tr><tr><td align=center valign=top>";
 
 print "<table class=settings><tr><td colspan=3 class=header>Password Manager</td>";
 if (! `grep AuthUserFile /etc/apache2/sites-available/default-ssl`) {
@@ -460,26 +592,112 @@ if (! `grep AuthUserFile /etc/apache2/sites-available/default-ssl`) {
 }  
 print "</table><br>";
 
-print "</td><td align=center>";
+print "</td></tr><tr><td align=center>";
 
-print "<form name=miscsettings method=post>";
-print "<table class=settings><tr><td colspan=2 class=header>Misc. Miner Settings</td>";
+print "<form name=farmview method=post>";
+print "<table class=farmview><tr><td colspan=2 class=header>Farmview Settings</td>";
 print "<td class=header><input type='submit' value='Save'></td><tr>";
-my $doboot = $mconf->{settings}->{do_boot};
-print "<tr><td>Start on Boot</td><td><i>Start the loaded profile at boot time?</i></td>";
-if ($doboot==1) {
-  print "<td><input type='radio' name='doboot' value=1 checked>Yes ";
-  print "<input type='radio' name='doboot' value=0>No </td></tr>";
+my $bcast = $mconf->{farmview}->{do_bcast_status};
+print "<tr><td>Broadcast Status</td>";
+print "<td><i>Send Node Status?</i></td>";
+if ($bcast==1) {
+  print "<td><input type='radio' value=1 name='bcast' checked>Yes";
+  print "<input type='radio' value=0 name='bcast'>No</td>";
 } else { 
-  print "<td><input type='radio' name='doboot' value=1>Yes ";
-  print "<input type='radio' name='doboot' value=0 checked>No </td></tr>"; 
+  print "<td><input type='radio' value=1 name='bcast'>Yes";
+  print "<input type='radio' value=0 name='bcast' checked>No</td>";
 }
-my $minerport = $mconf->{settings}->{cgminer_port};
-print "<tr><td>API port</td><td><i>Defaults to 4028 if unset</i></td>";
-print "<td>$minerport <input type='text' size='4' placeholder='4028' name='nap'></td></tr>";
-print "</table></form><br>";
+print "</tr>";
+my $statport = $mconf->{farmview}->{status_port};
+print "<tr><td>Broadcast Port</td>";
+print "<td><i>Port to send status on</i></td>";
+print "<td>$statport <input type='text' size='5' placeholder='54545' name='nbp'></td></tr>";
+my $directip = $mconf->{farmview}->{do_direct_status};
+print "<tr><td>FarmView IP</td>";
+print "<td><i>Only needed if FV is not local</i></td>";
+print "<td>$directip <input type='text' size='15' placeholder='192.168.5.100' name='dds'></td></tr>";
+my $dfarm = $mconf->{farmview}->{do_farmview};
+print "<tr><td>FarmView</td>";
+print "<td><i>Run FarmView on this node?</i></td>";
+if ($dfarm==1) {
+  print "<td><input type='radio' value='1' name='farmview' checked>Yes";
+  print "<input type='radio' value='0' name='farmview'>No</td>";
+} else { 
+  print "<td><input type='radio' value='1' name='farmview'>Yes";
+  print "<input type='radio' value='0' name='farmview' checked>No</td>";
+}
+print "</tr>";
+my $lport = $mconf->{farmview}->{listen_port};
+print "<tr><td>Listen Port</td>";
+print "<td><i>Port FV should listen on<br><small>FV will restart if changed</small></i></td>";
+print "<td>$lport <input type='text' size='5' placeholder='54545' name='nlp'></td></tr>";
+print "</table></form>";
 
-print "</td></tr><tr><td rowspan=2 align=center valign=top>";
+print "</td></tr><tr><td align=center>";
+
+print "<form name=display method=post>";
+print "<table class=display><tr><td colspan=2 class=header>Display Settings</td>";
+print "<td class=header><input type='submit' value='Save'></td><tr>";
+my $miner_loc = $mconf->{display}->{miner_loc};
+print "<tr><td>Miner Location</td><td>$miner_loc</td>";
+print "<td><input type='text' placeholder='Location text' name='nml'></td></tr>";
+
+my $status_css = $mconf->{display}->{status_css};
+print "<tr><td>Status CSS</td><td>$status_css</td>";
+print "<td><select name=scss>";
+my @csslist = glob("/var/www/IFMI/themes/*.css");
+    foreach my $file (@csslist) {
+      $file =~ s/\/var\/www\/IFMI\/themes\///;
+      if ("$file" eq "$status_css") {
+          print "<option value=$file selected>$file</option>";
+        } else { 
+          print "<option value=$file>$file</option>";
+        }
+    }
+print "</select></td></tr>";
+my $farm_css = $mconf->{display}->{farmview_css}; 
+print "<tr><td>Farmview CSS</td><td>$farm_css<br><i><small>FV will restart if changed</small></i></td>";
+print "<td><select name=fcss>";
+my @fcsslist = glob("/var/www/IFMI/themes/*.css");
+    foreach my $file (@fcsslist) {
+        $file =~ s/\/var\/www\/IFMI\/themes\///;
+        if ("$file" eq "$farm_css") {
+          print "<option value=$file selected>$file</option>";
+        } else { 
+          print "<option value=$file>$file</option>";
+        }
+    }
+print "</select></td></tr>";
+my $gcolors = $mconf->{display}->{graphcolors};
+print "<tr><td>Graph Colors File</td><td>$gcolors</td>";
+print "<td><select name=gcf>";
+my @colorslist = glob("/var/www/IFMI/themes/*.colors");
+    foreach my $file (@colorslist) {
+      $file =~ s/\/var\/www\/IFMI\/themes\///;
+      if ("$file" eq "$gcolors") {
+          print "<option value=$file selected>$file</option>";
+      }else { 
+          print "<option value=$file>$file</option>";
+      }
+    }
+print "</select></td></tr>";
+my $hashavg = $mconf->{display}->{usehashavg};
+print "<tr><td>Hashrate Display</td>";
+print "<td><i>5sec average, or Overall (old style)</i></td>";
+if ($hashavg==1) {
+  print "<td><input type='radio' name='hashavg' value=0>5 sec";
+  print "<input type='radio' name='hashavg' value=1 checked>Overall</td></tr>";
+} else { 
+  print "<td><input type='radio' name='hashavg' value=0 checked>5 sec";
+  print "<input type='radio' name='hashavg' value=1>Overall</td></tr></form>";
+}
+print "<form name='cag' method=post><tr><td>Clear All Graphs</td>";
+print "<td></td>";
+print "<td><input type='hidden' name='cgraphs' value='cgraphs'><button type='submit'>Clear</button></td></tr>";
+print "</table></form>";
+
+print "</td></tr><tr><td align=center valign=top>";
+
 print "<form name=monitoring method=post>";
 print "<table class=monitor><tr><td colspan=2 class=header>Monitoring Settings</td>";
 print "<td class=header><input type='submit' value='Save'></td><tr>";
@@ -559,110 +777,6 @@ if ($emaildo==1) {
   print "<input type=submit name='sendemail' value='Send' method=post></td></tr></form>";
 }
 print "</table><br>";
-
-print "</td><td align=center>";
-
-print "<form name=farmview method=post>";
-print "<table class=farmview><tr><td colspan=2 class=header>Farmview Settings</td>";
-print "<td class=header><input type='submit' value='Save'></td><tr>";
-my $bcast = $mconf->{farmview}->{do_bcast_status};
-print "<tr><td>Broadcast Status</td>";
-print "<td><i>Send Node Status?</i></td>";
-if ($bcast==1) {
-  print "<td><input type='radio' value=1 name='bcast' checked>Yes";
-  print "<input type='radio' value=0 name='bcast'>No</td>";
-} else { 
-  print "<td><input type='radio' value=1 name='bcast'>Yes";
-  print "<input type='radio' value=0 name='bcast' checked>No</td>";
-}
-print "</tr>";
-my $statport = $mconf->{farmview}->{status_port};
-print "<tr><td>Broadcast Port</td>";
-print "<td><i>Port to send status on</i></td>";
-print "<td>$statport <input type='text' size='5' placeholder='54545' name='nbp'></td></tr>";
-my $directip = $mconf->{farmview}->{do_direct_status};
-print "<tr><td>FarmView IP</td>";
-print "<td><i>Only needed if FV is not local</i></td>";
-print "<td>$directip <input type='text' size='15' placeholder='192.168.5.100' name='dds'></td></tr>";
-my $dfarm = $mconf->{farmview}->{do_farmview};
-print "<tr><td>FarmView</td>";
-print "<td><i>Run FarmView on this node?</i></td>";
-if ($dfarm==1) {
-  print "<td><input type='radio' value='1' name='farmview' checked>Yes";
-  print "<input type='radio' value='0' name='farmview'>No</td>";
-} else { 
-  print "<td><input type='radio' value='1' name='farmview'>Yes";
-  print "<input type='radio' value='0' name='farmview' checked>No</td>";
-}
-print "</tr>";
-my $lport = $mconf->{farmview}->{listen_port};
-print "<tr><td>Listen Port</td>";
-print "<td><i>Port FV should listen on<br><small>FV will restart if changed</small></i></td>";
-print "<td>$lport <input type='text' size='5' placeholder='54545' name='nlp'></td></tr>";
-print "</table></form>";
-
-print "</td></tr><tr><td align=center>";
-
-print "<form name=display method=post>";
-print "<table class=display><tr><td colspan=2 class=header>Display Settings</td>";
-print "<td class=header><input type='submit' value='Save'></td><tr>";
-my $miner_loc = $mconf->{display}->{miner_loc};
-print "<tr><td>Miner Location</td><td>$miner_loc</td>";
-print "<td><input type='text' placeholder='Location text' name='nml'></td></tr>";
-
-my $status_css = $mconf->{display}->{status_css};
-print "<tr><td>Status CSS</td><td>$status_css</td>";
-print "<td><select name=scss>";
-my @csslist = glob("/var/www/IFMI/themes/*.css");
-    foreach my $file (@csslist) {
-    	$file =~ s/\/var\/www\/IFMI\/themes\///;
-    	if ("$file" eq "$status_css") {
-          print "<option value=$file selected>$file</option>";
-        } else { 
-          print "<option value=$file>$file</option>";
-        }
-    }
-print "</select></td></tr>";
-my $farm_css = $mconf->{display}->{farmview_css}; 
-print "<tr><td>Farmview CSS</td><td>$farm_css<br><i><small>FV will restart if changed</small></i></td>";
-print "<td><select name=fcss>";
-my @fcsslist = glob("/var/www/IFMI/themes/*.css");
-    foreach my $file (@fcsslist) {
-       	$file =~ s/\/var\/www\/IFMI\/themes\///;
-       	if ("$file" eq "$farm_css") {
-          print "<option value=$file selected>$file</option>";
-        } else { 
-          print "<option value=$file>$file</option>";
-        }
-    }
-print "</select></td></tr>";
-my $gcolors = $mconf->{display}->{graphcolors};
-print "<tr><td>Graph Colors File</td><td>$gcolors</td>";
-print "<td><select name=gcf>";
-my @colorslist = glob("/var/www/IFMI/themes/*.colors");
-    foreach my $file (@colorslist) {
-    	$file =~ s/\/var\/www\/IFMI\/themes\///;
-    	if ("$file" eq "$gcolors") {
-          print "<option value=$file selected>$file</option>";
- 		  }else { 
-          print "<option value=$file>$file</option>";
- 		  }
-    }
-print "</select></td></tr>";
-my $hashavg = $mconf->{display}->{usehashavg};
-print "<tr><td>Hashrate Display</td>";
-print "<td><i>5sec average, or Overall (old style)</i></td>";
-if ($hashavg==1) {
-  print "<td><input type='radio' name='hashavg' value=0>5 sec";
-  print "<input type='radio' name='hashavg' value=1 checked>Overall</td></tr>";
-} else { 
-  print "<td><input type='radio' name='hashavg' value=0 checked>5 sec";
-  print "<input type='radio' name='hashavg' value=1>Overall</td></tr></form>";
-}
-  print "<form name='cag' method=post><tr><td>Clear All Graphs</td>";
-  print "<td></td>";
-  print "<td><input type='hidden' name='cgraphs' value='cgraphs'><button type='submit'>Clear</button></td></tr>";
-  print "</table></form>";
 
 print "</td></tr>";
 
