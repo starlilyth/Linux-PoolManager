@@ -53,6 +53,7 @@ while ($continue) {
     } 
   }
 
+
   #  broadcast node status
   if ($conf{farmview}{do_bcast_status} == 1) { 
    &bcastStatus;
@@ -94,6 +95,40 @@ while ($continue) {
       &doFarmview;
     }
     exec('/bin/rm /tmp/rfv');
+  }
+  
+  #Pimp specific
+  if (-f "/etc/version") {
+    my $pimpcheck = `cat /etc/version | grep -c pimp`
+    if ($pimpcheck > 1) {
+      &dogpustats;
+    }
+}
+  sub dogpustats {
+    my $msg; 
+    my @gpus = &getFreshGPUData;
+    if (@gpus) {
+      $msg .= "Profile: $conf{miners}{$currentm}{mconfig} ";
+      $msg .= "GPU Temps: ";
+      for (my $k = 0;$k < @gpus;$k++)
+       {
+        $msg .= sprintf("%2.0f", $gpus[$k]{'current_temp_0_c'}) . "/";     
+       }
+       chop $msg; 
+       $msg .= " Status: [";
+       for (my $k = 0;$k < @gpus;$k++)
+       {
+         if (${$gpus[$k]}{status} eq "Alive") { $msg .= "A"}
+         if (${$gpus[$k]}{status} eq "Dead") { $msg .= "D"}
+         if (${$gpus[$k]}{status} eq "Sick") { $msg .= "S"}
+  
+       # $msg .= ${@gpus[$k]}{status} . " "; 
+       }
+       $msg .= "]\n";
+    } else { $msg .= "GPU Status: Miner not running" }
+       #print $msg;
+
+       open FILE, ">/tmp/gpustats" or die $!; print FILE $msg; close FILE;
   }
 
 
