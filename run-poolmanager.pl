@@ -24,8 +24,8 @@ Proc::Daemon::Init;
 # If already running, then exit
 use Proc::PID::File;
 if (Proc::PID::File->running()) {
-    my $myPID = `cat /var/run/run-poolmanager.pl.pid`;
-    print "ERROR: run-poolmanager already running. Process: $myPID";
+ #   my $myPID = `cat /var/run/run-poolmanager.pl.pid`;
+ #   print "ERROR: run-poolmanager already running. Process: $myPID";
     exit(0);
 }
 
@@ -120,7 +120,7 @@ while ($continue) {
         $msg .= sprintf("%2.0f", $gpus[$k]{'current_temp_0_c'}) . "/";     
        }
        chop $msg; 
-       $msg .= " Status: [";
+       $msg .= " Status:\e[1;31m [";
        for (my $k = 0;$k < @gpus;$k++)
        {
          if (${$gpus[$k]}{status} eq "Alive") { $msg .= "A"}

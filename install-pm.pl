@@ -57,7 +57,8 @@ sub doInstall {
 
 # The following three values may need adjusting on systems that are not Debian or RedHat based. 
 	my $webdir = "/var/www";
-	my $cgidir = "/usr/lib/cgi-bin";
+	if (-d "/etc/lighttpd" && !-d "/var/www/cgi-bin" ) { `ln -s /usr/lib/cgi-bin /var/www/cgi-bin` }
+	my $cgidir = "/usr/lib/cgi-bin"; 
   my $apacheuser = "unknown";
 
 	my $appdir = "/opt/ifmi";
@@ -134,52 +135,79 @@ sub doInstall {
 	 	} else {
     		print "...cert appears to be installed, skipping...\n" if ($flag ne "-q");
 		}
-		my $restart = 0; 
-   	copy "/etc/apache2/sites-available/default-ssl", "/etc/apache2/sites-available/default-ssl.pre-ifmi"
-		if (!-f "/etc/apache2/sites-available/default-ssl.pre-ifmi");
-	    if (`grep ssl-cert-snakeoil.pem /etc/apache2/sites-available/default-ssl`) {
-  		`sed -i "s/ssl-cert-snakeoil.pem/apache.crt/g" /etc/apache2/sites-available/default-ssl`;
-			`sed -i "s/ssl-cert-snakeoil.key/apache.key/g" /etc/apache2/sites-available/default-ssl`;
-  		$instlog .= "cert installed.\n";
-			`/usr/sbin/a2ensite default-ssl`;
-  		`/usr/sbin/a2enmod ssl`;
-  		$restart++;
+		
+		#Lighttpd additions begin
+		my $lrestart = 0;
+		if (-d "/etc/lighttpd") {
+			if (!-f "/etc/lighttpd/snakeoil.pem") {
+				copy "/etc/ssl/private/apache.key", "/etc/lighttpd/snakeoil.pem";
+				`cat /etc/ssl/certs/apache.crt >> /etc/lighttpd/snakeoil.pem`;
+				copy "/etc/lighttpd/lighttpd.conf", "/etc/lighttpd/lighttpd.conf.pre-ifmi";
+				`sed -i 's/#       \"mod_rewrite\"/       \"mod_rewrite\"/g' /etc/lighttpd/lighttpd.conf`;
+				$lrestart++;
+			}
+			if (!-f "/etc/lighttpd/conf-enabled/10-ssl.conf") { 
+				`lighty-enable-mod ssl`;
+				copy "/etc/lighttpd/conf-available/10-ssl.conf", "/etc/lighttpd/conf-available/10-ssl.conf.pre-ifmi";
+				`sed -i "s/server.pem/snakeoil.pem/g" /etc/lighttpd/conf-available/10-ssl.conf`;
+				$lrestart++;
+			}
+			if (!-f "/etc/lighttpd/conf-enabled/10-cgi.conf") {
+				`lighty-enable-mod cgi`;
+				$lrestart++;
+			}
+			
+
+		} else {
+			#Lighttpd additions end.
+			my $restart = 0; 
+   			copy "/etc/apache2/sites-available/default-ssl", "/etc/apache2/sites-available/default-ssl.pre-ifmi"
+			if (!-f "/etc/apache2/sites-available/default-ssl.pre-ifmi");
+	    	if (`grep ssl-cert-snakeoil.pem /etc/apache2/sites-available/default-ssl`) {
+  			`sed -i "s/ssl-cert-snakeoil.pem/apache.crt/g" /etc/apache2/sites-available/default-ssl`;
+				`sed -i "s/ssl-cert-snakeoil.key/apache.key/g" /etc/apache2/sites-available/default-ssl`;
+  			$instlog .= "cert installed.\n";
+				`/usr/sbin/a2ensite default-ssl`;
+  			`/usr/sbin/a2enmod ssl`;
+  			$restart++;
+			}
+			if (! `grep ServerName /etc/apache2/sites-available/default-ssl`) {
+				open my $din, '<', "/etc/apache2/sites-available/default-ssl";
+ 	    	open my $dout, '>', "/etc/apache2/sites-available/default-ssl.out";
+ 	    	while (<$din>) {
+		    		print $dout $_;
+	    			last if /ServerAdmin /;
+	   			}
+ 	    	print $dout "\n	ServerName IFMI:443\n";
+ 	    	while (<$din>) {
+		    		print $dout $_;
+			    }
+	    		close $dout;
+				move "/etc/apache2/sites-available/default-ssl.out", "/etc/apache2/sites-available/default-ssl";
+	 	 } 
+    	if (! `grep RewriteEngine /etc/apache2/sites-available/default`) {
+	    	copy "/etc/apache2/sites-available/default", "/etc/apache2/sites-available/default.pre-ifmi"
+	    		if (!-f "/etc/apache2/sites-available/default.pre-ifmi");
+	    	open my $din, '<', "/etc/apache2/sites-available/default";
+	    	open my $dout, '>', "/etc/apache2/sites-available/default.out";
+	    	while (<$din>) {
+	    		print $dout $_;
+    			last if /ServerAdmin /;
+   			}
+	    	print $dout "\n	RewriteEngine On\n	RewriteCond %{HTTPS} !=on\n";
+	    	print $dout "	RewriteRule ^/?(.*) https://%{SERVER_NAME}/\$1 [R,L]\n";
+	    	while (<$din>) {
+	    		print $dout $_;
+	    	}
+    		close $dout;
+				move "/etc/apache2/sites-available/default.out", "/etc/apache2/sites-available/default";
+				$instlog .= "rewrite enabled.\n";
+  			`/usr/sbin/a2enmod rewrite`;
+  			$restart++;
+			}
+			`service apache2 restart` if ($restart > 0);
 		}
-		if (! `grep ServerName /etc/apache2/sites-available/default-ssl`) {
-			open my $din, '<', "/etc/apache2/sites-available/default-ssl";
- 	    open my $dout, '>', "/etc/apache2/sites-available/default-ssl.out";
- 	    while (<$din>) {
-		    	print $dout $_;
-	    		last if /ServerAdmin /;
-	   		}
- 	    print $dout "\n	ServerName IFMI:443\n";
- 	    while (<$din>) {
-		    	print $dout $_;
-		    }
-	    	close $dout;
-			move "/etc/apache2/sites-available/default-ssl.out", "/etc/apache2/sites-available/default-ssl";
-	  } 
-    if (! `grep RewriteEngine /etc/apache2/sites-available/default`) {
-	    copy "/etc/apache2/sites-available/default", "/etc/apache2/sites-available/default.pre-ifmi"
-	    	if (!-f "/etc/apache2/sites-available/default.pre-ifmi");
-	    open my $din, '<', "/etc/apache2/sites-available/default";
-	    open my $dout, '>', "/etc/apache2/sites-available/default.out";
-	    while (<$din>) {
-	    	print $dout $_;
-    		last if /ServerAdmin /;
-   		}
-	    print $dout "\n	RewriteEngine On\n	RewriteCond %{HTTPS} !=on\n";
-	    print $dout "	RewriteRule ^/?(.*) https://%{SERVER_NAME}/\$1 [R,L]\n";
-	    while (<$din>) {
-	    	print $dout $_;
-	    }
-    	close $dout;
-			move "/etc/apache2/sites-available/default.out", "/etc/apache2/sites-available/default";
-			$instlog .= "rewrite enabled.\n";
-  		`/usr/sbin/a2enmod rewrite`;
-  		$restart++;
-		}
-		`service apache2 restart` if ($restart > 0);
+		`service lighttpd restart` if ($lrestart > 0);
 		print "Please read the README and edit your miner conf file as required.\nDone! Thank you for flying IFMI!\n" if ($flag ne "-q");
 	} else { 
 		print "Cant determine apache user, Bailing out!\n";
