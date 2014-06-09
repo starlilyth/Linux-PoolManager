@@ -36,7 +36,6 @@ sub switchProfile {
           print "$mpath $mopts --config $mconf\n"
         }
       print "Usage: 'mcontrol switch X' where X is a profile number.\n";
-      return $output;
     } elsif (defined $swopt && $swopt =~ m/^\d+$/) {
       if ($swopt ne $currentm) {
         print "Stopping mining...\n";
@@ -51,7 +50,6 @@ sub switchProfile {
           sleep 10;
           &resetPoolSuperPri;
           print "New profile should be started.\n";
-          return $output;
         }
       } else {
         print"That config is already running.\n";
