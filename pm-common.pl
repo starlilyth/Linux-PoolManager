@@ -70,10 +70,14 @@ sub startMining {
   if ($mcheck > 0) {
     die "another mining process is running."
   }
-  &startCGMiner();
-  &blog("starting miner") if (defined(${$conf}{settings}{verbose}));
-  sleep 10;
-  &resetPoolSuperPri;
+    print "Starting mining...";
+    print "\nCurrent Profile: " . $conf{miners}{$currentm}{mconfig} . "\n";
+    &startCGMiner();
+    print "Mining started... Waiting 10 seconds and setting super priority.\n";
+    &blog("starting miner") if (defined(${$conf}{settings}{verbose}));
+    sleep 10;
+    &resetPoolSuperPri; 
+    print "Super priority set.\n";
 }
 
 sub addPool {
