@@ -99,10 +99,8 @@ while ($continue) {
   
   #Pimp specific
   if (-f "/etc/version") {
-    my $pimpcheck;
-    my $pimpcheck = `/bin/cat /etc/version | grep -c pimp`;
-    if ($pimpcheck > 0) {
-      &dogpustats;
+     my $pimpcheck = `grep -c pimp /etc/version `;
+     &dogpustats if ($pimpcheck > 0);
     }
 }
   sub dogpustats {
