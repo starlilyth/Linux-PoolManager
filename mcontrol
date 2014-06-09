@@ -89,13 +89,14 @@ if ($ARGV[0] eq "installht") {
   }
   `chown www-data /var/htpasswd`;
   if (-d "/etc/lighttpd") {
-    copy "/etc/lighttpd/conf-available/05-auth.conf", "/etc/lighttpd/conf-available/05-auth.conf.pre-ifmi"
+    copy "/etc/lighttpd/conf-available/05-auth.conf", "/etc/lighttpd/conf-available/05-auth.conf.pre-ifmi";
     if (!-f "/etc/lighttpd/conf-available/05-auth.conf.pre-ifmi") {
       open my $lin, '>>', "/etc/lighttpd/conf-available/05-auth.conf";
       print $lin 'auth.backend = "htpasswd"';
       print $lin 'auth.backend.htpasswd.userfile = "/var/htpasswd"';
       print $lin 'auth.require = ( "/" => ( "method" => "htpasswd", "realm" => "Restricted access", "require" => "user=valid-user" ) ) ';
       close $lin; 
+     `/usr/sbin/service lighthttpd restart`;
     }
   } else {
     if (! `grep AuthUserFile /etc/apache2/sites-available/default-ssl`) {
