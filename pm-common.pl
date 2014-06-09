@@ -48,8 +48,9 @@ sub switchProfile {
           print "Mining stopped successfully...\nStarting miner on new profile.\n";
           &startCGMiner();
           sleep 10;
+          print "Mining started succesfully....Waiting 10 seconds and setting super priority.\n";
           &resetPoolSuperPri;
-          print "New profile should be started.\n";
+          print "New profile is started & super priority is set.\n";
         }
       } else {
         print"That config is already running.\n";
