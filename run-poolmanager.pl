@@ -24,6 +24,8 @@ Proc::Daemon::Init;
 # If already running, then exit
 use Proc::PID::File;
 if (Proc::PID::File->running()) {
+    my $myPID = `/var/run/run-poolmanager.pl.pid`;
+    print "ERROR: run-poolmanager already running. Process: $myPID";
     exit(0);
 }
 
@@ -102,7 +104,7 @@ while ($continue) {
      my $pimpcheck = `grep -c pimp /etc/version `;
      &dogpustats if ($pimpcheck > 0);
   }
-  
+
   sub dogpustats {
     my $conf = &getConfig;
     my %conf = %{$conf};
