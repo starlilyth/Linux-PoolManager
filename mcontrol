@@ -94,7 +94,7 @@ if ($ARGV[0] eq "installht") {
       open my $lin, '>>', "/etc/lighttpd/conf-available/05-auth.conf";
       print $lin "auth.backend = \"htpasswd\" \n";
       print $lin "auth.backend.htpasswd.userfile = \"/var/htpasswd\"\n";
-      print $lin "auth.require = ( \"/\" => ( \"method\" => \"htpasswd\", \"realm\" => \"Restricted access\", \"require\" => \"user=valid-user\" ) ) \n";
+      print $lin "auth.require = ( \"/\" => ( \"method\" => \"basic\", \"realm\" => \"Restricted access\", \"require\" => \"user=valid-user\" ) ) \n";
       close $lin; 
       `lighty-enable-mod auth`;
       `/usr/sbin/service lighttpd restart`;
