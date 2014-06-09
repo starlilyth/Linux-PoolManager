@@ -120,7 +120,7 @@ while ($continue) {
         $msg .= sprintf("%2.0f", $gpus[$k]{'current_temp_0_c'}) . "/";     
        }
        chop $msg; 
-       $msg .= " Status:\e[1;31m [";
+       $msg .= " Status: [";
        for (my $k = 0;$k < @gpus;$k++)
        {
          if (${$gpus[$k]}{status} eq "Alive") { $msg .= "A"}
