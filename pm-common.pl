@@ -16,6 +16,68 @@ setlogsock('unix');
 use JSON::XS;
 use File::Copy;
 
+sub switchProfile {  
+  my ($swopt) = @_;
+  my $conf = &getConfig;
+  my %conf = %{$conf};  
+  my $conffile = "/opt/ifmi/poolmanager.conf";
+  my $currentm = $conf{settings}{current_mconf};
+  my $minerpath = $conf{miners}{$currentm}{mpath};
+  $minerpath = 0 if (!defined $minerpath);
+    if (!defined $swopt) {
+      print "\nCurrent Profile: " . $conf{miners}{$currentm}{mconfig} . "\n\n";
+      print "Available Profles: \n";
+        foreach my $mid (sort keys %{$conf{miners}}) {
+          my $mname = $conf{miners}{$mid}{mconfig};
+          my $mpath = $conf{miners}{$mid}{mpath};
+          my $mopts = $conf{miners}{$mid}{mopts};
+          my $mconf = $conf{miners}{$mid}{savepath};
+          print "$mid - $mname\n";
+          print "$mpath $mopts --config $mconf\n"
+        }
+      print "Usage: 'mcontrol switch X' where X is a profile number.\n";
+      return $output;
+    } elsif (defined $swopt && $swopt =~ m/^\d+$/) {
+      if ($swopt ne $currentm) {
+        print "Stopping mining...\n";
+        &stopCGMiner();
+         ${$conf}{settings}{current_mconf} = $swopt;
+         DumpFile($conffile, $conf);
+         sleep 15;
+        my $mcheck = `ps -eo command | grep -Ec ^$minerpath`;
+        if ($mcheck == 0) {
+          print "Mining stopped successfully...\n Starting miner on new profile.\n";
+          &startCGMiner();
+          sleep 10;
+          &resetPoolSuperPri;
+          print "New profile should be started.\n";
+          return $output;
+        }
+      } else {
+        print"That config is already running.\n";
+      }
+    }
+  }
+
+sub startMining {
+    my $conf = &getConfig;
+    my %conf = %{$conf};  
+    my $conffile = "/opt/ifmi/poolmanager.conf";
+    my $currentm = $conf{settings}{current_mconf};
+    my $minerpath = $conf{miners}{$currentm}{mpath};
+     if (-e "/opt/ifmi/nomine") {
+    die "/opt/ifmi/nomine is present, mining disabled until this file is removed."
+  }
+  my $mcheck = `ps -eo command | grep -Ec ^$minerpath`;
+  if ($mcheck > 0) {
+    die "another mining process is running."
+  }
+  &startCGMiner();
+  &blog("starting miner") if (defined(${$conf}{settings}{verbose}));
+  sleep 10;
+  &resetPoolSuperPri;
+}
+
 sub addPool {
   my $purl = $_[0];
   my $puser = $_[1];
