@@ -96,7 +96,7 @@ if ($ARGV[0] eq "installht") {
       print $lin 'auth.backend.htpasswd.userfile = "/var/htpasswd"';
       print $lin 'auth.require = ( "/" => ( "method" => "htpasswd", "realm" => "Restricted access", "require" => "user=valid-user" ) ) ';
       close $lin; 
-     `/usr/sbin/service lighthttpd restart`;
+     `/usr/sbin/service lighttpd restart`;
     }
   } else {
     if (! `grep AuthUserFile /etc/apache2/sites-available/default-ssl`) {

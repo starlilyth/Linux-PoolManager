@@ -156,10 +156,9 @@ sub doInstall {
 				`lighty-enable-mod cgi`;
 				$lrestart++;
 			}
-			
-
-		} else {
+			`service lighttpd restart` if ($lrestart > 0);
 			#Lighttpd additions end.
+		} else {
 			my $restart = 0; 
    			copy "/etc/apache2/sites-available/default-ssl", "/etc/apache2/sites-available/default-ssl.pre-ifmi"
 			if (!-f "/etc/apache2/sites-available/default-ssl.pre-ifmi");
@@ -207,7 +206,6 @@ sub doInstall {
 			}
 			`service apache2 restart` if ($restart > 0);
 		}
-		`service lighttpd restart` if ($lrestart > 0);
 		print "Please read the README and edit your miner conf file as required.\nDone! Thank you for flying IFMI!\n" if ($flag ne "-q");
 	} else { 
 		print "Cant determine apache user, Bailing out!\n";
