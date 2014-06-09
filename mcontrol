@@ -58,8 +58,8 @@ if ($ARGV[0] eq "restart") {
         &startCGMiner();
         print "Mining started... Waiting 10 seconds and setting super priority.\n";
         &blog("starting miner") if (defined(${$conf}{settings}{verbose}));
-  sleep 10;
-  &resetPoolSuperPri; 
+        sleep 10;
+        &resetPoolSuperPri; 
         print "Super priority set.\n";
 
 }
@@ -88,25 +88,38 @@ if ($ARGV[0] eq "installht") {
   		`/usr/bin/htpasswd -bc /var/htpasswd poolmanager live`;
   }
   `chown www-data /var/htpasswd`;
-	if (! `grep AuthUserFile /etc/apache2/sites-available/default-ssl`) {
-    copy "/etc/apache2/sites-available/default-ssl", "/etc/apache2/sites-available/default-ssl.pre-ifmi"
-    if (!-f "/etc/apache2/sites-available/default-ssl.pre-ifmi");
-    open my $din, '<', "/etc/apache2/sites-available/default-ssl";
-    open my $dout, '>', "/etc/apache2/sites-available/default-ssl.out";
-    while (<$din>) {
-      print $dout $_;
-      last if /Directory \/>/;
+  if (-d "/etc/lighttpd") {
+    copy "/etc/lighttpd/conf-available/05-auth.conf", "/etc/lighttpd/conf-available/05-auth.conf.pre-ifmi" if (!-f "/etc/lighttpd/conf-available/05-auth.conf.pre-ifmi");
+    if ((-f "/etc/lighttpd/conf-available/05-auth.conf.pre-ifmi") && (! `grep htpasswd /etc/lighttpd/conf-available/05-auth.conf`)) {
+      open my $lin, '>>', "/etc/lighttpd/conf-available/05-auth.conf";
+      print $lin "auth.backend = \"htpasswd\" \n";
+      print $lin "auth.backend.htpasswd.userfile = \"/var/htpasswd\"\n";
+      print $lin "auth.require = ( \"/\" => ( \"method\" => \"basic\", \"realm\" => \"Restricted access\", \"require\" => \"user=valid-user\" ) ) \n";
+      close $lin; 
+      `lighty-enable-mod auth`;
+      `/usr/sbin/service lighttpd restart`;
     }
-    print $dout "\n AuthType Basic\n  AuthName \"Authentication Required\"\n";
-    print $dout " AuthUserFile /var/htpasswd\n";
-    print $dout "# Comment out the line below to disable password protection\n";
-    print $dout " Require valid-user\n\n";
-    while (<$din>) {
-      print $dout $_;
+  } else {
+    if (! `grep AuthUserFile /etc/apache2/sites-available/default-ssl`) {
+      copy "/etc/apache2/sites-available/default-ssl", "/etc/apache2/sites-available/default-ssl.pre-ifmi"
+      if (!-f "/etc/apache2/sites-available/default-ssl.pre-ifmi");
+      open my $din, '<', "/etc/apache2/sites-available/default-ssl";
+      open my $dout, '>', "/etc/apache2/sites-available/default-ssl.out";
+      while (<$din>) {
+        print $dout $_;
+        last if /Directory \/>/;
+      }
+      print $dout "\n AuthType Basic\n  AuthName \"Authentication Required\"\n";
+      print $dout " AuthUserFile /var/htpasswd\n";
+      print $dout "# Comment out the line below to disable password protection\n";
+      print $dout " Require valid-user\n\n";
+      while (<$din>) {
+        print $dout $_;
+      }
+      close $dout;
+      move "/etc/apache2/sites-available/default-ssl.out", "/etc/apache2/sites-available/default-ssl";
+     `/usr/sbin/service apache2 graceful`;
     }
-    close $dout;
-    move "/etc/apache2/sites-available/default-ssl.out", "/etc/apache2/sites-available/default-ssl";
-	 `/usr/sbin/service apache2 graceful`;
 	}
   if (! `grep -E /usr/bin/htpasswd /etc/sudoers`) {
     my $fin = "/etc/sudoers";

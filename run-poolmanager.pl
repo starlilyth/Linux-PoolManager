@@ -24,8 +24,8 @@ Proc::Daemon::Init;
 # If already running, then exit
 use Proc::PID::File;
 if (Proc::PID::File->running()) {
-    my $myPID = `cat /var/run/run-poolmanager.pl.pid`;
-    print "ERROR: run-poolmanager already running. Process: $myPID";
+ #   my $myPID = `cat /var/run/run-poolmanager.pl.pid`;
+ #   print "ERROR: run-poolmanager already running. Process: $myPID";
     exit(0);
 }
 
