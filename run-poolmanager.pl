@@ -24,6 +24,8 @@ Proc::Daemon::Init;
 # If already running, then exit
 use Proc::PID::File;
 if (Proc::PID::File->running()) {
+    my $myPID = `cat /var/run/run-poolmanager.pl.pid`;
+    print "ERROR: run-poolmanager already running. Process: $myPID";
     exit(0);
 }
 
@@ -52,6 +54,7 @@ while ($continue) {
       }
     } 
   }
+
 
   #  broadcast node status
   if ($conf{farmview}{do_bcast_status} == 1) { 
@@ -94,6 +97,43 @@ while ($continue) {
       &doFarmview;
     }
     exec('/bin/rm /tmp/rfv');
+  }
+  
+  #Pimp specific
+  if (-f "/etc/version") {
+     my $pimpcheck = `grep -c pimp /etc/version `;
+     &dogpustats if ($pimpcheck > 0);
+  }
+
+  sub dogpustats {
+    my $conf = &getConfig;
+    my %conf = %{$conf};
+    my $conffile = "/opt/ifmi/poolmanager.conf";
+    my $currentm = $conf{settings}{current_mconf};
+    my $msg; 
+    my @gpus = &getFreshGPUData;
+    if (@gpus) {
+      $msg .= "Profile: $conf{miners}{$currentm}{mconfig} ";
+      $msg .= "GPU Temps: ";
+      for (my $k = 0;$k < @gpus;$k++)
+       {
+        $msg .= sprintf("%2.0f", $gpus[$k]{'current_temp_0_c'}) . "/";     
+       }
+       chop $msg; 
+       $msg .= " Status: [";
+       for (my $k = 0;$k < @gpus;$k++)
+       {
+         if (${$gpus[$k]}{status} eq "Alive") { $msg .= "A"}
+         if (${$gpus[$k]}{status} eq "Dead") { $msg .= "D"}
+         if (${$gpus[$k]}{status} eq "Sick") { $msg .= "S"}
+  
+       # $msg .= ${@gpus[$k]}{status} . " "; 
+       }
+       $msg .= "]\n";
+    } else { $msg .= "GPU Status: Miner not running" }
+       #print $msg;
+    #   my $fgpustatsfubar = "/tmp/gpustats"
+  open my $fgpustats, '>', "/tmp/gpustats" or die; print $fgpustats $msg; close $fgpustats;
   }
 
 
