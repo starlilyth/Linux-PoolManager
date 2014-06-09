@@ -101,7 +101,7 @@ while ($continue) {
   if (-f "/etc/version") {
     my $pimpcheck;
     my $pimpcheck = `cat /etc/version | grep -c pimp`;
-    if ($pimpcheck > 1) {
+    if ($pimpcheck > 0) {
       &dogpustats;
     }
 }
