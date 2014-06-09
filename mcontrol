@@ -96,7 +96,8 @@ if ($ARGV[0] eq "installht") {
       print $lin "auth.backend.htpasswd.userfile = \"/var/htpasswd\"\n";
       print $lin "auth.require = ( \"/\" => ( \"method\" => \"htpasswd\", \"realm\" => \"Restricted access\", \"require\" => \"user=valid-user\" ) ) \n";
       close $lin; 
-     `/usr/sbin/service lighttpd restart`;
+      `lighty-enable-mod auth`;
+      `/usr/sbin/service lighttpd restart`;
     }
   } else {
     if (! `grep AuthUserFile /etc/apache2/sites-available/default-ssl`) {
