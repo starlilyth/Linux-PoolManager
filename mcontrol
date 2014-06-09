@@ -39,7 +39,9 @@ if ($ARGV[0] eq "start") {
 
 
 if ($ARGV[0] eq "stop") { 
+  print "Stopping mining.....\n"; 
   &stopCGMiner();
+  print "Mining stopped.\n";
   &blog("stopping miner") if (defined(${$conf}{settings}{verbose}));
  }
 
