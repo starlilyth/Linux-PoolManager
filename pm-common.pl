@@ -45,7 +45,7 @@ sub switchProfile {
          sleep 15;
         my $mcheck = `ps -eo command | grep -Ec ^$minerpath`;
         if ($mcheck == 0) {
-          print "Mining stopped successfully...\n Starting miner on new profile.\n";
+          print "Mining stopped successfully...\nStarting miner on new profile.\n";
           &startCGMiner();
           sleep 10;
           &resetPoolSuperPri;
