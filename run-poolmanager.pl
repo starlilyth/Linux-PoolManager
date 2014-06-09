@@ -101,8 +101,8 @@ while ($continue) {
   if (-f "/etc/version") {
      my $pimpcheck = `grep -c pimp /etc/version `;
      &dogpustats if ($pimpcheck > 0);
-    }
-}
+  }
+  
   sub dogpustats {
     my $conf = &getConfig;
     my %conf = %{$conf};
