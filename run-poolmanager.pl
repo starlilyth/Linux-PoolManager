@@ -24,7 +24,7 @@ Proc::Daemon::Init;
 # If already running, then exit
 use Proc::PID::File;
 if (Proc::PID::File->running()) {
-    my $myPID = `/var/run/run-poolmanager.pl.pid`;
+    my $myPID = `cat /var/run/run-poolmanager.pl.pid`;
     print "ERROR: run-poolmanager already running. Process: $myPID";
     exit(0);
 }
@@ -134,8 +134,6 @@ while ($continue) {
        #print $msg;
     #   my $fgpustatsfubar = "/tmp/gpustats"
   open my $fgpustats, '>', "/tmp/gpustats" or die; print $fgpustats $msg; close $fgpustats;
-  #     open my $finfubar, '>', $fgpustatsfubar or die; print $finfubar $msg; close $finfubar;
-  #     open FILE, ">/tmp/gpustats" or die $!; print FILE $msg; close FILE;
   }
 
 
