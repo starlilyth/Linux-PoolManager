@@ -50,6 +50,7 @@ sub doInstall {
 	require JSON;
 	require Email::Simple;
 	require Email::Sender;
+	require Proc::Daemon;
 	require Try::Tiny;
 	print " ..all set!\n" if ($flag ne "-q");
 	$instlog .= "Perl test passed.";
