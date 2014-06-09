@@ -106,6 +106,10 @@ while ($continue) {
     }
 }
   sub dogpustats {
+    my $conf = &getConfig;
+    my %conf = %{$conf};
+    my $conffile = "/opt/ifmi/poolmanager.conf";
+    my $currentm = $conf{settings}{current_mconf};
     my $msg; 
     my @gpus = &getFreshGPUData;
     if (@gpus) {
