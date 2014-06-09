@@ -132,8 +132,8 @@ while ($continue) {
        $msg .= "]\n";
     } else { $msg .= "GPU Status: Miner not running" }
        #print $msg;
-       my $fgpustats = "/tmp/gpustats"
-       open my $fin, '>', $fgpustats or die; print $fin $msg; close $fin;
+       my $fgpustatsfubar = "/tmp/gpustats"
+       open my $finfubar, '>', $fgpustatsfubar or die; print $finfubar $msg; close $finfubar;
   #     open FILE, ">/tmp/gpustats" or die $!; print FILE $msg; close FILE;
   }
 
