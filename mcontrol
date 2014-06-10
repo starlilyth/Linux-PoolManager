@@ -89,14 +89,18 @@ if ($ARGV[0] eq "installht") {
   }
   `chown www-data /var/htpasswd`;
   if (-d "/etc/lighttpd") {
-      copy "/etc/lighttpd/conf-available/05-auth.conf", "/etc/lighttpd/conf-available/05-auth.conf.pre-ifmi"
-      if (!-f "/etc/lighttpd/conf-available/05-auth.conf.pre-ifmi");
-      # auth.backend                 = "htpasswd"
-    
-      #auth.backend.htpasswd.userfile = "/var/htpasswd" 
-      #auth.require = ( "/" => ( "method" => "htpasswd", "realm" => "Restricted access", "require" => "user=valid-user" ) ) 
-    } else {
-	   if (! `grep AuthUserFile /etc/apache2/sites-available/default-ssl`) {
+    copy "/etc/lighttpd/conf-available/05-auth.conf", "/etc/lighttpd/conf-available/05-auth.conf.pre-ifmi" if (!-f "/etc/lighttpd/conf-available/05-auth.conf.pre-ifmi");
+    if ((-f "/etc/lighttpd/conf-available/05-auth.conf.pre-ifmi") && (! `grep htpasswd /etc/lighttpd/conf-available/05-auth.conf`)) {
+      open my $lin, '>>', "/etc/lighttpd/conf-available/05-auth.conf";
+      print $lin "auth.backend = \"htpasswd\" \n";
+      print $lin "auth.backend.htpasswd.userfile = \"/var/htpasswd\"\n";
+      print $lin "auth.require = ( \"/\" => ( \"method\" => \"basic\", \"realm\" => \"Restricted access\", \"require\" => \"user=valid-user\" ) ) \n";
+      close $lin; 
+      `lighty-enable-mod auth`;
+      `/usr/sbin/service lighttpd restart`;
+    }
+  } else {
+    if (! `grep AuthUserFile /etc/apache2/sites-available/default-ssl`) {
       copy "/etc/apache2/sites-available/default-ssl", "/etc/apache2/sites-available/default-ssl.pre-ifmi"
       if (!-f "/etc/apache2/sites-available/default-ssl.pre-ifmi");
       open my $din, '<', "/etc/apache2/sites-available/default-ssl";
@@ -114,7 +118,7 @@ if ($ARGV[0] eq "installht") {
       }
       close $dout;
       move "/etc/apache2/sites-available/default-ssl.out", "/etc/apache2/sites-available/default-ssl";
-	   `/usr/sbin/service apache2 graceful`;
+     `/usr/sbin/service apache2 graceful`;
     }
 	}
   if (! `grep -E /usr/bin/htpasswd /etc/sudoers`) {
