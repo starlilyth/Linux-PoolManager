@@ -126,13 +126,9 @@ while ($continue) {
          if (${$gpus[$k]}{status} eq "Alive") { $msg .= "A"}
          if (${$gpus[$k]}{status} eq "Dead") { $msg .= "D"}
          if (${$gpus[$k]}{status} eq "Sick") { $msg .= "S"}
-  
-       # $msg .= ${@gpus[$k]}{status} . " "; 
        }
        $msg .= "]\n";
     } else { $msg .= "GPU Status: Miner not running" }
-       #print $msg;
-    #   my $fgpustatsfubar = "/tmp/gpustats"
   open my $fgpustats, '>', "/tmp/gpustats" or die; print $fgpustats $msg; close $fgpustats;
   }
 
@@ -166,7 +162,6 @@ while ($continue) {
           }
     } else { $msg .= "Miner not started - Stats Unavailable."; }
        #print $msg;
-    #   my $fgpustatsfubar = "/tmp/gpustats"
     open my $fsysstats, '>', "/tmp/minerstats" or die; print $fsysstats $msg; close $fsysstats;
   }
 
