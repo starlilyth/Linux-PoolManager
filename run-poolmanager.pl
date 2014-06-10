@@ -160,7 +160,12 @@ while ($continue) {
           }
           $msg .= "]\n";
           }
-    } else { $msg .= "Miner not started - Stats Unavailable."; }
+    } else { 
+             if ($rigup < 300) { 
+                $msg .= "System startup in progress..\n Status will be available once miner is started.";
+             } else {
+                $msg .= "Miner not started - Stats Unavailable."; 
+            }
        #print $msg;
     open my $fsysstats, '>', "/tmp/minerstats" or die; print $fsysstats $msg; close $fsysstats;
   }
