@@ -113,14 +113,14 @@ while ($continue) {
     my $msg; 
     my @gpus = &getFreshGPUData;
     if (@gpus) {
-      $msg .= "Profile: $conf{miners}{$currentm}{mconfig} ";
-      $msg .= "GPU Temps: ";
+      $msg .= "Miner Status:  Active Profile: $conf{miners}{$currentm}{mconfig} ";
+      $msg .= "Temps: ";
       for (my $k = 0;$k < @gpus;$k++)
        {
         $msg .= sprintf("%2.0f", $gpus[$k]{'current_temp_0_c'}) . "/";     
        }
        chop $msg; 
-       $msg .= " Status: [";
+       $msg .= "GPU Status: [";
        for (my $k = 0;$k < @gpus;$k++)
        {
          if (${$gpus[$k]}{status} eq "Alive") { $msg .= "A"}
@@ -136,6 +136,39 @@ while ($continue) {
   open my $fgpustats, '>', "/tmp/gpustats" or die; print $fgpustats $msg; close $fgpustats;
   }
 
+  sub dosysstats {
+   my $conf = &getConfig;
+   my %conf = %{$conf};
+   my $conffile = "/opt/ifmi/poolmanager.conf";
+   my $currentm = $conf{settings}{current_mconf};
+   my $minerpath = $conf{miners}{$currentm}{mpath};
+   my $msg;
+   my $mcheck = `ps -eo command | grep -Ec ^$minerpath`;
+
+    if ($mcheck > 0) {
+      my @gpus = &getFreshGPUData;
+        if (@gpus) {
+          $msg .= "Profile: $conf{miners}{$currentm}{mconfig} ";
+          $msg .= "GPU Temps: ";
+          for (my $k = 0;$k < @gpus;$k++)
+          {
+            $msg .= sprintf("%2.0f", $gpus[$k]{'current_temp_0_c'}) . "/";     
+          }
+          chop $msg; 
+          $msg .= " Status: [";
+          for (my $k = 0;$k < @gpus;$k++)
+          {
+             if (${$gpus[$k]}{status} eq "Alive") { $msg .= "A"}
+             if (${$gpus[$k]}{status} eq "Dead") { $msg .= "D"}
+             if (${$gpus[$k]}{status} eq "Sick") { $msg .= "S"}
+          }
+          $msg .= "]\n";
+          }
+    } else { $msg .= "Miner not started - Stats Unavailable."; }
+       #print $msg;
+    #   my $fgpustatsfubar = "/tmp/gpustats"
+    open my $fsysstats, '>', "/tmp/minerstats" or die; print $fsysstats $msg; close $fsysstats;
+  }
 
   sub doFarmview {
     my $fcheck = `/bin/ps -eo command | /bin/grep -Ec /opt/ifmi/farmview\$`;
