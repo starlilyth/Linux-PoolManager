@@ -19,10 +19,10 @@ my $conf = &getConfig;
 my %conf = %{$conf};
 
 use Proc::Daemon;
-Proc::Daemon::Init;
-
-# If already running, then exit
 use Proc::PID::File;
+
+Proc::Daemon::Init;
+# If already running, then exit
 if (Proc::PID::File->running()) {
  #   my $myPID = `cat /var/run/run-poolmanager.pl.pid`;
  #   print "ERROR: run-poolmanager already running. Process: $myPID";
