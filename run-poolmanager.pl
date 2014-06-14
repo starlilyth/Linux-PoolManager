@@ -102,7 +102,8 @@ while ($continue) {
   #Pimp specific
   if (-f "/etc/version") {
      my $pimpcheck = `grep -c pimp /etc/version `;
-     &dogpustats if ($pimpcheck > 0);
+     &doGpustats if ($pimpcheck > 0);
+     &doSysstats if ($pimpcheck > 0);
   }
 
   sub doFarmview {
