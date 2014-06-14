@@ -24,7 +24,7 @@ use File::Copy;
     my $msg; 
     my @gpus = &getFreshGPUData;
     if (@gpus) {
-      $msg .= "Miner Status: Active Profile: $conf{miners}{$currentm}{mconfig} ";
+      $msg .= "Miner Status: Profile: $conf{miners}{$currentm}{mconfig} ";
       $msg .= "Temps: [";
       for (my $k = 0;$k < @gpus;$k++)
        {
