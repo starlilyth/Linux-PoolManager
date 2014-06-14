@@ -24,7 +24,7 @@ use File::Copy;
     my $msg; 
     my @gpus = &getFreshGPUData;
     if (@gpus) {
-      $msg .= "Miner Status:  Active Profile: $conf{miners}{$currentm}{mconfig} ";
+      $msg .= "Miner Status: Active Profile: $conf{miners}{$currentm}{mconfig} ";
       $msg .= "Temps: ";
       for (my $k = 0;$k < @gpus;$k++)
        {
@@ -39,7 +39,7 @@ use File::Copy;
          if (${$gpus[$k]}{status} eq "Sick") { $msg .= "S"}
        }
        $msg .= "]\n";
-    } else { $msg .= "GPU Status: Miner not running" }
+    } else { $msg .= " GPU Status: Miner not running" }
   open my $fgpustats, '>', "/tmp/gpustats" or die; print $fgpustats $msg; close $fgpustats;
   }
 
@@ -99,6 +99,7 @@ Total Hashrate: $minerate\n Miner Runtime: $mrunt\n";
     print $msg;
     open my $fsysstats, '>', "/tmp/minerstats" or die; print $fsysstats $msg; close $fsysstats;
   }
+  
 sub switchProfile {  
   my ($swopt) = @_;
   my $conf = &getConfig;
