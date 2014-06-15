@@ -80,21 +80,6 @@ while ($continue) {
   } else { 
     exec('/opt/ifmi/pmgraph.pl'); 
   }
-
-  # # FarmView
-  # if ($conf{farmview}{do_farmview} == 1) {
-  #   &doFarmview; 
-  # }
-  # if ($conf{farmview}{do_farmview} == 0) {
-  #   &undoFarmview; 
-  # }
-  # if (-f "/tmp/rfv") {
-  #   if ($conf{farmview}{do_farmview} == 1) {
-  #     &undoFarmview;
-  #     &doFarmview;
-  #   }
-  #   exec('/bin/rm /tmp/rfv');
-  # }
   
   #Pimp specific
   if (-f "/etc/version") {
@@ -132,27 +117,6 @@ while ($continue) {
     #   my $fgpustatsfubar = "/tmp/gpustats"
   open my $fgpustats, '>', "/tmp/gpustats" or die; print $fgpustats $msg; close $fgpustats;
   }
-
-
-  # sub doFarmview {
-  #   my $fcheck = `/bin/ps -eo command | /bin/grep -Ec /opt/ifmi/farmview\$`;
-  #   if ($fcheck == 0) {
-  #     my $pid = fork();
-  #     if (not defined $pid) {
-  #       die "out of resources? forking failed while starting farmview";
-  #     } elsif ($pid == 0) {
-  #     exec('/opt/ifmi/farmview');
-  #     }
-  #   }
-  # }
-
-  # sub undoFarmview { 
-  #   if (-f "/var/run/farmview.pid") {
-  #     my $fvpid = `/bin/cat /var/run/farmview.pid`;
-  #     `/bin/kill $fvpid`;
-  #     `/bin/rm /var/run/farmview.pid`;
-  #   }
-  # }
 
   # Get the ad
   `wget --quiet -T 10 -O /opt/ifmi/adata http://ads.miner.farm/pm.html`;
