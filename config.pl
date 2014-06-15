@@ -595,7 +595,7 @@ print "</table><br>";
 print "</td></tr><tr><td align=center>";
 
 print "<form name=farmview method=post>";
-print "<table class=farmview><tr><td colspan=2 class=header>Farmview Settings</td>";
+print "<table class=farmview><tr><td colspan=2 class=header>FarmWatcher Settings</td>";
 print "<td class=header><input type='submit' value='Save'></td><tr>";
 my $bcast = $mconf->{farmview}->{do_bcast_status};
 print "<tr><td>Broadcast Status</td>";
@@ -613,24 +613,11 @@ print "<tr><td>Broadcast Port</td>";
 print "<td><i>Port to send status on</i></td>";
 print "<td>$statport <input type='text' size='5' placeholder='54545' name='nbp'></td></tr>";
 my $directip = $mconf->{farmview}->{do_direct_status};
-print "<tr><td>FarmView IP</td>";
-print "<td><i>Only needed if FV is not local</i></td>";
+print "<tr><td>FarmWatcher IP</td>";
+print "<td><i>Only needed if FW is not local</i></td>";
 print "<td>$directip <input type='text' size='15' placeholder='192.168.5.100' name='dds'></td></tr>";
 my $dfarm = $mconf->{farmview}->{do_farmview};
-print "<tr><td>FarmView</td>";
-print "<td><i>Run FarmView on this node?</i></td>";
-if ($dfarm==1) {
-  print "<td><input type='radio' value='1' name='farmview' checked>Yes";
-  print "<input type='radio' value='0' name='farmview'>No</td>";
-} else { 
-  print "<td><input type='radio' value='1' name='farmview'>Yes";
-  print "<input type='radio' value='0' name='farmview' checked>No</td>";
-}
-print "</tr>";
-my $lport = $mconf->{farmview}->{listen_port};
-print "<tr><td>Listen Port</td>";
-print "<td><i>Port FV should listen on<br><small>FV will restart if changed</small></i></td>";
-print "<td>$lport <input type='text' size='5' placeholder='54545' name='nlp'></td></tr>";
+
 print "</table></form>";
 
 print "</td></tr><tr><td align=center>";

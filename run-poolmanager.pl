@@ -19,13 +19,10 @@ my $conf = &getConfig;
 my %conf = %{$conf};
 
 use Proc::Daemon;
-Proc::Daemon::Init;
-
-# If already running, then exit
 use Proc::PID::File;
+
+Proc::Daemon::Init;
 if (Proc::PID::File->running()) {
- #   my $myPID = `cat /var/run/run-poolmanager.pl.pid`;
- #   print "ERROR: run-poolmanager already running. Process: $myPID";
     exit(0);
 }
 
@@ -84,20 +81,20 @@ while ($continue) {
     exec('/opt/ifmi/pmgraph.pl'); 
   }
 
-  # FarmView
-  if ($conf{farmview}{do_farmview} == 1) {
-    &doFarmview; 
-  }
-  if ($conf{farmview}{do_farmview} == 0) {
-    &undoFarmview; 
-  }
-  if (-f "/tmp/rfv") {
-    if ($conf{farmview}{do_farmview} == 1) {
-      &undoFarmview;
-      &doFarmview;
-    }
-    exec('/bin/rm /tmp/rfv');
-  }
+  # # FarmView
+  # if ($conf{farmview}{do_farmview} == 1) {
+  #   &doFarmview; 
+  # }
+  # if ($conf{farmview}{do_farmview} == 0) {
+  #   &undoFarmview; 
+  # }
+  # if (-f "/tmp/rfv") {
+  #   if ($conf{farmview}{do_farmview} == 1) {
+  #     &undoFarmview;
+  #     &doFarmview;
+  #   }
+  #   exec('/bin/rm /tmp/rfv');
+  # }
   
   #Pimp specific
   if (-f "/etc/version") {
@@ -105,27 +102,6 @@ while ($continue) {
      &doGpustats if ($pimpcheck > 0);
      &doSysstats if ($pimpcheck > 0);
   }
-
-  sub doFarmview {
-    my $fcheck = `/bin/ps -eo command | /bin/grep -Ec /opt/ifmi/farmview\$`;
-    if ($fcheck == 0) {
-      my $pid = fork();
-      if (not defined $pid) {
-        die "out of resources? forking failed while starting farmview";
-      } elsif ($pid == 0) {
-      exec('/opt/ifmi/farmview');
-      }
-    }
-  }
-
-  sub undoFarmview { 
-    if (-f "/var/run/farmview.pid") {
-      my $fvpid = `/bin/cat /var/run/farmview.pid`;
-      `/bin/kill $fvpid`;
-      `/bin/rm /var/run/farmview.pid`;
-    }
-  }
-
   # Get the ad
   `wget --quiet -T 10 -O /opt/ifmi/adata http://ads.miner.farm/pm.html`;
 
