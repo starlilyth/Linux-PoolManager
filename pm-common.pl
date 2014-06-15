@@ -15,6 +15,90 @@ use Sys::Syslog qw( :DEFAULT setlogsock);
 setlogsock('unix');
 use JSON::XS;
 use File::Copy;
+ 
+  sub doGpustats {
+    my $conf = &getConfig;
+    my %conf = %{$conf};
+    my $conffile = "/opt/ifmi/poolmanager.conf";
+    my $currentm = $conf{settings}{current_mconf};
+    my $msg; 
+    my @gpus = &getFreshGPUData;
+    if (@gpus) {
+      $msg .= "Miner Status: Profile: $conf{miners}{$currentm}{mconfig} ";
+      $msg .= "Temps: [";
+      for (my $k = 0;$k < @gpus;$k++)
+       {
+        $msg .= sprintf("%2.0f", $gpus[$k]{'current_temp_0_c'}) . "/";     
+       }
+       chop $msg; 
+       $msg .= "] GPU Status: [";
+       for (my $k = 0;$k < @gpus;$k++)
+       {
+         if (${$gpus[$k]}{status} eq "Alive") { $msg .= "A"}
+         if (${$gpus[$k]}{status} eq "Dead") { $msg .= "D"}
+         if (${$gpus[$k]}{status} eq "Sick") { $msg .= "S"}
+       }
+       $msg .= "]\n";
+    } else { $msg .= " GPU Status: Miner not running" }
+  open my $fgpustats, '>', "/tmp/gpustats" or die; print $fgpustats $msg; close $fgpustats;
+  }
+
+sub doSysstats {
+  my $conf = &getConfig;
+  my %conf = %{$conf};
+  my $conffile = "/opt/ifmi/poolmanager.conf";
+  my $currentm = $conf{settings}{current_mconf};
+  my $minerpath = $conf{miners}{$currentm}{mpath};
+  my $mcheck = `ps -eo command | grep -Ec ^$minerpath`;
+ 
+ 
+  my $msg; my $apool; my $minerate;
+  my $dhashrates; my $dtemps; my $dstatus; my $mrunt;
+  if ($mcheck > 0) {
+    my @gpus = &getFreshGPUData;
+    if (@gpus) {
+      for (my $k = 0;$k < @gpus;$k++) {
+        $dtemps .= sprintf("%2.0f", $gpus[$k]{'current_temp_0_c'}) . " ";
+ 
+        if (${$gpus[$k]}{status} eq "Alive") { $dstatus .= "A "}
+        if (${$gpus[$k]}{status} eq "Dead") { $dstatus .= "D "}
+        if (${$gpus[$k]}{status} eq "Sick") { $dstatus .= "S "}
+ 
+        my $ghashrate = $gpus[$k]{'hashrate'};
+        $ghashrate = $gpus[$k]{'hashavg'} if ($ghashrate eq "");
+        $dhashrates .= sprintf("%d", $ghashrate) . " ";
+ 
+        #getting the current pool is messy, as it can be different on every gpu.
+        my $shorturl; my $poolurl = $gpus[$k]{'pool_url'};
+        $poolurl = $1 if ((defined $poolurl) && ($poolurl =~ m/.+\@(.+)/));
+        $shorturl = $2 if ((defined $poolurl) && ($poolurl =~ m|://(\w+-?\w+\.)+?(\w+-?\w+\.\w+:\d+)|));
+        $shorturl = "N/A" if (! defined $shorturl);
+        $apool = $shorturl if ($k == 0);
+        if ($k > 0) { $apool = "Multiple" if ($apool ne $shorturl) }        
+      }
+    }
+    my @summary = &getCGMinerSummary;
+    if (@summary) {
+      for (my $i=0;$i<@summary;$i++) {
+        my $melapsed = ${$summary[$i]}{'elapsed'};
+        $mrunt = sprintf("%d days, %02d:%02d.%02d",(gmtime $melapsed)[7,2,1,0]) if (defined $melapsed);
+        my $mratem = ${$summary[$i]}{'hashrate'};
+        $mratem = ${$summary[$i]}{'hashavg'} if (!defined $mratem);
+        $minerate = sprintf("%.2f", $mratem) if (defined $mratem);
+ 
+      }
+    }
+ 
+    $msg .= "Current Profile: $conf{miners}{$currentm}{mconfig}\n Device Status: [ $dstatus]\n
+Device Hashrates: [ $dhashrates]\n GPU Temps: [ $dtemps]\n Active Pool: $apool\n
+Total Hashrate: $minerate\n Miner Runtime: $mrunt\n";
+ 
+ 
+    } else { $msg .= "Miner not started - Stats Unavailable."; }
+ 
+    print $msg;
+    open my $fsysstats, '>', "/tmp/minerstats" or die; print $fsysstats $msg; close $fsysstats;
+  }
 
 sub switchProfile {  
   my ($swopt) = @_;
