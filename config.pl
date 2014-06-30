@@ -468,7 +468,7 @@ print "</table><br>";
 
 print "<tr><td align=center>";
 
-print "<table class=settings><tr><td class=header>Algo Manager</td><td class=header>Enabled</td><td class=header>Delete</td></tr>";
+print '<table class=settings><tr><td class=header>TMB Algo Mapper (<a href="http://trademybit.com" target="_blank">trademybit.com</a>)</td><td class=header>Enabled</td><td class=header>Delete</td></tr>';
 for (keys %{$mconf->{algos}}) {
   my $anum = $_;
   print "<form name=achange method=post>";
@@ -518,7 +518,7 @@ for (keys %{$mconf->{algos}}) {
   print "</td></tr>";
 }
 print "<tr><td colspan=3><form name=nalgo method=post>";
-print "<input type='text' placeholder='algo' name='nalgo' required> ";
+print "<input type='text' placeholder='Algo Name' name='nalgo' required> ";
 print " <input type='submit' value='Add'></form></td></tr>";
 
 

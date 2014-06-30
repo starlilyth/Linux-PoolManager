@@ -119,6 +119,15 @@ if (defined $geng) {
  $geng = "";
 }
 
+my $chstrat = $in{'setstrat'};
+my $stratint = $in{'stratint'};
+if (defined $chstrat) {
+	print "STRATEGY: $chstrat\n";
+ &changeStrategy($chstrat, $stratint);
+# &saveConfig();
+ $chstrat = "";
+}
+
 my $ncmc = $in{'setmconf'};
 if (defined $ncmc) {
 	${$conf}{settings}{current_mconf} = $ncmc;
@@ -600,8 +609,18 @@ if (@summary) {
 	  	$pimpver =~ s/\n//g if (defined $pimpver);
 	  	$msput .= "<tr><td>PiMP Version: </td><td>$pimpver</td>" if (defined $pimpver);
 	  	if (defined $mvers) {
-		  	$msput .= "<tr><td>Miner Version: </td><td>$mvers (API: $avers)</td>";
-		 		$msput .= "<td colspan=2>$mstrategy Mode</td></tr>";
+		  	$msput .= "<tr><td>Miner Version: </td><td>$mvers (API: $avers)</td></tr>";
+		 		$msput .= "<tr><td>Mining Strategy: </td><td>$mstrategy Mode</td>";
+				$msput .= "<td colspan=2><form name='mstrategy' method='post'><select name='setstrat'>";
+				$msput .= "<option value='0'>Failover</option>";
+				$msput .= "<option value='1'>Rnd Robin</option>";
+				$msput .= "<option value='2'>Rotate</option>";
+				$msput .= "<option value='3'>Load Bal</option>";
+				$msput .= "<option value='4'>Balance</option></select>";
+				$msput .= " (int:<input type='text' size='5' placeholder='seconds' name='stratint'>)";
+				$msput .= " <input type='submit' value='Select'>";
+				$msput .= "</form></td></tr>";
+
 	 			$msput .= "<tr><td>Running Profile:  </td><td>$runname</td>";
 	 			my $runpath = $conf{miners}{$runningm}{mpath};
 	 			$msput .= "<td>Run Path: </td><td>$runpath</td></tr>";
@@ -616,8 +635,8 @@ if (@summary) {
   	  			$msput .= "<option value=$_>$mname</option>";
   				}
 				}
-			$msput .= "<input type='submit' value='Select'>";
-			$msput .= "</select></form></td></tr>";
+			$msput .= "</select><input type='submit' value='Select'>";
+			$msput .= "</form></td></tr>";
 
 			my $currconf = $conf{miners}{$currentm}{savepath};
 			$msput .= "<tr><td>Loaded Config:  </td><td colspan=3>";
