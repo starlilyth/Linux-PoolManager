@@ -49,12 +49,12 @@ while ($continue) {
           &resetPoolSuperPri;
         }
       }
-    } 
+    }
   }
 
 
   #  broadcast node status
-  if ($conf{farmview}{do_bcast_status} == 1) { 
+  if ($conf{farmview}{do_bcast_status} == 1) {
    &bcastStatus;
   }
   # send status direct
@@ -62,8 +62,8 @@ while ($continue) {
    &directStatus($conf{farmview}{do_direct_status});
   }
 
-  # Email 
-  if ($conf{monitoring}{do_email} == 1) { 
+  # Email
+  if ($conf{monitoring}{do_email} == 1) {
     if (-f "/tmp/pmnotify.lastsent") {
       if (time - (stat ('/tmp/pmnotify.lastsent'))[9] > ($conf{email}{smtp_min_wait} -10)) {
         &doEmail;
@@ -74,50 +74,19 @@ while ($continue) {
   # Graphs should be no older than 5 minutes
   my $graph = "/var/www/IFMI/graphs/msummary.png";
   if (-f $graph) {
-    if (time - (stat ($graph))[9] > 290) { 
-      exec('/opt/ifmi/pmgraph.pl'); 
+    if (time - (stat ($graph))[9] > 290) {
+      exec('/opt/ifmi/pmgraph.pl');
     }
-  } else { 
-    exec('/opt/ifmi/pmgraph.pl'); 
+  } else {
+    exec('/opt/ifmi/pmgraph.pl');
   }
-  
+
   #Pimp specific
   if (-f "/etc/version") {
      my $pimpcheck = `grep -c pimp /etc/version `;
-     &dogpustats if ($pimpcheck > 0);
+     &doGpustats if ($pimpcheck > 0);
+     &doSysstats if ($pimpcheck > 0);
   }
-
-  sub dogpustats {
-    my $conf = &getConfig;
-    my %conf = %{$conf};
-    my $conffile = "/opt/ifmi/poolmanager.conf";
-    my $currentm = $conf{settings}{current_mconf};
-    my $msg; 
-    my @gpus = &getFreshGPUData;
-    if (@gpus) {
-      $msg .= "Profile: $conf{miners}{$currentm}{mconfig} ";
-      $msg .= "GPU Temps: ";
-      for (my $k = 0;$k < @gpus;$k++)
-       {
-        $msg .= sprintf("%2.0f", $gpus[$k]{'current_temp_0_c'}) . "/";     
-       }
-       chop $msg; 
-       $msg .= " Status: [";
-       for (my $k = 0;$k < @gpus;$k++)
-       {
-         if (${$gpus[$k]}{status} eq "Alive") { $msg .= "A"}
-         if (${$gpus[$k]}{status} eq "Dead") { $msg .= "D"}
-         if (${$gpus[$k]}{status} eq "Sick") { $msg .= "S"}
-  
-       # $msg .= ${@gpus[$k]}{status} . " "; 
-       }
-       $msg .= "]\n";
-    } else { $msg .= "GPU Status: Miner not running" }
-       #print $msg;
-    #   my $fgpustatsfubar = "/tmp/gpustats"
-  open my $fgpustats, '>', "/tmp/gpustats" or die; print $fgpustats $msg; close $fgpustats;
-  }
-
   # Get the ad
   `wget --quiet -T 10 -O /opt/ifmi/adata http://ads.miner.farm/pm.html`;
 
