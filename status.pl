@@ -486,7 +486,9 @@ if (@gpus) {
 		}
 		$gput .= "</TD>";
 
-		my $gint = $gpus[$i]{'intensity'}; $gint = "0" if ($gint eq "");
+		my $gint = $gpus[$i]{'intensity'};
+		my $gxint = "x" . $gpus[$i]{'xintensity'};
+		$gint = $gxint if ($gxint ne "" && $gxint > 0);
 		$gput .= '<TD>' . $gint . '</td>';
 
 		my $gpuhwe;
