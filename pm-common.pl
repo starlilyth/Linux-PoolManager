@@ -16,10 +16,10 @@ setlogsock('unix');
 use JSON::XS;
 use File::Copy;
 
-sub switchProfile {  
+sub switchProfile {
   my ($swopt) = @_;
   my $conf = &getConfig;
-  my %conf = %{$conf};  
+  my %conf = %{$conf};
   my $conffile = "/opt/ifmi/poolmanager.conf";
   my $currentm = $conf{settings}{current_mconf};
   my $minerpath = $conf{miners}{$currentm}{mpath};
@@ -59,81 +59,101 @@ sub switchProfile {
   }
 
 sub startMining {
-    my $conf = &getConfig;
-    my %conf = %{$conf};  
-    my $conffile = "/opt/ifmi/poolmanager.conf";
-    my $currentm = $conf{settings}{current_mconf};
-    my $minerpath = $conf{miners}{$currentm}{mpath};
-     if (-e "/opt/ifmi/nomine") {
-    die "/opt/ifmi/nomine is present, mining disabled until this file is removed."
-  }
+  my $conf = &getConfig;
+  my %conf = %{$conf};
+  my $conffile = "/opt/ifmi/poolmanager.conf";
+  my $currentm = $conf{settings}{current_mconf};
+  my $minerpath = $conf{miners}{$currentm}{mpath};
+  die "/opt/ifmi/nomine is present, mining disabled until this file is removed." if (-e "/opt/ifmi/nomine");
   my $mcheck = `ps -eo command | grep -Ec ^$minerpath`;
-  if ($mcheck > 0) {
-    die "another mining process is running."
-  }
-    print "Starting mining...";
-    print "\nCurrent Profile: " . $conf{miners}{$currentm}{mconfig} . "\n";
-    &startCGMiner();
-    print "Mining started... Waiting 10 seconds and setting super priority.\n";
-    &blog("starting miner") if (defined(${$conf}{settings}{verbose}));
-    sleep 10;
-    &resetPoolSuperPri; 
-    print "Super priority set.\n";
+  die "another mining process is running." if ($mcheck > 0);
+  print "Starting mining...";
+  print "\nCurrent Profile: " . $conf{miners}{$currentm}{mconfig} . "\n";
+  &startCGMiner();
+  print "Mining started... Waiting 10 seconds and setting super priority.\n";
+  &blog("starting miner") if (defined(${$conf}{settings}{verbose}));
+  sleep 10;
+  &resetPoolSuperPri;
+  print "Super priority set.\n";
 }
 
 sub addPool {
-  my $purl = $_[0];
-  my $puser = $_[1];
-  my $ppw = $_[2];
-  $ppw = " " if ($ppw eq "");   
-  my $pdata = "$purl,$puser,$ppw";
+  my ($purl, $puser, $ppw, $pname, $pdesc, $pprof, $palgo) = @_;
+  $ppw = " " if ($ppw eq "");
+  my $pdata = "$purl,$puser,$ppw,$pname,$pdesc,$pprof,$palgo";
   &sendAPIcommand("addpool",$pdata);
 }
 
 sub blog {
   my ($msg) = @_;
   my @parts = split(/\//, $0);
-  my $task = $parts[@parts-1];  
+  my $task = $parts[@parts-1];
   openlog($task,'nofatal,pid','local5');
   syslog('info', $msg);
   closelog;
 }
 
-sub CGMinerIsPriv {  
+sub CGMinerIsPriv {
   my $data = &sendAPIcommand("privileged",);
   while ($data =~ m/STATUS=(\w),/g) {
     return $1;
   }
 }
 
+sub changeStrategy {
+  my $strategy = $_[0];
+  my $interval = $_[1];
+  my $sreq = "$strategy,$interval";
+  &sendAPIcommand("changestrategy",$sreq);
+}
+
+
 sub delPool {
   my $delreq = $_[0];
-  &sendAPIcommand("removepool",$delreq); 
+  &sendAPIcommand("removepool",$delreq);
 }
+
+sub getCGMinerProfiles {
+  my @mprofiles;
+  my $data = &sendAPIcommand("profiles",);
+  my $proid; my $prodata;
+  while ($data =~ m/PROFILE=(\d+),(.+?)\|/g) {
+    $proid = $1; $prodata = $2;
+    my $prname; if ($prodata =~ m/Name=(.+?),/) { $prname = $1; }
+    my $prisdef; if ($prodata =~ m/IsDefault=(.+?),/) { $prisdef = $1; }
+    my $pralgo; if ($prodata =~ m/Algorithm=(.+?),/) { $pralgo = $1; }
+    my $pralgt; if ($prodata =~ m/Algorithm Type=(.+?),/) { $pralgt = $1; }
+    my $prlg; if ($prodata =~ m/LookupGap=(.+?),/) { $prlg = $1; }
+    my $prdevs; if ($prodata =~ m/Devices=(.+?),/) { $prdevs = $1; }
+    my $print; if ($prodata =~ m/Intensity=(.+?),/) { $print = $1; }
+    my $prxint; if ($prodata =~ m/XIntensity=(.+?),/) { $prxint = $1; }
+    my $prrint; if ($prodata =~ m/RawIntensity=(.+?),/) { $prrint = $1; }
+    my $prgeng; if ($prodata =~ m/Gpu Engine=(.+?),/) { $prgeng = $1; }
+    my $prgmem; if ($prodata =~ m/Gpu MemClock=(.+?),/) { $prgmem = $1; }
+    my $prgthr; if ($prodata =~ m/Gpu Threads=(.+?),/) { $prgthr = $1; }
+    my $prgfan; if ($prodata =~ m/Gpu Fan\%=(.+?),/) { $prgfan = $1; }
+    my $prgpt; if ($prodata =~ m/Gpu Powertune%=(.+?),/) { $prgpt = $1; }
+    my $prgvdc; if ($prodata =~ m/Gpu Vddc=(.+?),/) { $prgvdc = $1; }
+    my $prsha; if ($prodata =~ m/Shaders=(.+?),/) { $prsha = $1; }
+    my $prtc; if ($prodata =~ m/Thread Concurrency=(.+?),/) { $prtc = $1; }
+    my $prws; if ($prodata =~ m/Worksize=(.+?),/) { $prws = $1; }
+    push(@mprofiles, ({profid=> $proid, name=>$prname, is_default=>$prisdef, algo=>$pralgo,
+      algo_type=>$pralgt, lookup_gap=>$prlg, devices=>$prdevs, intensity=>$print, x_int=>$prxint,
+      raw_int=>$prrint, gpu_engine=>$prgeng, gpu_memclock=>$prgmem, gpu_threads=>$prgthr, gpu_fan=>$prgfan,
+      gpu_ptune=>$prgpt, gpu_vddc=>$prgvdc, shaders=>$prsha, thread_con=>$prtc, worksize=>$prws}) );
+  }
+  return(@mprofiles);
+}
+
 
 sub getCGMinerConfig {
   my @mconfig;
   my $res = &sendAPIcommand("config",);
-  my $mstrategy;
-  if ($res =~ m/Strategy=(.+?),/g) {
-    $mstrategy = $1;
-  }
-  my $mfonly;
-  if ($res =~ m/Failover-Only=(\w+),/g) {
-    $mfonly = $1;
-  }
-  my $mscant;
-  if ($res =~ m/ScanTime=(\d+),/g) {
-    $mscant = $1;
-  }
-  my $mqueue;
-  if ($res =~ m/Queue=(\d+),/g) {
-    $mqueue = $1;
-  }
-  my $mexpiry;
-  if ($res =~ m/Expiry=(\d+),/g) {
-    $mexpiry = $1;
-  }
+  my $mstrategy; if ($res =~ m/Strategy=(.+?),/g) { $mstrategy = $1; }
+  my $mfonly; if ($res =~ m/Failover-Only=(\w+),/g) { $mfonly = $1; }
+  my $mscant; if ($res =~ m/ScanTime=(\d+),/g) { $mscant = $1; }
+  my $mqueue; if ($res =~ m/Queue=(\d+),/g) { $mqueue = $1; }
+  my $mexpiry; if ($res =~ m/Expiry=(\d+),/g) { $mexpiry = $1; }
   push(@mconfig, ({strategy=>$mstrategy, fonly=>$mfonly, scantime=>$mscant, queue=>$mqueue, expiry=>$mexpiry }) );
   return(@mconfig);
 }
@@ -141,77 +161,41 @@ sub getCGMinerConfig {
 sub getCGMinerGPUCount {
   my $data = &sendAPIcommand("gpucount",);
   while ($data =~ m/Count=(\d+)/g) {
-    return $1; 
+    return $1;
   }
 }
 
-sub getCGMinerPools {  
+sub getCGMinerPools {
   my @pools;
   my $data = &sendAPIcommand("pools",);
-  my $poid; my $pdata; 
+  my $poid; my $pdata;
   while ($data =~ m/POOL=(\d+),(.+?)\|/g) {
     $poid = $1; $pdata = $2;
-    my $purl; 
-    if ($pdata =~ m/URL=(.+?),/) {
-      $purl = $1; 
-    }
-    my $pstat;
-    if ($pdata =~ m/Status=(.+?),/) {
-      $pstat = $1; 
-    }
-    my $ppri;
-    if ($pdata =~ m/Priority=(\d+),/) {
-      $ppri = $1; 
-    }
-    my $pquo;
-    if ($pdata =~ m/Quota=(\d+),/) {
-      $pquo = $1; 
-    }
-    my $plp;
-    if ($pdata =~ m/Long Poll=(.+?),/) {
-      $plp = $1; 
-    }
-    my $pgw;
-    if ($pdata =~ m/Getworks=(\d+),/) {
-      $pgw = $1; 
-    }
-    my $pacc;
-    if ($pdata =~ m/Accepted=(\d+),/) {
-      $pacc = $1; 
-    }
-    my $prej;
-    if ($pdata =~ m/Rejected=(\d+),/) {
-      $prej = $1; 
-    }        
-    my $pworks;
-    if ($pdata =~ m/Works=(\d+),/) {
-      $pworks = $1; 
-    }  
-    my $pdisc;
-    if ($pdata =~ m/Discarded=(\d+),/) {
-      $pdisc = $1; 
-    }  
-    my $pstale;
-    if ($pdata =~ m/Stale=(\d+),/) {
-      $pstale = $1; 
-    }  
-    my $pgfails;
-    if ($pdata =~ m/Get Failures=(\d+),/) {
-      $pgfails = $1; 
-    }  
-    my $prfails;
-    if ($pdata =~ m/Remote Failures=(\d+),/) {
-      $prfails = $1; 
-    }  
-    my $puser;
-    if ($pdata =~ m/User=(.+?),/) {
-      $puser = $1; 
-    }  
-    push(@pools, ({ poolid=>$poid, url=>$purl, status=>$pstat, priority=>$ppri, quota=>$pquo, 
-    lp=>$plp, getworks=>$pgw, accepted=>$pacc, rejected=>$prej, works=>$pworks, discarded=>$pdisc, 
-    stale=>$pstale, getfails=>$pgfails, remotefailures=>$prfails, user=>$puser }) );
+    my $purl; if ($pdata =~ m/URL=(.+?),/) { $purl = $1; }
+    my $pstat; if ($pdata =~ m/Status=(.+?),/) { $pstat = $1; }
+    my $ppri; if ($pdata =~ m/Priority=(\d+),/) { $ppri = $1; }
+    my $pquo; if ($pdata =~ m/Quota=(\d+),/) { $pquo = $1; }
+    my $plp; if ($pdata =~ m/Long Poll=(.+?),/) { $plp = $1; }
+    my $pgw; if ($pdata =~ m/Getworks=(\d+),/) { $pgw = $1; }
+    my $pacc; if ($pdata =~ m/Accepted=(\d+),/) { $pacc = $1; }
+    my $prej; if ($pdata =~ m/Rejected=(\d+),/) { $prej = $1; }
+    my $pworks; if ($pdata =~ m/Works=(\d+),/) { $pworks = $1; }
+    my $pdisc; if ($pdata =~ m/Discarded=(\d+),/) { $pdisc = $1; }
+    my $pstale; if ($pdata =~ m/Stale=(\d+),/) { $pstale = $1; }
+    my $pgfails; if ($pdata =~ m/Get Failures=(\d+),/) { $pgfails = $1; }
+    my $prfails; if ($pdata =~ m/Remote Failures=(\d+),/) { $prfails = $1; }
+    my $puser; if ($pdata =~ m/User=(.+?),/) { $puser = $1; }
+    my $pprofile; if ($pdata =~ m/Profile=(.+?),/) { $pprofile = $1; }
+    my $palgo; if ($pdata =~ m/Algorithm=(.+?),/) { $palgo = $1; }
+    my $palgt; if ($pdata =~ m/Algorithm Type=(.+?),/) { $palgt = $1; }
+    my $pname; if ($pdata =~ m/Name=(.+?),/) { $pname = $1; }
+    my $pdesc; if ($pdata =~ m/Description=(.+?),/) { $pdesc = $1; }
+    push(@pools, ({ poolid=>$poid, url=>$purl, status=>$pstat, priority=>$ppri, quota=>$pquo,
+    lp=>$plp, getworks=>$pgw, accepted=>$pacc, rejected=>$prej, works=>$pworks, discarded=>$pdisc,
+    stale=>$pstale, getfails=>$pgfails, remotefailures=>$prfails, user=>$puser, profile=>$pprofile,
+    algo=>$palgo, algo_type=>$palgt, name=>$pname, descr=>$pdesc }) );
   }
-  return(@pools);    
+  return(@pools);
 }
 
 sub getCGMinerStats {
@@ -225,10 +209,10 @@ sub getCGMinerStats {
   }
   if ($res =~ m/Accepted=(\d+),/) {
     $data->{'shares_accepted'} = $1;
-  }   
+  }
   if ($res =~ m/Rejected=(\d+),/) {
     $data->{'shares_invalid'} = $1;
-  }   
+  }
   if ($res =~ m/Status=(\w+),/) {
     $data->{'status'} = $1;
   }
@@ -243,13 +227,13 @@ sub getCGMinerStats {
   }
   if ($res =~ m/Intensity=(\w?\d+),/) {
     $data->{'intensity'} =$1;
-  }   
+  }
   if ($res =~ m/Last\sShare\sPool=(\d+),/) {
     foreach my $p (@pools) {
       if (${$p}{poolid} == $1) {
         $data->{'pool_url'} =${$p}{url};
       }
-    }   
+    }
   }
   if ($res =~ m/Last\sShare\sTime=(\d+),/)
   {
@@ -269,7 +253,7 @@ sub getCGMinerStats {
   }
   if ($res =~ m/GPU\sActivity=(.+?),/) {
    $data->{'current_load_c'} = $1;
-  }       
+  }
   if ($res =~ m/Temperature=(\d+\.\d+),/) {
    $data->{'current_temp_0_c'} = $1;
   }
@@ -281,109 +265,40 @@ sub getCGMinerStats {
   }
   if ($res =~ m/Fan\sSpeed=(\d+),/) {
     $data->{'fan_rpm_c'} = $1;
-  }     
+  }
 }
 
-sub getCGMinerSummary {    
-  my @summary; 
+sub getCGMinerSummary {
+  my @summary;
   my $res = &sendAPIcommand("summary",);
-  my $melapsed;
-  if ($res =~ m/Elapsed=(\d+),/g) {
-    $melapsed = $1;
-  }
-  my $mhashav;
-  if ($res =~ m/MHS\sav=(\d+\.\d+),/g) {
-    $mhashav = $1;
-  }
-  my $mhashrate;
-  if ($res =~ m/MHS\s\ds=(\d+\.\d+),/g) {
-    $mhashrate = $1;
-  }
-  my $mkhashav;
-  if ($res =~ m/KHS\sav=(\d+),/g) {
-    $mkhashav = $1;
-  }
-  my $mkhashrate;
-  if ($res =~ m/KHS\s\ds=(\d+),/g) {
-    $mkhashrate =$1;
-  }
-  my $mfoundbl;
-  if ($res =~ m/Found\sBlocks=(\d+),/g) {
-    $mfoundbl =$1;
-  }
-  my $mgetworks;
-  if ($res =~ m/Getworks=(\d+),/g) {
-    $mgetworks =$1;
-  }
-  my $maccept;
-  if ($res =~ m/Accepted=(\d+),/g) {
-    $maccept = $1
-  }
-  my $mreject;
-  if ($res =~ m/Rejected=(\d+),/g) {
-    $mreject = $1
-  }
-  my $mhwerrors;
-  if ($res =~ m/Hardware\sErrors=(\d+),/g) {
-    $mhwerrors = $1
-  }
-  my $mutility;
-  if ($res =~ m/Utility=(.+?),/g) {
-    $mutility = $1
-  }
-  my $mdiscarded;
-  if ($res =~ m/Discarded=(\d+),/g) {
-    $mdiscarded = $1
-  }
-  my $mstale;
-  if ($res =~ m/Stale=(\d+),/g) {
-    $mstale = $1
-  }
-  my $mgetfails;
-  if ($res =~ m/Get\sFailures=(\d+),/g) {
-    $mgetfails = $1
-  }
-  my $mlocalwork;
-  if ($res =~ m/Local\sWork=(\d+),/g) {
-    $mlocalwork = $1
-  }
-  my $mremfails;
-  if ($res =~ m/Remote\sFailures=(\d+),/g) {
-    $mremfails = $1
-  }
-  my $mnetblocks;
-  if ($res =~ m/Network\sBlocks=(\d+),/g) {
-    $mnetblocks = $1
-  }
-  my $mtotalmh;
-  if ($res =~ m/Total\sMH=(\d+\.\d+),/g) {
-    $mtotalmh = $1
-  }
-  my $mworkutil;
-  if ($res =~ m/Work\sUtility=(\d+\.\d+),/g) {
-    $mworkutil = $1
-  }
-  my $mdiffacc;
-  if ($res =~ m/Difficulty\sAccepted=(\d+\.\d+),/g) {
-    $mdiffacc = $1
-  }
-  my $mdiffrej;
-  if ($res =~ m/Difficulty\sRejected=(\d+\.\d+),/g) {
-    $mdiffrej = $1
-  }
-  my $mdiffstale;
-  if ($res =~ m/Difficulty\sStale=(\d+\.\d+),/g) {
-    $mdiffstale = $1
-  }
-  my $mbestshare;
-  if ($res =~ m/Best\sShare=(\d+),/g) {
-    $mbestshare = $1
-  }
-  push(@summary, ({elapsed=>$melapsed, hashavg=>$mhashav, hashrate=>$mhashrate, khashavg=>$mkhashav, 
-  khashrate=>$mkhashrate, shares_accepted=>$maccept, found_blocks=>$mfoundbl, getworks=>$mgetworks, 
-  shares_invalid=>$mreject, hardware_errors=>$mhwerrors, utility=>$mutility, discarded=>$mdiscarded, 
-  stale=>$mstale, get_failures=>$mgetfails, local_work=>$mlocalwork, remote_failures=>$mremfails, 
-  network_blocks=>$mnetblocks, total_mh=>$mtotalmh, work_utility=>$mworkutil, diff_accepted=>$mdiffacc, 
+  my $melapsed; if ($res =~ m/Elapsed=(\d+),/g) { $melapsed = $1; }
+  my $mhashav; if ($res =~ m/MHS\sav=(\d+\.\d+),/g) { $mhashav = $1; }
+  my $mhashrate; if ($res =~ m/MHS\s\ds=(\d+\.\d+),/g) { $mhashrate = $1; }
+  my $mkhashav; if ($res =~ m/KHS\sav=(\d+),/g) { $mkhashav = $1; }
+  my $mkhashrate; if ($res =~ m/KHS\s\ds=(\d+),/g) { $mkhashrate =$1; }
+  my $mfoundbl; if ($res =~ m/Found\sBlocks=(\d+),/g) { $mfoundbl =$1; }
+  my $mgetworks; if ($res =~ m/Getworks=(\d+),/g) { $mgetworks =$1; }
+  my $maccept; if ($res =~ m/Accepted=(\d+),/g) { $maccept = $1 }
+  my $mreject; if ($res =~ m/Rejected=(\d+),/g) { $mreject = $1 }
+  my $mhwerrors; if ($res =~ m/Hardware\sErrors=(\d+),/g) { $mhwerrors = $1 }
+  my $mutility; if ($res =~ m/Utility=(.+?),/g) { $mutility = $1 }
+  my $mdiscarded; if ($res =~ m/Discarded=(\d+),/g) { $mdiscarded = $1 }
+  my $mstale; if ($res =~ m/Stale=(\d+),/g) { $mstale = $1 }
+  my $mgetfails; if ($res =~ m/Get\sFailures=(\d+),/g) { $mgetfails = $1 }
+  my $mlocalwork; if ($res =~ m/Local\sWork=(\d+),/g) { $mlocalwork = $1 }
+  my $mremfails; if ($res =~ m/Remote\sFailures=(\d+),/g) { $mremfails = $1 }
+  my $mnetblocks; if ($res =~ m/Network\sBlocks=(\d+),/g) { $mnetblocks = $1 }
+  my $mtotalmh; if ($res =~ m/Total\sMH=(\d+\.\d+),/g) { $mtotalmh = $1 }
+  my $mworkutil; if ($res =~ m/Work\sUtility=(\d+\.\d+),/g) { $mworkutil = $1 }
+  my $mdiffacc; if ($res =~ m/Difficulty\sAccepted=(\d+\.\d+),/g) { $mdiffacc = $1 }
+  my $mdiffrej; if ($res =~ m/Difficulty\sRejected=(\d+\.\d+),/g) { $mdiffrej = $1 }
+  my $mdiffstale; if ($res =~ m/Difficulty\sStale=(\d+\.\d+),/g) { $mdiffstale = $1 }
+  my $mbestshare; if ($res =~ m/Best\sShare=(\d+),/g) { $mbestshare = $1 }
+  push(@summary, ({elapsed=>$melapsed, hashavg=>$mhashav, hashrate=>$mhashrate, khashavg=>$mkhashav,
+  khashrate=>$mkhashrate, shares_accepted=>$maccept, found_blocks=>$mfoundbl, getworks=>$mgetworks,
+  shares_invalid=>$mreject, hardware_errors=>$mhwerrors, utility=>$mutility, discarded=>$mdiscarded,
+  stale=>$mstale, get_failures=>$mgetfails, local_work=>$mlocalwork, remote_failures=>$mremfails,
+  network_blocks=>$mnetblocks, total_mh=>$mtotalmh, work_utility=>$mworkutil, diff_accepted=>$mdiffacc,
   diff_rejected=>$mdiffrej, diff_stale=>$mdiffstale, best_share=>$mbestshare }) );
   return(@summary);
 }
@@ -392,7 +307,7 @@ sub getConfig {
   my $conffile = '/opt/ifmi/poolmanager.conf';
   if (! -e $conffile) {
     exec('/usr/lib/cgi-bin/config.pl');
-  } 
+  }
   my $c;
   $c = LoadFile($conffile);
   return($c);
@@ -400,25 +315,25 @@ sub getConfig {
 
 sub getCGMinerVersion {
   my $data = &sendAPIcommand("version",);
-  while ($data =~ m/VERSION,(.+)\|/g) {
-    return $1; 
+  while ($data =~ m/VERSION(.+)\|/g) {
+    return $1;
   }
 }
 
 sub getFreshGPUData {
   my @gpus;
-  my @cgpools = getCGMinerPools();  
+  my @cgpools = getCGMinerPools();
   my $gpucount = &getCGMinerGPUCount;
-  my $gidata; my $gdesc; my $gdisp; 
+  my $gidata; my $gdesc; my $gdisp;
   for (my $i=0;$i<$gpucount;$i++) {
-    my $gpu = $i; 
+    my $gpu = $i;
     if (-e "/usr/local/bin/atitweak") {
       my $res = `DISPLAY=:0.0 /usr/local/bin/atitweak -s`;
       while ($res =~ m/$i\.\s(.+\n)/g) {
-        $gidata = $1; 
+        $gidata = $1;
          if ($gidata =~ m/^(.+?)\s+\(/) {
           $gdesc = $1;
-         }  
+         }
          if ($gidata =~ m/:(\d+\.\d+)\)/) {
           $gdisp = $1;
          }
@@ -428,12 +343,12 @@ sub getFreshGPUData {
       $gdisp = "0.0";
     }
     $gpus[$gpu] = ({ desc => $gdesc, display => $gdisp });
-    &getCGMinerStats($gpu, \%{$gpus[$gpu]}, @cgpools );   
-  }       
+    &getCGMinerStats($gpu, \%{$gpus[$gpu]}, @cgpools );
+  }
   return(@gpus);
 }
 
-sub minerExpiry { 
+sub minerExpiry {
   my $nmexpiry = $_[0];
   my $ecomm = "expiry,$nmexpiry";
   &sendAPIcommand("setconfig",$ecomm);
@@ -453,24 +368,24 @@ sub minerScantime {
 
 sub priPool {
  my $prilist = $_[0];
-  &sendAPIcommand("poolpriority",$prilist); 
+  &sendAPIcommand("poolpriority",$prilist);
 }
 
 sub quotaPool {
  my $preq = $_[0];
  my $pqta = $_[1];
  my $qdata = "$preq,$pqta";
-  &sendAPIcommand("poolquota",$qdata); 
+  &sendAPIcommand("poolquota",$qdata);
 }
 
 sub saveConfig {
   my $conf = &getConfig;
   my %conf = %{$conf};
-  my $runmconf = ${$conf}{settings}{running_mconf}; 
-  my $savefile = ${$conf}{miners}{$runmconf}{savepath}; 
-  if (-f $savefile) { 
+  my $runmconf = ${$conf}{settings}{running_mconf};
+  my $savefile = ${$conf}{miners}{$runmconf}{savepath};
+  if (-f $savefile) {
    my $bkpfile = $savefile . ".bkp";
-   copy $savefile, $bkpfile; 
+   copy $savefile, $bkpfile;
   }
   &blog("saving $savefile...") if (defined(${$conf}{settings}{verbose}));
   &sendAPIcommand("save",$savefile);
@@ -495,7 +410,7 @@ sub sendAPIcommand {
       print $sock "$command|$cflags";
     } else {
       &blog("sending \"$command\" to cgminer api") if (defined(${$conf}{settings}{verbose}));
-      print $sock "$command|\n"; 
+      print $sock "$command|\n";
     }
     my $res = "";
     while(<$sock>) {
@@ -503,10 +418,10 @@ sub sendAPIcommand {
     }
     close($sock);
     &blog("success!") if (defined(${$conf}{settings}{verbose}));
-    return $res;  
+    return $res;
   } else {
     &blog("failed to get socket for cgminer api") if (defined(${$conf}{settings}{verbose}));
-  }   
+  }
 }
 
 sub setGPUDisable {
@@ -560,19 +475,19 @@ sub setPoolSuperPri {
       $acount++;
     }
   }
-  if ($acount == 0 && $spool ne "z") { 
+  if ($acount == 0 && $spool ne "z") {
     my $newa = (keys %{$conf{pools}}); $newa++;
     ${$conf}{pools}{$newa}{url} = $spool;
     ${$conf}{pools}{$newa}{spri} = 1;
   }
-  DumpFile($conffile, $conf); 
+  DumpFile($conffile, $conf);
   &resetPoolSuperPri;
 }
 
 sub resetPoolSuperPri {
   my $conf = &getConfig;
   my %conf = %{$conf};
-  my $pnum; my $spool = "x"; 
+  my $pnum; my $spool = "x";
   my @pools = &getCGMinerPools(1);
   for (keys %{$conf{pools}}) {
     my $spval = ${$conf}{pools}{$_}{spri};
@@ -592,15 +507,15 @@ sub resetPoolSuperPri {
 
 sub startCGMiner {
   my $conf = &getConfig;
-  my %conf = %{$conf};  
-  my $currmconf = ${$conf}{settings}{current_mconf}; 
-  my $minerbin = ${$conf}{miners}{$currmconf}{mpath}; 
+  my %conf = %{$conf};
+  my $currmconf = ${$conf}{settings}{current_mconf};
+  my $minerbin = ${$conf}{miners}{$currmconf}{mpath};
   if ($minerbin eq "") {
-    die "No miner path defined! Exiting."; 
+    die "No miner path defined! Exiting.";
   }
-  my $mineropts =  ${$conf}{miners}{$currmconf}{mopts};   
+  my $mineropts =  ${$conf}{miners}{$currmconf}{mopts};
   my $savepath = ${$conf}{miners}{$currmconf}{savepath};
-  my $pid = fork();   
+  my $pid = fork();
   if (not defined $pid) {
     die "out of resources? forking failed for cgminer process";
   } elsif ($pid == 0) {
@@ -608,14 +523,14 @@ sub startCGMiner {
     $ENV{LD_LIBRARY_PATH} = "/opt/AMD-APP-SDK-v2.4-lnx32/lib/x86/:/opt/AMDAPP/lib/x86_64:";
     $ENV{GPU_USE_SYNC_OBJECTS} = "1";
     $ENV{GPU_MAX_ALLOC_PERCENT} = "100";
-    my $cmd = "cd /opt/ifmi; /usr/bin/screen -d -m -S PM-miner $minerbin --config $savepath $mineropts"; 
+    my $cmd = "cd /opt/ifmi; /usr/bin/screen -d -m -S PM-miner $minerbin --config $savepath $mineropts";
     &blog("starting miner with cmd: $cmd") if (defined(${$conf}{settings}{verbose}));
     ${$conf}{settings}{running_mconf} = $currmconf;
     my $conffile = "/opt/ifmi/poolmanager.conf";
-    DumpFile($conffile, $conf); 
+    DumpFile($conffile, $conf);
     exec($cmd);
     exit(0);
-  } 
+  }
 }
 
 sub stopCGMiner {
@@ -629,7 +544,7 @@ sub switchPool {
 
 sub zeroStats {
   my $zopts = "all,false";
-  &sendAPIcommand("zero",$zopts); 
+  &sendAPIcommand("zero",$zopts);
 }
 
 1;
