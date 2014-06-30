@@ -611,6 +611,8 @@ if (@summary) {
 	  	if (defined $mvers) {
 		  	$msput .= "<tr><td>Miner Version: </td><td>$mvers (API: $avers)</td></tr>";
 		 		$msput .= "<tr><td>Mining Strategy: </td><td>$mstrategy Mode</td>";
+		 	}
+		 	if ($avers >= 4) {
 				$msput .= "<td colspan=2><form name='mstrategy' method='post'><select name='setstrat'>";
 				$msput .= "<option value='0'>Failover</option>";
 				$msput .= "<option value='1'>Rnd Robin</option>";
@@ -620,11 +622,10 @@ if (@summary) {
 				$msput .= " (int:<input type='text' size='5' placeholder='seconds' name='stratint'>)";
 				$msput .= " <input type='submit' value='Select'>";
 				$msput .= "</form></td></tr>";
-
-	 			$msput .= "<tr><td>Running Profile:  </td><td>$runname</td>";
-	 			my $runpath = $conf{miners}{$runningm}{mpath};
-	 			$msput .= "<td>Run Path: </td><td>$runpath</td></tr>";
-		 	}
+			}
+	 		$msput .= "<tr><td>Running Profile:  </td><td>$runname</td>";
+	 		my $runpath = $conf{miners}{$runningm}{mpath};
+	 		$msput .= "<td>Run Path: </td><td>$runpath</td></tr>";
 	 		$msput .= "<tr><td>Loaded Profile:  </td><td>$currname</td>";
 			$msput .= "<td colspan=2><form name=currentm method=post><select name=setmconf>";
 			for (keys %{$conf{miners}}) {
