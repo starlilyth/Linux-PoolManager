@@ -466,65 +466,65 @@ print "<td><input type='text' size='45' placeholder='--api-listen' name='nmo'></
 print "</form></td></tr>";
 print "</table><br>";
 
+# print "<tr><td align=center>";
+
+# print '<table class=settings><tr><td class=header>TMB Algo Mapper (<a href="http://trademybit.com" target="_blank">trademybit.com</a>)</td><td class=header>Enabled</td><td class=header>Delete</td></tr>';
+# for (keys %{$mconf->{algos}}) {
+#   my $anum = $_;
+#   print "<form name=achange method=post>";
+#   my $aname = $mconf->{algos}->{$anum}->{aname};
+#   print "<tr><td>$aname ";
+#   print " = ";
+#   my $profname;
+#   my $aprof = $mconf->{algos}->{$anum}->{aprof};
+#   if (defined $aprof) {
+#     if ($aprof eq "none") {
+#       $profname = "not set";
+#     } else {
+#       $profname = $mconf->{miners}->{$aprof}->{mconfig};
+#     }
+#   } else {
+#     $profname = "not set";
+#   }
+#   print "$profname - Change to:";
+
+#   print "<select name=naprof>";
+#   for (keys %{$mconf->{miners}}) {
+#     my $mname = $mconf->{miners}->{$_}->{mconfig};
+#     if ($mname ne $profname) {
+#       print "<option value=$_>$mname</option>";
+#     }
+#   }
+#   print "<option value='none'>None</option>" if (defined $aprof);
+#   print "</select>";
+#   print "<input type='hidden' name='nanum' value=$anum>";
+#   print "<input type='submit' value='Set'></form>";
+#   print "</td><td>";
+
+#   print "<form name=sling00 method=post>";
+#   print "<input type='hidden' name='caenable' value=$anum>";
+#   my $ischk = $mconf->{algos}->{$anum}->{enabled};
+#   if ($ischk == 1) {
+#     print "<input type='checkbox' name='aenable' value='0' checked>";
+#   } else {
+#     print "<input type='checkbox' name='aenable' value='1'>";
+#   }
+#   print "<input type='submit' value='Set'></form>";
+
+#   print "</td><td>";
+#   print "<form name=adel method=post>";
+#   print "<input type='hidden' name='daname' value=$_>";
+#   print "<input type='submit' value='X'></form>";
+#   print "</td></tr>";
+# }
+# print "<tr><td colspan=3><form name=nalgo method=post>";
+# print "<input type='text' placeholder='Algo Name' name='nalgo' required> ";
+# print " <input type='submit' value='Add'></form></td></tr>";
+
+
+# print "</table><br></td></tr>";
+
 print "<tr><td align=center>";
-
-print '<table class=settings><tr><td class=header>TMB Algo Mapper (<a href="http://trademybit.com" target="_blank">trademybit.com</a>)</td><td class=header>Enabled</td><td class=header>Delete</td></tr>';
-for (keys %{$mconf->{algos}}) {
-  my $anum = $_;
-  print "<form name=achange method=post>";
-  my $aname = $mconf->{algos}->{$anum}->{aname};
-  print "<tr><td>$aname ";
-  print " = ";
-  my $profname;
-  my $aprof = $mconf->{algos}->{$anum}->{aprof};
-  if (defined $aprof) {
-    if ($aprof eq "none") {
-      $profname = "not set";
-    } else {
-      $profname = $mconf->{miners}->{$aprof}->{mconfig};
-    }
-  } else {
-    $profname = "not set";
-  }
-  print "$profname - Change to:";
-
-  print "<select name=naprof>";
-  for (keys %{$mconf->{miners}}) {
-    my $mname = $mconf->{miners}->{$_}->{mconfig};
-    if ($mname ne $profname) {
-      print "<option value=$_>$mname</option>";
-    }
-  }
-  print "<option value='none'>None</option>" if (defined $aprof);
-  print "</select>";
-  print "<input type='hidden' name='nanum' value=$anum>";
-  print "<input type='submit' value='Set'></form>";
-  print "</td><td>";
-
-  print "<form name=sling00 method=post>";
-  print "<input type='hidden' name='caenable' value=$anum>";
-  my $ischk = $mconf->{algos}->{$anum}->{enabled};
-  if ($ischk == 1) {
-    print "<input type='checkbox' name='aenable' value='0' checked>";
-  } else {
-    print "<input type='checkbox' name='aenable' value='1'>";
-  }
-  print "<input type='submit' value='Set'></form>";
-
-  print "</td><td>";
-  print "<form name=adel method=post>";
-  print "<input type='hidden' name='daname' value=$_>";
-  print "<input type='submit' value='X'></form>";
-  print "</td></tr>";
-}
-print "<tr><td colspan=3><form name=nalgo method=post>";
-print "<input type='text' placeholder='Algo Name' name='nalgo' required> ";
-print " <input type='submit' value='Add'></form></td></tr>";
-
-
-print "</table><br>";
-
-print "</td></tr><tr><td align=center>";
 
 print "<form name=miscsettings method=post>";
 print "<table class=settings><tr><td colspan=2 class=header>Misc. Miner Settings</td>";
