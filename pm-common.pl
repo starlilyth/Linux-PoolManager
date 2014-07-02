@@ -195,24 +195,24 @@ sub getCGMinerProfiles {
   my $proid; my $prodata;
   while ($data =~ m/PROFILE=(\d+),(.+?)\|/g) {
     $proid = $1; $prodata = $2;
-    my $prname; if ($prodata =~ m/Name=(.+?),/) { $prname = $1; }
-    my $prisdef; if ($prodata =~ m/IsDefault=(.+?),/) { $prisdef = $1; }
-    my $pralgo; if ($prodata =~ m/Algorithm=(.+?),/) { $pralgo = $1; }
-    my $pralgt; if ($prodata =~ m/Algorithm Type=(.+?),/) { $pralgt = $1; }
-    my $prlg; if ($prodata =~ m/LookupGap=(.+?),/) { $prlg = $1; }
-    my $prdevs; if ($prodata =~ m/Devices=(.+?),/) { $prdevs = $1; }
-    my $print; if ($prodata =~ m/Intensity=(.+?),/) { $print = $1; }
-    my $prxint; if ($prodata =~ m/XIntensity=(.+?),/) { $prxint = $1; }
-    my $prrint; if ($prodata =~ m/RawIntensity=(.+?),/) { $prrint = $1; }
-    my $prgeng; if ($prodata =~ m/Gpu Engine=(.+?),/) { $prgeng = $1; }
-    my $prgmem; if ($prodata =~ m/Gpu MemClock=(.+?),/) { $prgmem = $1; }
-    my $prgthr; if ($prodata =~ m/Gpu Threads=(.+?),/) { $prgthr = $1; }
-    my $prgfan; if ($prodata =~ m/Gpu Fan\%=(.+?),/) { $prgfan = $1; }
-    my $prgpt; if ($prodata =~ m/Gpu Powertune%=(.+?),/) { $prgpt = $1; }
-    my $prgvdc; if ($prodata =~ m/Gpu Vddc=(.+?),/) { $prgvdc = $1; }
-    my $prsha; if ($prodata =~ m/Shaders=(.+?),/) { $prsha = $1; }
-    my $prtc; if ($prodata =~ m/Thread Concurrency=(.+?),/) { $prtc = $1; }
-    my $prws; if ($prodata =~ m/Worksize=(.+?),/) { $prws = $1; }
+    my $prname; if ($prodata =~ m/Name=(\w+?),/) { $prname = $1; }
+    my $prisdef; if ($prodata =~ m/,IsDefault=(\w+?),/) { $prisdef = $1; }
+    my $pralgo; if ($prodata =~ m/,Algorithm=(.+?),/) { $pralgo = $1; }
+    my $pralgt; if ($prodata =~ m/,Algorithm Type=(\w+?),/) { $pralgt = $1; }
+    my $prlg; if ($prodata =~ m/,LookupGap=(\d+?),/) { $prlg = $1; }
+    my $prdevs; if ($prodata =~ m/,Devices=(.+?),/) { $prdevs = $1; }
+    my $print; if ($prodata =~ m/,Intensity=(\d+?),/) { $print = $1; }
+    my $prxint; if ($prodata =~ m/,XIntensity=(\d+?),/) { $prxint = $1; }
+    my $prrint; if ($prodata =~ m/,RawIntensity=(\d+?),/) { $prrint = $1; }
+    my $prgeng; if ($prodata =~ m/,Gpu Engine=(\d+?),/) { $prgeng = $1; }
+    my $prgmem; if ($prodata =~ m/,Gpu MemClock=(\d+?),/) { $prgmem = $1; }
+    my $prgthr; if ($prodata =~ m/,Gpu Threads=(\d+?),/) { $prgthr = $1; }
+    my $prgfan; if ($prodata =~ m/,Gpu Fan\%=(\d+?),/) { $prgfan = $1; }
+    my $prgpt; if ($prodata =~ m/,Gpu Powertune%=(\d+?),/) { $prgpt = $1; }
+    my $prgvdc; if ($prodata =~ m/,Gpu Vddc=(\d+?),/) { $prgvdc = $1; }
+    my $prsha; if ($prodata =~ m/,Shaders=(\d+?),/) { $prsha = $1; }
+    my $prtc; if ($prodata =~ m/,Thread Concurrency=(\d+?),/) { $prtc = $1; }
+    my $prws; if ($prodata =~ m/,Worksize=(\d+?),/) { $prws = $1; }
     push(@mprofiles, ({profid=> $proid, name=>$prname, is_default=>$prisdef, algo=>$pralgo,
       algo_type=>$pralgt, lookup_gap=>$prlg, devices=>$prdevs, intensity=>$print, x_int=>$prxint,
       raw_int=>$prrint, gpu_engine=>$prgeng, gpu_memclock=>$prgmem, gpu_threads=>$prgthr, gpu_fan=>$prgfan,

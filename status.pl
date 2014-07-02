@@ -270,7 +270,7 @@ my $UHOH = "false";
 $UHOH = "true" if (!(@pools) && !(@summary) && !(@gpus));
 
 # do GPUs
-my $gput; my $g1put; my $gsput; my $ggimg;
+my $gput; my $g1put; my $gsput; my $ggimg; my $atable;
 my @nodemsg; my @gpumsg;
 my $problems = 0;
 my $okgpus = 0;
@@ -973,6 +973,56 @@ if ($ispriv eq "S") {
 	$psum .= "</table><br>";
 	$p1sum .= $psum;
 
+	if (@profiles) {
+		$atable = "<table>";
+		$atable .= "<TR class='header'><TD class='header'>Default</TD>";
+		$atable .= "<TD class='header'>Name</TD>";
+		$atable .= "<TD class='header'>Algorithm</TD>";
+		$atable .= "<TD class='header'>A Type</TD>";
+		$atable .= "<TD class='header'>I</TD>";
+		$atable .= "<TD class='header'>TC</TD>";
+		$atable .= "<TD class='header'>LG</TD>";
+		$atable .= "<TD class='header'>Eng</TD>";
+		$atable .= "<TD class='header'>Mem</TD>";
+		$atable .= "<TD class='header'>Thr</TD>";
+		$atable .= "<TD class='header'>Fan</TD>";
+		$atable .= "<TD class='header'>Ptune</TD>";
+		$atable .= "<TD class='header'>Wsize</TD>";
+		$atable .= "</TR>";
+
+	  for (my $a=0;$a<@profiles;$a++) {
+	  	my $profisdef = ${$profiles[$a]}{'is_default'};
+	  	my $profname = ${$profiles[$a]}{'name'};
+	  	my $profalgo = ${$profiles[$a]}{'algo'};
+	  	my $profatype = ${$profiles[$a]}{'algo_type'};
+	  	my $profi = ${$profiles[$a]}{'intensity'}; $profi =
+	  	my $proftc = ${$profiles[$a]}{'thread_con'};
+	  	my $proflg = ${$profiles[$a]}{'lookup_gap'};
+	  	my $profeng = ${$profiles[$a]}{'gpu_engine'};
+	  	my $profmem = ${$profiles[$a]}{'gpu_memclock'};
+	  	my $profthr = ${$profiles[$a]}{'gpu_threads'};
+	  	my $proffan = ${$profiles[$a]}{'gpu_fan'};
+	  	my $profptune = ${$profiles[$a]}{'gpu_ptune'};
+	  	my $profwsize = ${$profiles[$a]}{'worksize'};
+
+			$atable .= "<tr><td>" . $profisdef . "</td>";
+			$atable .= "<td>" . $profname . "</td>";
+			$atable .= "<td>" . $profalgo . "</td>";
+			$atable .= "<td>" . $profatype . "</td>";
+			$atable .= "<td>" . $profi . "</td>";
+			$atable .= "<td>" . $proftc . "</td>";
+			$atable .= "<td>" . $proflg . "</td>";
+			$atable .= "<td>" . $profeng . "</td>";
+			$atable .= "<td>" . $profmem . "</td>";
+			$atable .= "<td>" . $profthr . "</td>";
+			$atable .= "<td>" . $proffan . "</td>";
+			$atable .= "<td>" . $profptune . "</td>";
+			$atable .= "<td>" . $profwsize . "</td>";
+			$atable .= "</tr>";
+	  }
+		$atable .= "</table><br>";
+	}
+
 } else {
 	if (defined $melapsed) {
 	  $p1sum .= "<TR><TD id=perror><p>The required API permissions do not appear to be available.<br>";
@@ -1145,6 +1195,7 @@ given(my $x) {
 	  } else {
 	    print $mcontrol;
 	    print $p1sum;
+	    print $atable if (defined $atable);
 	    print $g1put if (defined $g1put);
 
 		print "<br></div>";
