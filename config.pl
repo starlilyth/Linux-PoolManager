@@ -49,16 +49,13 @@ if (! -f $conffile) {
   	display => {
   		miner_loc => 'Undisclosed Location',
   		status_css => 'default.css',
-  		farmview_css => 'default.css',
   		graphcolors => 'pmgraph.colors',
   		usehashavg => '0',
       pmversion => $version,
   	},
   	farmview => {
   		do_bcast_status => '1',
-  		do_farmview => '1',
   		status_port => '54545',
-  		listen_port => '54545',
       do_direct_status => '',
   	},
     email => {
@@ -266,11 +263,6 @@ if (-o $conffile) {
     $mconf->{display}->{miner_loc} = $nml if((defined $nml) && ($nml ne ""));
     my $nscss = $in{'scss'};
     $mconf->{display}->{status_css} = $nscss if(defined $nscss);
-    my $nfcss = $in{'fcss'};
-    if((defined $nfcss) && ($nfcss ne "")) {
-      $mconf->{display}->{farmview_css} = $nfcss;
-      `touch /tmp/rfv`;
-    }
     my $ngcf = $in{'gcf'};
     $mconf->{display}->{graphcolors} = $ngcf if(defined $ngcf);
     my $nha = $in{'hashavg'};
@@ -327,14 +319,6 @@ if (-o $conffile) {
     if(defined $nbp) {
       $nbp = "54545" if (! ($nbp =~ m/^\d+?$/));
       $mconf->{farmview}->{status_port} = $nbp;
-    }
-    my $nfarmview = $in{'farmview'};
-    $mconf->{farmview}->{do_farmview} = $nfarmview if(defined $nfarmview);
-    my $nlp = $in{'nlp'};
-    if((defined $nlp) && ($nlp ne "")) {
-      $nlp = "54545" if (! ($nlp =~ m/^\d+?$/));
-      $mconf->{farmview}->{listen_port} = $nlp;
-      `touch /tmp/rfv`;
     }
     my $dds = $in{'dds'};
     $mconf->{farmview}->{do_direct_status} = $dds if((defined $dds) && ($dds ne ""));
@@ -616,7 +600,6 @@ my $directip = $mconf->{farmview}->{do_direct_status};
 print "<tr><td>FarmWatcher IP</td>";
 print "<td><i>Only needed if FW is not local</i></td>";
 print "<td>$directip <input type='text' size='15' placeholder='192.168.5.100' name='dds'></td></tr>";
-my $dfarm = $mconf->{farmview}->{do_farmview};
 
 print "</table></form>";
 
@@ -636,19 +619,6 @@ my @csslist = glob("/var/www/IFMI/themes/*.css");
     foreach my $file (@csslist) {
       $file =~ s/\/var\/www\/IFMI\/themes\///;
       if ("$file" eq "$status_css") {
-          print "<option value=$file selected>$file</option>";
-        } else {
-          print "<option value=$file>$file</option>";
-        }
-    }
-print "</select></td></tr>";
-my $farm_css = $mconf->{display}->{farmview_css};
-print "<tr><td>Farmview CSS</td><td>$farm_css<br><i><small>FV will restart if changed</small></i></td>";
-print "<td><select name=fcss>";
-my @fcsslist = glob("/var/www/IFMI/themes/*.css");
-    foreach my $file (@fcsslist) {
-        $file =~ s/\/var\/www\/IFMI\/themes\///;
-        if ("$file" eq "$farm_css") {
           print "<option value=$file selected>$file</option>";
         } else {
           print "<option value=$file>$file</option>";

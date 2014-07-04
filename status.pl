@@ -995,7 +995,7 @@ if ($ispriv eq "S") {
 	  	my $profname = ${$profiles[$a]}{'name'};
 	  	my $profalgo = ${$profiles[$a]}{'algo'};
 	  	my $profatype = ${$profiles[$a]}{'algo_type'};
-	  	my $profi = ${$profiles[$a]}{'intensity'}; $profi =
+	  	my $profi = ${$profiles[$a]}{'intensity'};
 	  	my $proftc = ${$profiles[$a]}{'thread_con'};
 	  	my $proflg = ${$profiles[$a]}{'lookup_gap'};
 	  	my $profeng = ${$profiles[$a]}{'gpu_engine'};
