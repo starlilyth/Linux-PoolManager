@@ -973,55 +973,55 @@ if ($ispriv eq "S") {
 	$psum .= "</table><br>";
 	$p1sum .= $psum;
 
-	if (@profiles) {
-		$atable = "<table>";
-		$atable .= "<TR class='header'><TD class='header'>Default</TD>";
-		$atable .= "<TD class='header'>Name</TD>";
-		$atable .= "<TD class='header'>Algorithm</TD>";
-		$atable .= "<TD class='header'>A Type</TD>";
-		$atable .= "<TD class='header'>I</TD>";
-		$atable .= "<TD class='header'>TC</TD>";
-		$atable .= "<TD class='header'>LG</TD>";
-		$atable .= "<TD class='header'>Eng</TD>";
-		$atable .= "<TD class='header'>Mem</TD>";
-		$atable .= "<TD class='header'>Thr</TD>";
-		$atable .= "<TD class='header'>Fan</TD>";
-		$atable .= "<TD class='header'>Ptune</TD>";
-		$atable .= "<TD class='header'>Wsize</TD>";
-		$atable .= "</TR>";
+	# if (@profiles) {
+	# 	$atable = "<table>";
+	# 	$atable .= "<TR class='header'><TD class='header'>Default</TD>";
+	# 	$atable .= "<TD class='header'>Name</TD>";
+	# 	$atable .= "<TD class='header'>Algorithm</TD>";
+	# 	$atable .= "<TD class='header'>A Type</TD>";
+	# 	$atable .= "<TD class='header'>I</TD>";
+	# 	$atable .= "<TD class='header'>TC</TD>";
+	# 	$atable .= "<TD class='header'>LG</TD>";
+	# 	$atable .= "<TD class='header'>Eng</TD>";
+	# 	$atable .= "<TD class='header'>Mem</TD>";
+	# 	$atable .= "<TD class='header'>Thr</TD>";
+	# 	$atable .= "<TD class='header'>Fan</TD>";
+	# 	$atable .= "<TD class='header'>Ptune</TD>";
+	# 	$atable .= "<TD class='header'>Wsize</TD>";
+	# 	$atable .= "</TR>";
 
-	  for (my $a=0;$a<@profiles;$a++) {
-	  	my $profisdef = ${$profiles[$a]}{'is_default'};
-	  	my $profname = ${$profiles[$a]}{'name'};
-	  	my $profalgo = ${$profiles[$a]}{'algo'};
-	  	my $profatype = ${$profiles[$a]}{'algo_type'};
-	  	my $profi = ${$profiles[$a]}{'intensity'};
-	  	my $proftc = ${$profiles[$a]}{'thread_con'};
-	  	my $proflg = ${$profiles[$a]}{'lookup_gap'};
-	  	my $profeng = ${$profiles[$a]}{'gpu_engine'};
-	  	my $profmem = ${$profiles[$a]}{'gpu_memclock'};
-	  	my $profthr = ${$profiles[$a]}{'gpu_threads'};
-	  	my $proffan = ${$profiles[$a]}{'gpu_fan'};
-	  	my $profptune = ${$profiles[$a]}{'gpu_ptune'};
-	  	my $profwsize = ${$profiles[$a]}{'worksize'};
+	#   for (my $a=0;$a<@profiles;$a++) {
+	#   	my $profisdef = ${$profiles[$a]}{'is_default'};
+	#   	my $profname = ${$profiles[$a]}{'name'};
+	#   	my $profalgo = ${$profiles[$a]}{'algo'};
+	#   	my $profatype = ${$profiles[$a]}{'algo_type'};
+	#   	my $profi = ${$profiles[$a]}{'intensity'};
+	#   	my $proftc = ${$profiles[$a]}{'thread_con'};
+	#   	my $proflg = ${$profiles[$a]}{'lookup_gap'};
+	#   	my $profeng = ${$profiles[$a]}{'gpu_engine'};
+	#   	my $profmem = ${$profiles[$a]}{'gpu_memclock'};
+	#   	my $profthr = ${$profiles[$a]}{'gpu_threads'};
+	#   	my $proffan = ${$profiles[$a]}{'gpu_fan'};
+	#   	my $profptune = ${$profiles[$a]}{'gpu_ptune'};
+	#   	my $profwsize = ${$profiles[$a]}{'worksize'};
 
-			$atable .= "<tr><td>" . $profisdef . "</td>";
-			$atable .= "<td>" . $profname . "</td>";
-			$atable .= "<td>" . $profalgo . "</td>";
-			$atable .= "<td>" . $profatype . "</td>";
-			$atable .= "<td>" . $profi . "</td>";
-			$atable .= "<td>" . $proftc . "</td>";
-			$atable .= "<td>" . $proflg . "</td>";
-			$atable .= "<td>" . $profeng . "</td>";
-			$atable .= "<td>" . $profmem . "</td>";
-			$atable .= "<td>" . $profthr . "</td>";
-			$atable .= "<td>" . $proffan . "</td>";
-			$atable .= "<td>" . $profptune . "</td>";
-			$atable .= "<td>" . $profwsize . "</td>";
-			$atable .= "</tr>";
-	  }
-		$atable .= "</table><br>";
-	}
+	# 		$atable .= "<tr><td>" . $profisdef . "</td>";
+	# 		$atable .= "<td>" . $profname . "</td>";
+	# 		$atable .= "<td>" . $profalgo . "</td>";
+	# 		$atable .= "<td>" . $profatype . "</td>";
+	# 		$atable .= "<td>" . $profi . "</td>";
+	# 		$atable .= "<td>" . $proftc . "</td>";
+	# 		$atable .= "<td>" . $proflg . "</td>";
+	# 		$atable .= "<td>" . $profeng . "</td>";
+	# 		$atable .= "<td>" . $profmem . "</td>";
+	# 		$atable .= "<td>" . $profthr . "</td>";
+	# 		$atable .= "<td>" . $proffan . "</td>";
+	# 		$atable .= "<td>" . $profptune . "</td>";
+	# 		$atable .= "<td>" . $profwsize . "</td>";
+	# 		$atable .= "</tr>";
+	#   }
+	# 	$atable .= "</table><br>";
+	# }
 
 } else {
 	if (defined $melapsed) {
