@@ -212,7 +212,7 @@ sub getCGMinerProfiles {
     my $prgvdc; if ($prodata =~ m/,Gpu Vddc=(\d+?),/) { $prgvdc = $1; }
     my $prsha; if ($prodata =~ m/,Shaders=(\d+?),/) { $prsha = $1; }
     my $prtc; if ($prodata =~ m/,Thread Concurrency=(\d+?),/) { $prtc = $1; }
-    my $prws; if ($prodata =~ m/,Worksize=(\d+?),/) { $prws = $1; }
+    my $prws; if ($prodata =~ m/,Worksize=(\d+)/) { $prws = $1; }
     push(@mprofiles, ({profid=> $proid, name=>$prname, is_default=>$prisdef, algo=>$pralgo,
       algo_type=>$pralgt, lookup_gap=>$prlg, devices=>$prdevs, intensity=>$print, x_int=>$prxint,
       raw_int=>$prrint, gpu_engine=>$prgeng, gpu_memclock=>$prgmem, gpu_threads=>$prgthr, gpu_fan=>$prgfan,
@@ -230,7 +230,10 @@ sub getCGMinerConfig {
   my $mscant; if ($res =~ m/ScanTime=(\d+),/g) { $mscant = $1; }
   my $mqueue; if ($res =~ m/Queue=(\d+),/g) { $mqueue = $1; }
   my $mexpiry; if ($res =~ m/Expiry=(\d+),/g) { $mexpiry = $1; }
-  push(@mconfig, ({strategy=>$mstrategy, fonly=>$mfonly, scantime=>$mscant, queue=>$mqueue, expiry=>$mexpiry }) );
+  my $mrotateint; if ($res =~ m/Rotate\sPeriod=(\d+),/g) { $mrotateint = $1; }
+  my $mswdelay; if ($res =~ m/Switch\sDelay=(\d+),/g) { $mswdelay = $1; }
+  push(@mconfig, ({strategy=>$mstrategy, fonly=>$mfonly, scantime=>$mscant,
+  queue=>$mqueue, expiry=>$mexpiry, rotate_int => $mrotateint, sw_delay => $mswdelay }) );
   return(@mconfig);
 }
 
@@ -376,6 +379,7 @@ sub getCGMinerSummary {
   my $mdiffrej; if ($res =~ m/Difficulty\sRejected=(\d+\.\d+),/g) { $mdiffrej = $1 }
   my $mdiffstale; if ($res =~ m/Difficulty\sStale=(\d+\.\d+),/g) { $mdiffstale = $1 }
   my $mbestshare; if ($res =~ m/Best\sShare=(\d+),/g) { $mbestshare = $1 }
+
   push(@summary, ({elapsed=>$melapsed, hashavg=>$mhashav, hashrate=>$mhashrate, khashavg=>$mkhashav,
   khashrate=>$mkhashrate, shares_accepted=>$maccept, found_blocks=>$mfoundbl, getworks=>$mgetworks,
   shares_invalid=>$mreject, hardware_errors=>$mhwerrors, utility=>$mutility, discarded=>$mdiscarded,
@@ -627,6 +631,17 @@ sub switchPool {
 sub zeroStats {
   my $zopts = "all,false";
   &sendAPIcommand("zero",$zopts);
+}
+
+sub updateAProfile {
+  my ($uapname, $uapa, $uapi, $uaptc, $uaplg, $uapeng, $uapmem, $uapthr, $uapfan, $uappt, $uapws) = @_;
+  my $uapopts = "$uapname\:$uapa\:\:$uaplg\:\:$uapi\:\:\:$uapeng\:$uapmem\:$uapthr\:$uapfan\:$uappt\:\:\:$uaptc\:$uapws";
+  &sendAPIcommand("addprofile",$uapopts);
+}
+
+sub deleteAProfile {
+  my $delreq = $_[0];
+  &sendAPIcommand("removeprofile",$delreq);
 }
 
 1;

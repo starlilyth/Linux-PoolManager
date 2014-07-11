@@ -197,6 +197,29 @@ my $rpri = $in{'rpri'};
 	&setPoolSuperPri($rpri);
 }
 
+
+my $uapname = $in{'uapname'};
+my $uapa = $in{'uapa'};
+my $uapi = $in{'uapi'};
+my $uaptc = $in{'uaptc'};
+my $uaplg = $in{'uaplg'};
+my $uapeng = $in{'uapeng'};
+my $uapmem = $in{'uapmem'};
+my $uapthr = $in{'uapthr'};
+my $uapfan = $in{'uapfan'};
+my $uappt = $in{'uappt'};
+my $uapws = $in{'uapws'};
+if (defined $uapname) {
+    &updateAProfile($uapname, $uapa, $uapi, $uaptc, $uaplg, $uapeng, $uapmem, $uapthr, $uapfan, $uappt, $uapws);
+    &saveConfig();
+}
+
+my $delap = $in{'delap'};
+if (defined $delap) {
+	&deleteAProfile($delap);
+  &saveConfig();
+}
+
 # Now carry on
 
 my $miner_name = `hostname`;
@@ -564,7 +587,7 @@ if (@gpus) {
 	$g1put .= "</table>";
 }
 
-my $mstrategy; my $mfonly; my $mscant; my $mqueue; my $mexpiry;
+my $mstrategy; my $mfonly; my $mscant; my $mqueue; my $mexpiry; my $mineri; my $mswdelay;
 if (@mconfig) {
 	for (my $i=0;$i<@mconfig;$i++) {
 		$mstrategy = ${$mconfig[0]}{'strategy'};
@@ -572,6 +595,8 @@ if (@mconfig) {
 		$mscant = ${$mconfig[0]}{'scantime'};
 		$mqueue = ${$mconfig[0]}{'queue'};
 		$mexpiry = ${$mconfig[0]}{'expiry'};
+		$mineri = ${$mconfig[0]}{'rotate_int'};
+		$mswdelay = ${$mconfig[0]}{'sw_delay'};
 	}
 }
 
@@ -612,7 +637,12 @@ if (@summary) {
 	  	$msput .= "<tr><td>PiMP Version: </td><td>$pimpver</td>" if (defined $pimpver);
 	  	if (defined $mvers) {
 		  	$msput .= "<tr><td>Miner Version: </td><td>$mvers (API: $avers)</td></tr>";
-		 		$msput .= "<tr><td>Mining Strategy: </td><td>$mstrategy Mode</td>";
+		 		$msput .= "<tr><td>Mining Strategy: </td><td>$mstrategy ";
+		 		if ($mstrategy eq "Rotate") {
+		 			$msput .= "(interval: $mineri)</td>";
+		 		} else {
+		 			$msput .= "(switch delay: $mswdelay)</td>";
+		 		}
 		 	}
 		 	if ($avers >= 4) {
 				$msput .= "<td colspan=2><form name='mstrategy' method='post'><select name='setstrat'>";
@@ -621,7 +651,7 @@ if (@summary) {
 				$msput .= "<option value='2'>Rotate</option>";
 				$msput .= "<option value='3'>Load Bal</option>";
 				$msput .= "<option value='4'>Balance</option></select>";
-				$msput .= " (int:<input type='text' size='5' placeholder='seconds' name='stratint'>)";
+				$msput .= " (rotate int:<input type='text' size='5' placeholder='seconds' name='stratint'>)";
 				$msput .= " <input type='submit' value='Select'>";
 				$msput .= "</form></td></tr>";
 			}
@@ -713,7 +743,7 @@ if (@summary) {
 			  $mcontrol .= "<td>Profile: $runname<br>";
 		  	$mcontrol .= "<small>Run time: " . $mrunt . "</small></td>";
 			  $mcontrol .= "<td><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > </form>";
-			  $mcontrol .= "<td><small>Switch Profile</small><br>";
+			  $mcontrol .= "<td><small>Switch Miner Profile</small><br>";
 				$mcontrol .= "<form name='startnm' action='status.pl' method='post'><select name='startnm'>";
 				for (keys %{$conf{miners}}) {
 	  			my $mname = $conf{miners}{$_}{mconfig};
@@ -770,10 +800,10 @@ $p1sum .= "<table id='pcontent'>";
 if ($ispriv eq "S") {
 	$p1sum .= "<TR class='header'><TD class='header'>Pool</TD>";
 	$p1sum .= "<TD class='header'>Pool URL</TD>";
-	$p1sum .= "<TD class='header'>Alias</TD>";
+#	$p1sum .= "<TD class='header'>Alias</TD>";
 	$p1sum .= "<TD class='header'>Worker</TD>" if ($avers > 1.16);
 	$p1sum .= "<TD class='header'>Status</TD>";
-	$p1sum .= "<TD class='header'>M Prof</TD>" if ($avers >= 4);
+	$p1sum .= "<TD class='header'>Algo Prof</TD>" if ($avers >= 4);
 	$p1sum .= "<TD class='header' colspan=2>Accept/Reject</TD>";
 	$p1sum .= "<TD class='header'>Active</TD>";
 	$p1sum .= "<TD class='header' colspan=2>Priority</TD>" if ($mstrategy eq "Failover");
@@ -905,7 +935,7 @@ if ($ispriv eq "S") {
 	      $purl .= "pool=$i";
 	      $psum .= '<TR><TD class="bigger"><A href="' . $purl . '">' . $i . '</TD>';
 	      $psum .= "<td>" . $pname . "</td>";
-	      $psum .= "<td>" . $poola . "</td>";
+#	      $psum .= "<td>" . $poola . "</td>";
 	      if (length($pusr) > 20) {
 	        $pusr = substr($pusr, 0, 6) . " ... " . substr($pusr, -6, 6) if (index($pusr, '.') < 0);
 	      }
@@ -973,55 +1003,84 @@ if ($ispriv eq "S") {
 	$psum .= "</table><br>";
 	$p1sum .= $psum;
 
-	# if (@profiles) {
-	# 	$atable = "<table>";
-	# 	$atable .= "<TR class='header'><TD class='header'>Default</TD>";
-	# 	$atable .= "<TD class='header'>Name</TD>";
-	# 	$atable .= "<TD class='header'>Algorithm</TD>";
-	# 	$atable .= "<TD class='header'>A Type</TD>";
-	# 	$atable .= "<TD class='header'>I</TD>";
-	# 	$atable .= "<TD class='header'>TC</TD>";
-	# 	$atable .= "<TD class='header'>LG</TD>";
-	# 	$atable .= "<TD class='header'>Eng</TD>";
-	# 	$atable .= "<TD class='header'>Mem</TD>";
-	# 	$atable .= "<TD class='header'>Thr</TD>";
-	# 	$atable .= "<TD class='header'>Fan</TD>";
-	# 	$atable .= "<TD class='header'>Ptune</TD>";
-	# 	$atable .= "<TD class='header'>Wsize</TD>";
-	# 	$atable .= "</TR>";
-
-	#   for (my $a=0;$a<@profiles;$a++) {
-	#   	my $profisdef = ${$profiles[$a]}{'is_default'};
-	#   	my $profname = ${$profiles[$a]}{'name'};
-	#   	my $profalgo = ${$profiles[$a]}{'algo'};
-	#   	my $profatype = ${$profiles[$a]}{'algo_type'};
-	#   	my $profi = ${$profiles[$a]}{'intensity'};
-	#   	my $proftc = ${$profiles[$a]}{'thread_con'};
-	#   	my $proflg = ${$profiles[$a]}{'lookup_gap'};
-	#   	my $profeng = ${$profiles[$a]}{'gpu_engine'};
-	#   	my $profmem = ${$profiles[$a]}{'gpu_memclock'};
-	#   	my $profthr = ${$profiles[$a]}{'gpu_threads'};
-	#   	my $proffan = ${$profiles[$a]}{'gpu_fan'};
-	#   	my $profptune = ${$profiles[$a]}{'gpu_ptune'};
-	#   	my $profwsize = ${$profiles[$a]}{'worksize'};
-
-	# 		$atable .= "<tr><td>" . $profisdef . "</td>";
-	# 		$atable .= "<td>" . $profname . "</td>";
-	# 		$atable .= "<td>" . $profalgo . "</td>";
-	# 		$atable .= "<td>" . $profatype . "</td>";
-	# 		$atable .= "<td>" . $profi . "</td>";
-	# 		$atable .= "<td>" . $proftc . "</td>";
-	# 		$atable .= "<td>" . $proflg . "</td>";
-	# 		$atable .= "<td>" . $profeng . "</td>";
-	# 		$atable .= "<td>" . $profmem . "</td>";
-	# 		$atable .= "<td>" . $profthr . "</td>";
-	# 		$atable .= "<td>" . $proffan . "</td>";
-	# 		$atable .= "<td>" . $profptune . "</td>";
-	# 		$atable .= "<td>" . $profwsize . "</td>";
-	# 		$atable .= "</tr>";
-	#   }
-	# 	$atable .= "</table><br>";
-	# }
+	if (@profiles) {
+			$atable = "<table>";
+			$atable .= "<TR class='header'>";
+			$atable .= "<TD class='header'>Algo Profile</TD>";
+			$atable .= "<TD class='header'>Default</TD>";
+			$atable .= "<TD class='header'>Algorithm</TD>";
+			$atable .= "<TD class='header'>Algo Type</TD>";
+			$atable .= "<TD class='header'>I</TD>";
+			$atable .= "<TD class='header'>TC</TD>";
+			$atable .= "<TD class='header'>LG</TD>";
+			$atable .= "<TD class='header'>Eng</TD>";
+			$atable .= "<TD class='header'>Mem</TD>";
+			$atable .= "<TD class='header'>Thr</TD>";
+			$atable .= "<TD class='header'>Fan</TD>";
+			$atable .= "<TD class='header'>Ptune</TD>";
+			$atable .= "<TD class='header'>Wsize</TD>";
+			$atable .= "<TD class='header'>Remove</TD>";
+			$atable .= "</TR>";
+			my $apmenu; my $profimg;
+		  for (my $a=0;$a<@profiles;$a++) {
+		  	my $profname = ${$profiles[$a]}{'name'};
+		  	my $profisdef = ${$profiles[$a]}{'is_default'};
+	 			if ($profisdef eq "true") {
+					$profimg = "<img src='/IFMI/ok24.png'>";
+					$apmenu .= "<option value=$profname selected>$profname</option>"
+	 			} else {
+					$profimg = "";
+					$apmenu .= "<option value=$profname>$profname</option>"
+	 			}
+		  	my $profalgo = ${$profiles[$a]}{'algo'};
+		  	my $profatype = ${$profiles[$a]}{'algo_type'};
+		  	my $profi = ${$profiles[$a]}{'intensity'}; $profi = "-" if (!defined $profi);
+		  	my $proftc = ${$profiles[$a]}{'thread_con'};$proftc = "-" if (!defined $proftc);
+		  	my $proflg = ${$profiles[$a]}{'lookup_gap'}; $proflg = "-" if (!defined $proflg);
+		  	my $profeng = ${$profiles[$a]}{'gpu_engine'}; $profeng = "-" if (!defined $profeng);
+		  	my $profmem = ${$profiles[$a]}{'gpu_memclock'}; $profmem = "-" if (!defined $profmem);
+		  	my $profthr = ${$profiles[$a]}{'gpu_threads'}; $profthr = "-" if (!defined $profthr);
+		  	my $proffan = ${$profiles[$a]}{'gpu_fan'}; $proffan = "-" if (!defined $proffan);
+		  	my $profptune = ${$profiles[$a]}{'gpu_ptune'}; $profptune = "-" if (!defined $profptune);
+		  	my $profwsize = ${$profiles[$a]}{'worksize'}; $profwsize = "-" if (!defined $profwsize);
+				$atable .= "<tr><td class ='bigger'>" . $profname . "</td>";
+				$atable .= "<td>" . $profimg . "</td>";
+				$atable .= "<td>" . $profalgo . "</td>";
+				$atable .= "<td>" . $profatype . "</td>";
+				$atable .= "<td>" . $profi . "</td>";
+				$atable .= "<td>" . $proftc . "</td>";
+				$atable .= "<td>" . $proflg . "</td>";
+				$atable .= "<td>" . $profeng . "</td>";
+				$atable .= "<td>" . $profmem . "</td>";
+				$atable .= "<td>" . $profthr . "</td>";
+				$atable .= "<td>" . $proffan . "</td>";
+				$atable .= "<td>" . $profptune . "</td>";
+				$atable .= "<td>" . $profwsize . "</td>";
+				$atable .= "<td><form name='apdelete' method='POST'>";
+		  	$atable .= "<input type='hidden' name='delap' value='$profname'>";
+	    	$atable .= "<input type='submit' value='X'></form></td>";
+				$atable .= "</tr>";
+		  }
+		  $atable .= "<tr><form name='apradd' action='status.pl' method='POST'>";
+		  $atable .= "<td colspan='14'>";
+#		  $atable .= "<select name='uapname'>";
+#		  $atable .= $apmenu;
+#			$atable .= "</select>";
+		  $atable .= " <input type='text' placeholder='Name' name='uapname' required>";
+		  $atable .= " <input type='text' placeholder='Algo' name='uapa' required>";
+		  $atable .= " <input type='text' size='2' placeholder='I' name='uapi'>";
+		  $atable .= " <input type='text' size='2' placeholder='TC' name='uaptc'>";
+		  $atable .= " <input type='text' size='2' placeholder='LG' name='uaplg'>";
+		  $atable .= " <input type='text' size='3' placeholder='Eng' name='uapeng'>";
+		  $atable .= " <input type='text' size='3' placeholder='Mem' name='uapmem'>";
+		  $atable .= " <input type='text' size='2' placeholder='Thr' name='uapthr'>";
+		  $atable .= " <input type='text' size='2' placeholder='Fan' name='uapfan'>";
+		  $atable .= " <input type='text' size='2' placeholder='Ptune' name='uappt'>";
+		  $atable .= " <input type='text' size='2' placeholder='Wsize' name='uapws'>";
+		  $atable .= " <input type='submit' value='Add'>";
+		  $atable .= "</td></form></tr>";
+			$atable .= "</table><br>";
+	}
 
 } else {
 	if (defined $melapsed) {
