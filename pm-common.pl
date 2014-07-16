@@ -204,10 +204,10 @@ sub getCGMinerProfiles {
     my $print; if ($prodata =~ m/,Intensity=(\d+?),/) { $print = $1; }
     my $prxint; if ($prodata =~ m/,XIntensity=(\d+?),/) { $prxint = $1; }
     my $prrint; if ($prodata =~ m/,RawIntensity=(\d+?),/) { $prrint = $1; }
-    my $prgeng; if ($prodata =~ m/,Gpu Engine=(\d+?),/) { $prgeng = $1; }
+    my $prgeng; if ($prodata =~ m/,Gpu Engine=(\d+-?\d+?),/) { $prgeng = $1; }
     my $prgmem; if ($prodata =~ m/,Gpu MemClock=(\d+?),/) { $prgmem = $1; }
     my $prgthr; if ($prodata =~ m/,Gpu Threads=(\d+?),/) { $prgthr = $1; }
-    my $prgfan; if ($prodata =~ m/,Gpu Fan\%=(\d+?),/) { $prgfan = $1; }
+    my $prgfan; if ($prodata =~ m/,Gpu Fan\%=(\d+-?\d+?),/) { $prgfan = $1; }
     my $prgpt; if ($prodata =~ m/,Gpu Powertune%=(\d+?),/) { $prgpt = $1; }
     my $prgvdc; if ($prodata =~ m/,Gpu Vddc=(\d+?),/) { $prgvdc = $1; }
     my $prsha; if ($prodata =~ m/,Shaders=(\d+?),/) { $prsha = $1; }

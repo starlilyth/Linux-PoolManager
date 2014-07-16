@@ -780,7 +780,8 @@ $mcontrol .= "</tr></table><br>";
 
 
 my $adata = `cat /opt/ifmi/adata`;
-$mcontrol .= "<table><td>$adata</td></table><br>" if ($adata ne "");
+my $donate = "<div align='right'><b>If you love our work, please donate!</b><br>BTC: 1BfFyiViCY18vvrhQuYwDzvYUkUsUZLhcX</div>";
+$mcontrol .= "<table><td>$adata</td><td>$donate</td></table><br>" if ($adata ne "");
 
 if (-e "/opt/ifmi/gpucountbad") {
 	my $badgpus = `cat /opt/pimp/gpudiff`; my $bgids;
