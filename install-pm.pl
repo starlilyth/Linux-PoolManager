@@ -82,7 +82,6 @@ sub doInstall {
     	copy "status.pl", $cgidir;
 			copy "config.pl", $cgidir;
     	copy "confedit.pl", $cgidir;
-      copy "farmview", $appdir;
     	copy "favicon.ico", $webdir;
     	copy "mcontrol", $appdir;
     	copy "pm-common.pl", $appdir;
@@ -94,7 +93,6 @@ sub doInstall {
     	`cp images/*.png $webdir/IFMI`;
     	`chmod 0755 $appdir/*.pl`; #because windows f's up the permissions. wtf.
     	`chmod 0755 $appdir/mcontrol`; #because windows
-    	`chmod 0755 $appdir/farmview`; #because windows
     	`chmod 0755 $cgidir/*.pl`; #because windows
 			`chown $apacheuser $appdir/poolmanager.conf` if (-f "$appdir/poolmanager.conf");
     	$instlog .= "files copied.\n";
