@@ -8,7 +8,7 @@
 #
 use strict;
 use warnings;
-use CGI qw(:cgi-lib :standard); 
+use CGI qw(:cgi-lib :standard);
 use YAML qw( LoadFile );
 my $conffile = "/opt/ifmi/poolmanager.conf";
 my $mconf = LoadFile( $conffile );
@@ -20,7 +20,7 @@ print start_html( -title=>'PM - ' . $hostname . ' - Config',
           -style=>{-src=>'/IFMI/themes/' . $theme } );
 
 my $currentm = $mconf->{settings}->{current_mconf};
-my $savepath = $mconf->{miners}->{$currentm}->{savepath}; 
+my $savepath = $mconf->{miners}->{$currentm}->{savepath};
 our %in;
 &ReadParse(%in);
 my $confdata = $in{'configtext'};
@@ -28,8 +28,8 @@ my $tempfile = "/tmp/confedit.tmp";
 if (defined $confdata) {
   open my $fin, '>', $tempfile;
   print $fin $confdata;
-  close $fin; 
-  $confdata = ""; 
+  close $fin;
+  $confdata = "";
 }
 my $status = -1;
 if (defined $in{'ptext'}) {
@@ -39,13 +39,18 @@ my $filedata = ""; my $datafile = "";
 if ($status > 0) {
   $datafile = $tempfile;
 } else {
-  $datafile = $savepath; 
+  $datafile = $savepath;
 }
 open my $fin, '<', $datafile;
 while (<$fin>) {
    $filedata .= "$_";
 }
-unlink $tempfile; 
+unlink $tempfile;
+my $sbutton = $in{'sbutton'};
+if (defined $sbutton && $sbutton eq "Save and Restart") {
+  my $rstat = (system("echo $in{'ptext'} | sudo -S /opt/ifmi/mcontrol restart"));
+}
+$sbutton = "";
 
 print "<div id='content'><table class=configeditor><tr><td class=header>Miner Configuration Editor</td></tr>";
 print "<tr><td class=bigger>Hostname: $hostname </td></tr><tr><td>Config file: $savepath ";
@@ -58,10 +63,10 @@ print "</td></tr><tr><td>";
 #print " User: <input type='text' placeholder='username' name='lname' required>";
 print "Root Password: ";
 print "<input type='password' placeholder='password' name='ptext' required> ";
-print " <input type='submit' value='Save'>";
+print " <input type='submit' name='sbutton' value='Save'> <input type='submit' name='sbutton' value='Save and Restart'>";
 if ($status > 0) {
   print "</td></tr><tr><td class=error>Save of $savepath failed!";
-} elsif ($status == 0) { 
+} elsif ($status == 0) {
   print "</td></tr><tr><td>$savepath saved";
 }
 print "</form></td></tr>";
