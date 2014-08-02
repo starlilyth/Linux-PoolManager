@@ -24,6 +24,7 @@ This should work out of the box on BAMT, but will need the following Perl module
 * libyaml-perl
 * librrds-perl
 * libproc-pid-file-perl (reported)
+* libproc-daemon-perl
 
 
 and for email notifications..
