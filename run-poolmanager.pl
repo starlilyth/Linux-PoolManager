@@ -88,7 +88,7 @@ while ($continue) {
      &doSysstats if ($pimpcheck > 0);
   }
   # Get the ad
-  `wget --quiet -O /opt/ifmi/adata http://ads.miner.farm/pm.html`;
+  `cd /opt/ifmi ; wget --quiet -N http://ads.miner.farm/pm.html ; cp pm.html adata`;
 
   sleep 60;
 }
