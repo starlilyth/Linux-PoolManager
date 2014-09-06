@@ -231,6 +231,11 @@ if (-o $conffile) {
     my $ndb = $in{'doboot'};
     $mconf->{settings}->{do_boot} = $ndb if ((defined $ndb) && ($ndb ne ""));
 
+    my $dbins = $in{'delbins'};
+    if (defined $dbins && $dbins ne "") {
+      `sudo /opt/ifmi/mcontrol delbins`;
+    }
+
     my $nap = $in{'nap'};
     if((defined $nap) && ($nap ne "")) {
       $nap = "4028" if (! ($nap =~ m/^\d+?$/));
@@ -420,7 +425,7 @@ print "<form name=deletem method=post>$currname <input type='submit' value='Dele
 print "<input type='hidden' name='deletem' value='$currentm'></form>";
 print "</td><td class=header>";
 print "<form name=currentm method=post><select name=setmconf>";
-for (keys %{$mconf->{miners}}) {
+for (sort { $a <=> $b } keys %{$mconf->{miners}}) {
   my $mname = $mconf->{miners}->{$_}->{mconfig};
   if ($currentm eq $_) {
     print "<option value=$_ selected>$mname</option>";
@@ -524,7 +529,11 @@ if ($doboot==1) {
 }
 my $minerport = $mconf->{settings}->{cgminer_port};
 print "<tr><td>API port</td><td><i>Defaults to 4028 if unset</i></td>";
-print "<td>$minerport <input type='text' size='4' placeholder='4028' name='nap'></td></tr>";
+print "<td>$minerport <input type='text' size='4' placeholder='4028' name='nap'></td></tr></form>";
+
+print "<tr><td>Delete .bins</td><td><i>Delete all .bin files</i></td>";
+print "<form name='delbins' method=post><input type='hidden' name='delbins' value='delbins'>";
+print "<td><input type='submit' value='Delete'></td></tr>";
 print "</table></form><br>";
 
 print "</td></tr><tr><td align=center valign=top>";

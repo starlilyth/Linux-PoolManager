@@ -1,22 +1,32 @@
 #!/usr/bin/perl
+### BEGIN INIT INFO
+# Provides:          mine
+# Required-Start:    $local_fs $network
+# Required-Stop:     $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: mine
+# Description:       mine script for Pimp
+### END INIT INFO
+
 #    This file is part of IFMI PoolManager.
 #
 #    PoolManager is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.   
+#    GNU General Public License for more details.
 
 use warnings;
 use strict;
-use File::Copy; 
+use File::Copy;
 use YAML qw( DumpFile );
 
 my $login = (getpwuid $>);
 die "must run as root" if ($login ne 'root');
 
 if (!defined $ARGV[0] || $ARGV[0] eq "") {
-  print "Usage: start, stop, restart, switch, installht, cleargraphs, boot (Restarts the machine)\n";
-  exit; 
+  print "Usage: start, stop, restart, switch, installht, cleargraphs, delbins, boot (Restarts the machine)\n";
+  exit;
 }
 
  require '/opt/ifmi/pm-common.pl';
@@ -29,23 +39,23 @@ if (!defined $ARGV[0] || $ARGV[0] eq "") {
  $minerpath = 0 if (!defined $minerpath);
 
 if ($ARGV[0] eq "switch") {
-  my $swopt = $ARGV[1]; 
+  my $swopt = $ARGV[1];
   &switchProfile($swopt);
 }
 
-if ($ARGV[0] eq "start") { 
- &startMining; 
+if ($ARGV[0] eq "start") {
+ &startMining;
 }
 
 
-if ($ARGV[0] eq "stop") { 
-  print "Stopping mining.....\n"; 
+if ($ARGV[0] eq "stop") {
+  print "Stopping mining.....\n";
   &stopCGMiner();
   print "Mining stopped.\n";
   &blog("stopping miner") if (defined(${$conf}{settings}{verbose}));
  }
 
-if ($ARGV[0] eq "restart") { 
+if ($ARGV[0] eq "restart") {
   &stopCGMiner();
   &blog("stopping miner") if (defined(${$conf}{settings}{verbose}));
   sleep 10;
@@ -59,13 +69,13 @@ if ($ARGV[0] eq "restart") {
         print "Mining started... Waiting 10 seconds and setting super priority.\n";
         &blog("starting miner") if (defined(${$conf}{settings}{verbose}));
         sleep 10;
-        &resetPoolSuperPri; 
+        &resetPoolSuperPri;
         print "Super priority set.\n";
 
 }
 
 if ($ARGV[0] eq "boot") {
-	my $bootcmd; 
+	my $bootcmd;
 	if (-e "/sbin/coldreboot") {
 		$bootcmd = "/sbin/coldreboot"
 	} else {
@@ -79,6 +89,10 @@ if ($ARGV[0] eq "cleargraphs") {
   system('/bin/rm /opt/ifmi/rrdtool/*.rrd');
   system('/bin/rm /var/www/IFMI/graphs/*.png');
   `/opt/ifmi/pmgraph.pl`;
+}
+
+if ($ARGV[0] eq "delbins") {
+  `rm /opt/ifmi/*.bin`;
 }
 
 if ($ARGV[0] eq "installht") {
@@ -95,7 +109,7 @@ if ($ARGV[0] eq "installht") {
       print $lin "auth.backend = \"htpasswd\" \n";
       print $lin "auth.backend.htpasswd.userfile = \"/var/htpasswd\"\n";
       print $lin "auth.require = ( \"/\" => ( \"method\" => \"basic\", \"realm\" => \"Restricted access\", \"require\" => \"user=valid-user\" ) ) \n";
-      close $lin; 
+      close $lin;
       `lighty-enable-mod auth`;
       `/usr/sbin/service lighttpd restart`;
     }
@@ -124,16 +138,16 @@ if ($ARGV[0] eq "installht") {
   if (! `grep -E /usr/bin/htpasswd /etc/sudoers`) {
     my $fin = "/etc/sudoers";
     open my $sin, '<', $fin;
-    open my $sout, '>', "$fin.out";    
+    open my $sout, '>', "$fin.out";
     while (<$sin>) {
       s/\/opt\/ifmi\/mcontrol/\/opt\/ifmi\/mcontrol,\/usr\/bin\/htpasswd/;
       print $sout $_;
-    }    
+    }
     close $sin; close $sout;
     rename $fin, "$fin.back";
-    rename "$fin.out", $fin; 
+    rename "$fin.out", $fin;
     `chmod 0440 /etc/sudoers`;
-  }	
+  }
 }
 
 

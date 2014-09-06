@@ -660,7 +660,7 @@ if (@summary) {
 	 		$msput .= "<td>Run Path: </td><td>$runpath</td></tr>";
 	 		$msput .= "<tr><td>Loaded Profile:  </td><td>$currname</td>";
 			$msput .= "<td colspan=2><form name=currentm method=post><select name=setmconf>";
-			for (keys %{$conf{miners}}) {
+			for (sort { $a <=> $b } keys %{$conf{miners}}) {
   			my $mname = $conf{miners}{$_}{mconfig};
   				if ($currentm eq $_) {
     				$msput .= "<option value=$_ selected>$mname</option>";
@@ -745,7 +745,7 @@ if (@summary) {
 			  $mcontrol .= "<td><form name='mstop' action='status.pl' method='POST'><input type='hidden' name='mstop' value='stop'><input type='submit' value='Stop' onclick='this.disabled=true;this.form.submit();' > </form>";
 			  $mcontrol .= "<td><small>Switch Miner Profile</small><br>";
 				$mcontrol .= "<form name='startnm' action='status.pl' method='post'><select name='startnm'>";
-				for (keys %{$conf{miners}}) {
+				for (sort { $a <=> $b } keys %{$conf{miners}}) {
 	  			my $mname = $conf{miners}{$_}{mconfig};
 	  				if ($currentm eq $_) {
 	    				$mcontrol .= "<option value=$_ selected>$mname</option>";
@@ -758,7 +758,7 @@ if (@summary) {
 			} else {
 		  	$mcontrol .= "<td class='error'>Stopped</td>";
 			  $mcontrol .= "<td><form name=currentm method=post>Profile: <select name=setmconf>";
-				for (keys %{$conf{miners}}) {
+				for (sort { $a <=> $b } keys %{$conf{miners}}) {
   				my $mname = $conf{miners}{$_}{mconfig};
   				if ($currentm eq $_) {
     				$mcontrol .= "<option value=$_ selected>$mname</option>";
@@ -779,7 +779,7 @@ if (@summary) {
 $mcontrol .= "</tr></table><br>";
 
 
-my $adata = `cat /opt/ifmi/adata`;
+my $adata = `cat /tmp/adata`;
 my $donate = "<div align='right'><b>If you love our work, please donate!</b><br>BTC: 1BfFyiViCY18vvrhQuYwDzvYUkUsUZLhcX</div>";
 $mcontrol .= "<table><td>$adata</td><td>$donate</td></table><br>";
 
