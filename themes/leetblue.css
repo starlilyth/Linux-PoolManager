@@ -1,0 +1,116 @@
+/* Status.CSS for Linux-PoolManager
+
+Theme: LeetBlue
+
+
+   Updated: 2014-Dec-03
+
+COLORS
+bg: 111111
+headerbg: 111111
+border: 003333
+text: 00cccc
+brighttext: 99ffff
+highlight: e8e11e
+
+
+-------------------------------------*/
+
+
+/* all text on the page */
+body, a { 
+	background-color: #111111;
+	font-family: Tahoma, Geneva, sans-serif;
+	font-size: 14px;
+	border: 0px;
+	margin: 0px;
+	padding: 0px;
+	color: #00cccc;
+	position: relative;
+	display: block;
+	z-index: 1;
+}
+
+/* overview - header area */
+#overview {
+	font-size: 16px;
+	color: #00cccc;
+}
+#overview .miner-name, td.overviewid, td.overviewhash {
+	color: #e8e11e;
+	font-size: 24px;
+}
+#overview .label {
+color: #ffffff;
+}
+#overview img {
+	padding-top: 3px;
+}
+
+#overview td {
+	padding: 0 30px 0 10px;
+	font-weight: 300;
+}
+.logo {
+    display: block;
+    height: 63px;
+    width: 155px;
+}
+.logo a {
+    background-image: url("/IFMI/IFMI-logo-small.png");
+    display: block;
+    height: 63px;
+    width: 155px;
+}
+.reset-btn {
+    background: none repeat scroll 0 0 #003333;
+    border: 0 none;
+    border-radius: 5px;
+    cursor: pointer;
+    height: 10px;
+    width: 10px;
+}
+
+
+
+/* hyperlinks */
+a {
+	color: #99ffff;
+}
+
+a:hover {
+	color: #e8e11e;
+}
+
+/* the main table area */
+#content {
+	padding: 20px;
+	vertical-align: top;
+	text-align: center;
+	display: block;
+}
+
+#content td {
+	border: 1px solid #003333;
+	padding: 5px;
+}
+
+/* table headers */
+#content td.header {
+	color: #00cccc;
+	background-color: #003333;
+	font-weight: bold;
+}
+
+/* errors */
+#content td.error {
+	color: #ffffff;
+	background-color: #ff0000;
+	font-weight: bold;
+}
+
+/* buttons and text boxes */
+input, button {
+	color: #99ffff;
+	background-color: #003333;
+}
