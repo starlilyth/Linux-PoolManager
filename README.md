@@ -104,10 +104,3 @@ A6: PoolManager only mirrors what cgminer can do, via the API, these are things 
 Absolutely NO hidden donate code!
 You can trust the IFMI brand to never include any kind of auto donate or hash theft code.
 
-If you love it, please donate!
-
-BTC: 1JBovQ1D3P4YdBntbmsu6F1CuZJGw9gnV6
-
-LTC: LdMJB36zEfTo7QLZyKDB55z9epgN78hhFb
-
-Donate your hashpower directly at http://coinshift.com/
